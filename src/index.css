@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --color-flux-primary: #2563eb;
+  --color-flux-secondary: #1e40af;
+  --color-flux-accent: #3b82f6;
+  --color-flux-dark: #0f172a;
+  --color-flux-darker: #020617;
+
+  --animate-gradient: gradient 8s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.8);
+  }
+}
+
+body {
+  background: linear-gradient(to bottom right, var(--color-flux-darker), var(--color-flux-dark), var(--color-flux-secondary));
+  color: white;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: rgb(51 65 85);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, rgb(96 165 250), rgb(192 132 252), rgb(251 182 206));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.gradient-bg {
+  background: linear-gradient(to bottom right, var(--color-flux-darker), var(--color-flux-dark), var(--color-flux-secondary));
+}
+
+.glass {
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
