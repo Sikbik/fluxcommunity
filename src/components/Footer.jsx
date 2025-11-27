@@ -57,7 +57,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://docs.runonflux.io" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <a href="https://docs.runonflux.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Documentation
                 </a>
               </li>

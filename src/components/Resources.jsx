@@ -8,7 +8,7 @@ export default function Resources() {
       icon: <BookOpen className="w-6 h-6" />,
       color: 'from-blue-500 to-cyan-500',
       links: [
-        { name: 'Official Flux Docs', url: 'https://docs.runonflux.io/', description: 'Complete technical documentation' },
+        { name: 'Official Flux Docs', url: 'https://docs.runonflux.com/', description: 'Complete technical documentation' },
         { name: 'FluxNode Setup Guide', url: 'https://docs.runonflux.com/fluxnodes/what-are-fluxnodes', description: 'Step-by-step node installation' },
         { name: 'API Documentation', url: 'https://docs.runonflux.io/fluxapi', description: 'Flux API reference and endpoints' },
       ]

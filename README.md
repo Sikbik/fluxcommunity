@@ -199,7 +199,7 @@ Copyright (c) 2025 Sikbik
 ## Links
 
 - Flux Official Website: https://runonflux.io
-- Flux Documentation: https://docs.runonflux.io
+- Flux Documentation: https://docs.runonflux.com
 - Flux GitHub: https://github.com/RunOnFlux
 - Community Discord: https://discord.com/invite/runonflux
 
