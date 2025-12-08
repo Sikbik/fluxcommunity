@@ -13,17 +13,17 @@ const StatItem = ({ value, label, color, isLoading }) => {
 
   return (
     <div className="relative group">
-      <div className={`text-2xl md:text-3xl font-bold ${colorClasses[color]} transition-all`}>
+      <div className={`text-lg md:text-3xl font-bold ${colorClasses[color]} transition-all`}>
         {isLoading ? (
-          <span className="inline-flex items-center gap-2">
-            <Activity className="w-5 h-5 animate-pulse" strokeWidth={2} />
+          <span className="inline-flex items-center gap-1">
+            <Activity className="w-4 h-4 md:w-5 md:h-5 animate-pulse" strokeWidth={2} />
             <span className="animate-pulse">...</span>
           </span>
         ) : (
           <span>{value}</span>
         )}
       </div>
-      <div className="text-sm text-slate-400 mt-1">{label}</div>
+      <div className="text-xs md:text-sm text-slate-400 mt-0.5 md:mt-1">{label}</div>
     </div>
   )
 }
@@ -31,7 +31,7 @@ const StatItem = ({ value, label, color, isLoading }) => {
 // Flux Capacitor Logo Component with Electric Effects (GPU Optimized)
 const FluxCapacitorLogo = () => (
   <div
-    className="relative w-44 h-44 md:w-56 md:h-56 flex items-center justify-center"
+    className="relative w-36 h-36 md:w-56 md:h-56 flex items-center justify-center"
     style={{ perspective: '800px', transformStyle: 'preserve-3d', willChange: 'transform' }}
   >
     {/* Ambient glow behind everything - simplified */}
@@ -44,7 +44,7 @@ const FluxCapacitorLogo = () => (
     />
 
     {/* Chaotic Lightning Bolts */}
-    <svg className="absolute inset-[-35px] md:inset-[-45px] w-[calc(100%+70px)] h-[calc(100%+70px)] md:w-[calc(100%+90px)] md:h-[calc(100%+90px)]" viewBox="0 0 200 200" fill="none">
+    <svg className="absolute inset-[-20px] md:inset-[-45px] w-[calc(100%+40px)] h-[calc(100%+40px)] md:w-[calc(100%+90px)] md:h-[calc(100%+90px)]" viewBox="0 0 200 200" fill="none">
       <defs>
         <linearGradient id="bolt-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#22d3ee" stopOpacity="0" />
@@ -203,21 +203,21 @@ const FluxCapacitorLogo = () => (
     >
       {/* Orbit path indicators (subtle ellipses) */}
       <div
-        className="absolute w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full border border-cyan-500/25"
+        className="absolute w-[140px] h-[140px] md:w-[220px] md:h-[220px] rounded-full border border-cyan-500/25"
         style={{ transform: 'rotateZ(-20deg) rotateX(70deg)' }}
       />
       <div
-        className="absolute w-[240px] h-[240px] md:w-[290px] md:h-[290px] rounded-full border border-purple-500/20"
+        className="absolute w-[180px] h-[180px] md:w-[290px] md:h-[290px] rounded-full border border-purple-500/20"
         style={{ transform: 'rotateZ(50deg) rotateX(70deg)' }}
       />
       <div
-        className="absolute w-[300px] h-[300px] md:w-[360px] md:h-[360px] rounded-full border border-amber-500/15"
+        className="absolute w-[220px] h-[220px] md:w-[360px] md:h-[360px] rounded-full border border-amber-500/15"
         style={{ transform: 'rotateZ(-40deg) rotateX(70deg)' }}
       />
 
       {/* Orbit Ring 1 - Cumulus (cyan) - closest/fastest */}
       <div
-        className="absolute w-[180px] h-[180px] md:w-[220px] md:h-[220px] animate-orbit-1"
+        className="absolute w-[140px] h-[140px] md:w-[220px] md:h-[220px] animate-orbit-1"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2">
@@ -244,7 +244,7 @@ const FluxCapacitorLogo = () => (
 
       {/* Orbit Ring 2 - Nimbus (purple) - middle */}
       <div
-        className="absolute w-[240px] h-[240px] md:w-[290px] md:h-[290px] animate-orbit-2"
+        className="absolute w-[180px] h-[180px] md:w-[290px] md:h-[290px] animate-orbit-2"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2">
@@ -271,7 +271,7 @@ const FluxCapacitorLogo = () => (
 
       {/* Orbit Ring 3 - Stratus (pink/gold) - furthest/slowest - COUNTER-CLOCKWISE */}
       <div
-        className="absolute w-[300px] h-[300px] md:w-[360px] md:h-[360px] animate-orbit-3"
+        className="absolute w-[220px] h-[220px] md:w-[360px] md:h-[360px] animate-orbit-3"
         style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2">
@@ -298,7 +298,7 @@ const FluxCapacitorLogo = () => (
     </div>
 
     {/* The Logo - Nucleus (optimized) */}
-    <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center z-10">
+    <div className="relative w-24 h-24 md:w-40 md:h-40 flex items-center justify-center z-10">
       {/* Nucleus glow - single element, no blur filter */}
       <div
         className="absolute inset-[-10px] rounded-full opacity-60"
@@ -373,64 +373,70 @@ export default function Hero() {
   }
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden pb-32">
+    <section className="min-h-[100dvh] flex flex-col items-center justify-between px-4 py-6 md:py-8 relative overflow-hidden">
       {/* Grid overlay */}
       <div className="absolute inset-0 grid-overlay opacity-30" />
 
-      {/* Flux Capacitor Logo - extra padding for orbiting nodes */}
-      <div className="mb-4 md:mb-6 animate-float relative z-10 pb-12 md:pb-16">
-        <FluxCapacitorLogo />
+      {/* Spacer for top */}
+      <div className="flex-shrink-0 h-4 md:h-8" />
+
+      {/* Main Content */}
+      <div className="flex flex-col items-center justify-center flex-1">
+        {/* Flux Capacitor Logo - extra padding for orbiting nodes */}
+        <div className="mb-2 md:mb-6 animate-float relative z-10 pb-4 md:pb-16">
+          <FluxCapacitorLogo />
+        </div>
+
+        {/* Portal Label */}
+        <div className="mono-label mb-1 md:mb-3 relative z-10">// community portal</div>
+
+        {/* Main Title */}
+        <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-center mb-1 md:mb-4 relative z-10 px-2">
+          <span className="electric-text-chrome" data-text="Flux Community">
+            Flux Community
+          </span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-base sm:text-xl md:text-2xl lg:text-3xl text-center mb-1 md:mb-3 max-w-4xl relative z-10 px-4">
+          <span className="text-slate-300 font-medium">Your Gateway to the</span>{' '}
+          <span className="text-cyan-400 font-semibold">Decentralized World</span>
+        </p>
+
+        {/* Description */}
+        <p className="text-sm md:text-lg text-slate-400 text-center mb-4 md:mb-8 max-w-2xl relative z-10 px-4">
+          Explore blockchain tools, learn from the academy, and discover community-built applications
+          powering the{' '}
+          <span className="text-purple-400">Flux ecosystem</span>.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 md:gap-4 mb-4 md:mb-8 w-full max-w-md sm:max-w-none justify-center relative z-10 px-4">
+          <button
+            onClick={scrollToContent}
+            className="btn-electric px-6 py-3 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg inline-flex items-center justify-center group"
+          >
+            Explore Ecosystem
+          </button>
+          <a
+            href="https://runonflux.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-neon px-6 py-3 md:px-8 md:py-4 rounded-xl font-semibold text-base md:text-lg text-center"
+          >
+            Official Website
+          </a>
+        </div>
       </div>
 
-      {/* Portal Label */}
-      <div className="mono-label mb-3 relative z-10">// community portal</div>
-
-      {/* Main Title */}
-      <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-center mb-4 relative z-10 px-2">
-        <span className="electric-text-chrome" data-text="Flux Community">
-          Flux Community
-        </span>
-      </h1>
-
-      {/* Subtitle */}
-      <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-center mb-3 max-w-4xl relative z-10 px-4">
-        <span className="text-slate-300 font-medium">Your Gateway to the</span>{' '}
-        <span className="text-cyan-400 font-semibold">Decentralized World</span>
-      </p>
-
-      {/* Description */}
-      <p className="text-sm sm:text-base md:text-lg text-slate-400 text-center mb-8 max-w-2xl relative z-10 px-4">
-        Explore blockchain tools, learn from the academy, and discover community-built applications
-        powering the{' '}
-        <span className="text-purple-400">Flux ecosystem</span>.
-      </p>
-
-      {/* CTA Buttons */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-8 w-full max-w-md sm:max-w-none justify-center relative z-10">
-        <button
-          onClick={scrollToContent}
-          className="btn-electric px-8 py-4 rounded-xl font-semibold text-lg inline-flex items-center justify-center group"
-        >
-          Explore Ecosystem
-        </button>
-        <a
-          href="https://runonflux.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-neon px-8 py-4 rounded-xl font-semibold text-lg text-center"
-        >
-          Official Website
-        </a>
-      </div>
-
-      {/* Stats Bar */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 z-10">
+      {/* Stats Bar - now in flex flow */}
+      <div className="w-full px-2 md:p-6 z-10 flex-shrink-0">
         <div className="max-w-7xl mx-auto">
-          <div className="glass-electric rounded-2xl p-6 relative overflow-hidden">
+          <div className="glass-electric rounded-xl md:rounded-2xl p-3 md:p-6 relative overflow-hidden">
             {/* Top accent line */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center relative">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 text-center relative">
               <StatItem
                 value={fluxNodeCount}
                 label="Active FluxNodes"
