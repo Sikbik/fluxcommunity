@@ -1,16 +1,46 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLUX COMMUNITY - VOLTAGE TYPOGRAPHY SYSTEM
+   Next-Gen Visual Design with High-Contrast Electric Effects
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Import distinctive display font - Outfit for geometric precision */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @theme {
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  /* Core Flux Colors - Preserved */
   --color-flux-primary: #2563eb;
   --color-flux-secondary: #1e40af;
   --color-flux-accent: #3b82f6;
   --color-flux-dark: #0f172a;
   --color-flux-darker: #020617;
 
+  /* Electric Enhancement Colors */
+  --color-electric-cyan: #22d3ee;
+  --color-electric-blue: #60a5fa;
+  --color-plasma-pink: #ec4899;
+  --color-plasma-purple: #a855f7;
+  --color-energy-green: #4ade80;
+
+  /* Animation Definitions */
   --animate-gradient: gradient 8s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-electric-pulse: electric-pulse 2s ease-in-out infinite;
+  --animate-plasma-flow: plasma-flow 4s ease-in-out infinite;
+  --animate-glitch: glitch 3s infinite;
+  --animate-scan-line: scan-line 8s linear infinite;
+  --animate-energy-arc: energy-arc 1.5s ease-in-out infinite;
+  --animate-circuit-flow: circuit-flow 3s linear infinite;
+  --animate-flicker: flicker 0.15s infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 @keyframes gradient {
   0%, 100% {
@@ -25,10 +55,10 @@
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0px) translateZ(0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-15px) translateZ(0);
   }
 }
 
@@ -37,33 +67,1094 @@
     box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
   }
   100% {
-    box-shadow: 0 0 40px rgba(37, 99, 235, 0.8);
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.8), 0 0 60px rgba(59, 130, 246, 0.4);
   }
 }
 
+/* Electric Pulse - Simplified for performance */
+@keyframes electric-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Plasma Flow - Simplified for performance */
+@keyframes plasma-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Glitch Effect - Disabled for cleaner look */
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+  }
+}
+
+/* Scan Line - Cyberpunk effect */
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Energy Arc Animation */
+@keyframes energy-arc {
+  0%, 100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 0.8;
+  }
+  25% {
+    clip-path: polygon(5% 0, 95% 5%, 100% 100%, 0 95%);
+    opacity: 1;
+  }
+  50% {
+    clip-path: polygon(0 5%, 100% 0, 95% 95%, 5% 100%);
+    opacity: 0.9;
+  }
+  75% {
+    clip-path: polygon(3% 3%, 97% 0, 100% 97%, 0 100%);
+    opacity: 1;
+  }
+}
+
+/* Circuit Flow - For border animations */
+@keyframes circuit-flow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
+}
+
+/* Flicker Effect */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+  25%, 75% { opacity: 0.98; }
+}
+
+/* Lightning Strike */
+@keyframes lightning {
+  0%, 100% {
+    opacity: 0;
+  }
+  5%, 10% {
+    opacity: 1;
+  }
+  7%, 12% {
+    opacity: 0.3;
+  }
+  15% {
+    opacity: 0;
+  }
+}
+
+/* Energy Orb Rotation */
+@keyframes orb-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spark Animation */
+@keyframes spark {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Electric Border Chase */
+@keyframes border-chase {
+  0% {
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+  }
+  25% {
+    background-position: 100% 0%, 100% 100%, 0% 100%, 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 100%, 0% 0%, 100% 0%;
+  }
+  75% {
+    background-position: 0% 100%, 0% 0%, 100% 0%, 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%;
+  }
+}
+
+/* Holographic Shift - Disabled for performance */
+@keyframes holo-shift {
+  0%, 100% {
+    opacity: 1;
+  }
+}
+
+/* Electric Spark - for logo sparks */
+@keyframes electric-spark {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleY(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.2);
+  }
+}
+
+/* Electric Ring - expanding pulse rings */
+@keyframes electric-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Electric Border - subtle glow pulse */
+@keyframes electric-border {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 4px rgba(34, 211, 238, 0.4));
+  }
+  50% {
+    filter: brightness(1.1) drop-shadow(0 0 8px rgba(168, 85, 247, 0.6));
+  }
+}
+
+/* Chaotic Lightning Animations - each bolt flickers differently */
+@keyframes lightning-flash-1 {
+  0%, 18%, 22%, 55%, 100% { opacity: 0; }
+  19%, 21% { opacity: 1; }
+  56%, 58% { opacity: 0.8; }
+  57% { opacity: 0.4; }
+}
+
+@keyframes lightning-flash-2 {
+  0%, 35%, 40%, 70%, 100% { opacity: 0; }
+  36%, 39% { opacity: 1; }
+  71%, 75% { opacity: 0.7; }
+}
+
+@keyframes lightning-flash-3 {
+  0%, 10%, 14%, 82%, 87%, 100% { opacity: 0; }
+  11%, 13% { opacity: 1; }
+  83%, 86% { opacity: 0.9; }
+}
+
+@keyframes lightning-flash-4 {
+  0%, 45%, 50%, 52%, 100% { opacity: 0; }
+  46%, 49%, 51% { opacity: 1; }
+}
+
+@keyframes lightning-flash-5 {
+  0%, 5%, 10%, 62%, 68%, 100% { opacity: 0; }
+  6%, 9% { opacity: 1; }
+  63%, 67% { opacity: 0.85; }
+  65% { opacity: 0.5; }
+}
+
+@keyframes lightning-flash-6 {
+  0%, 28%, 33%, 90%, 95%, 100% { opacity: 0; }
+  29%, 32% { opacity: 1; }
+  91%, 94% { opacity: 0.75; }
+}
+
+@keyframes lightning-flash-7 {
+  0%, 58%, 62%, 78%, 100% { opacity: 0; }
+  59%, 61% { opacity: 1; }
+  79%, 82% { opacity: 0.6; }
+}
+
+@keyframes lightning-flash-8 {
+  0%, 15%, 20%, 42%, 48%, 100% { opacity: 0; }
+  16%, 19% { opacity: 1; }
+  43%, 47% { opacity: 0.9; }
+  45% { opacity: 0.3; }
+}
+
+/* Logo Pulse - breathing glow */
+@keyframes logo-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Electron Pulse - intense flickering */
+@keyframes electron-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%) scale(1);
+  }
+  25% {
+    opacity: 0.9;
+    transform: translateX(-50%) translateY(-50%) scale(1.15);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%) scale(0.95);
+  }
+  75% {
+    opacity: 0.85;
+    transform: translateX(-50%) translateY(-50%) scale(1.1);
+  }
+}
+
+/* Nucleus Pulse - slower energy pulse */
+@keyframes nucleus-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+/* Orbit animations for node tiers - true 3D orbits */
+@keyframes orbit-1 {
+  from { transform: rotateZ(-20deg) rotateX(70deg) rotate(0deg); }
+  to { transform: rotateZ(-20deg) rotateX(70deg) rotate(360deg); }
+}
+
+@keyframes orbit-2 {
+  from { transform: rotateZ(50deg) rotateX(70deg) rotate(0deg); }
+  to { transform: rotateZ(50deg) rotateX(70deg) rotate(360deg); }
+}
+
+@keyframes orbit-3 {
+  from { transform: rotateZ(-40deg) rotateX(70deg) rotate(0deg); }
+  to { transform: rotateZ(-40deg) rotateX(70deg) rotate(-360deg); }
+}
+
+/* Power Surge */
+@keyframes power-surge {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 body {
-  background: linear-gradient(to bottom right, var(--color-flux-darker), var(--color-flux-dark), var(--color-flux-secondary));
+  background: linear-gradient(135deg,
+    var(--color-flux-darker) 0%,
+    var(--color-flux-dark) 40%,
+    var(--color-flux-secondary) 100%
+  );
+  background-attachment: fixed;
   color: white;
+  font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Apply display font to all headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 * {
   border-color: rgb(51 65 85);
 }
 
+/* Selection styling */
+::selection {
+  background: rgba(59, 130, 246, 0.4);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRADIENT TEXT EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .gradient-text {
-  background: linear-gradient(to right, rgb(96 165 250), rgb(192 132 252), rgb(251 182 206));
+  background: linear-gradient(
+    135deg,
+    rgb(96 165 250) 0%,
+    rgb(192 132 252) 50%,
+    rgb(251 182 206) 100%
+  );
+  background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  line-height: 1.2;
+  padding-bottom: 0.1em;
 }
 
-.gradient-bg {
-  background: linear-gradient(to bottom right, var(--color-flux-darker), var(--color-flux-dark), var(--color-flux-secondary));
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOLTAGE TEXT SYSTEM - Distinctive, High-Impact Typography
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Electric Text - Primary headline treatment
+   Gradient from cyan to blue - crisp and sharp */
+.electric-text {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    #22d3ee 0%,
+    #38bdf8 30%,
+    #60a5fa 60%,
+    #818cf8 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  padding-bottom: 0.1em;
 }
+
+/* Hero title - clean, professional gradient */
+.electric-text-chrome {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e0f2fe 40%,
+    #7dd3fc 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  padding-bottom: 0.05em;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Subtle glow underline accent */
+.electric-text-chrome::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+  opacity: 0.6;
+}
+
+/* Voltage shift animations - visible RGB split for impact */
+@keyframes voltage-shift-cyan {
+  0%, 100% { transform: translate(-2px, 0); opacity: 0.6; }
+  20% { transform: translate(0px, -1px); opacity: 0.4; }
+  40% { transform: translate(-3px, 1px); opacity: 0.7; }
+  60% { transform: translate(1px, 0); opacity: 0.5; }
+  80% { transform: translate(-1px, -1px); opacity: 0.6; }
+}
+
+@keyframes voltage-shift-magenta {
+  0%, 100% { transform: translate(2px, 0); opacity: 0.5; }
+  20% { transform: translate(-1px, 1px); opacity: 0.6; }
+  40% { transform: translate(3px, -1px); opacity: 0.4; }
+  60% { transform: translate(0px, 1px); opacity: 0.7; }
+  80% { transform: translate(1px, 0); opacity: 0.5; }
+}
+
+/* Alternate style: Stark underline accent */
+.voltage-title {
+  position: relative;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  display: inline-block;
+}
+
+.voltage-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #22d3ee, #00ffff);
+  box-shadow:
+    0 0 10px #22d3ee,
+    0 0 20px #22d3ee,
+    0 0 40px rgba(34, 211, 238, 0.5);
+  animation: voltage-pulse 2s ease-in-out infinite;
+}
+
+@keyframes voltage-pulse {
+  0%, 100% { opacity: 1; transform: scaleX(1); }
+  50% { opacity: 0.8; transform: scaleX(0.98); }
+}
+
+/* Outline text style - bold, modern */
+.outline-title {
+  color: transparent;
+  -webkit-text-stroke: 2px #22d3ee;
+  text-stroke: 2px #22d3ee;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-shadow:
+    0 0 30px rgba(34, 211, 238, 0.4),
+    0 0 60px rgba(34, 211, 238, 0.2);
+  transition: all 0.3s ease;
+}
+
+.outline-title:hover {
+  color: #22d3ee;
+  text-shadow:
+    0 0 40px rgba(34, 211, 238, 0.8),
+    0 0 80px rgba(34, 211, 238, 0.4);
+}
+
+/* Monospace accent for technical labels */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #22d3ee;
+  opacity: 0.9;
+}
+
+/* Glitch text effect - Disabled */
+.glitch-text {
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS EFFECTS - Enhanced
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .glass {
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Glass with electric border */
+.glass-electric {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.glass-electric::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.5) 0%,
+    rgba(59, 130, 246, 0.3) 25%,
+    rgba(168, 85, 247, 0.3) 50%,
+    rgba(236, 72, 153, 0.5) 75%,
+    rgba(34, 211, 238, 0.5) 100%
+  );
+  background-size: 300% 300%;
+  animation: plasma-flow 4s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ELECTRIC BORDER EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.electric-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.electric-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    #22d3ee 10%,
+    transparent 20%,
+    #3b82f6 30%,
+    transparent 40%,
+    #a855f7 50%,
+    transparent 60%,
+    #ec4899 70%,
+    transparent 80%,
+    #22d3ee 90%,
+    transparent 100%
+  );
+  animation: orb-rotate 3s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Plasma border with pulse */
+.plasma-border {
+  position: relative;
+  background: rgba(15, 23, 42, 0.8);
+  border: none;
+}
+
+.plasma-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #3b82f6 0%,
+    #a855f7 25%,
+    #ec4899 50%,
+    #a855f7 75%,
+    #3b82f6 100%
+  );
+  background-size: 200% 100%;
+  animation: circuit-flow 3s linear infinite;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+.plasma-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(15, 23, 42, 0.95);
+  z-index: -1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENERGY EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Energy glow for icons and elements */
+.energy-glow {
+  filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 15px currentColor);
+  animation: electric-pulse 2s ease-in-out infinite;
+}
+
+/* Flux capacitor ring effect */
+.flux-ring {
+  position: relative;
+}
+
+.flux-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #3b82f6,
+    #a855f7,
+    #ec4899,
+    #22d3ee,
+    #3b82f6
+  );
+  animation: orb-rotate 2s linear infinite;
+  filter: blur(3px);
+  opacity: 0.8;
+}
+
+.flux-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 10%,
+    transparent 20%
+  );
+  animation: orb-rotate 1s linear infinite;
+}
+
+/* Power line effect */
+.power-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.1) 20%,
+    rgba(59, 130, 246, 0.3) 40%,
+    rgba(168, 85, 247, 0.3) 60%,
+    rgba(236, 72, 153, 0.1) 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: circuit-flow 2s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTON EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn-electric {
+  position: relative;
+  background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-electric::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-electric:hover::before {
+  left: 100%;
+}
+
+.btn-electric:hover {
+  box-shadow:
+    0 0 20px rgba(59, 130, 246, 0.6),
+    0 0 40px rgba(168, 85, 247, 0.4),
+    0 0 60px rgba(236, 72, 153, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Neon button */
+.btn-neon {
+  position: relative;
+  background: transparent;
+  border: 2px solid #22d3ee;
+  color: #22d3ee;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-neon:hover {
+  background: rgba(34, 211, 238, 0.1);
+  box-shadow:
+    0 0 10px rgba(34, 211, 238, 0.5),
+    0 0 20px rgba(34, 211, 238, 0.3),
+    inset 0 0 20px rgba(34, 211, 238, 0.1);
+  text-shadow: 0 0 20px currentColor;
+}
+
+.btn-neon:hover::before {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARD EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card-electric {
+  position: relative;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-electric::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #22d3ee,
+    #3b82f6,
+    #a855f7,
+    transparent
+  );
+  opacity: 0.5;
+  animation: circuit-flow 3s linear infinite;
+}
+
+.card-electric::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(59, 130, 246, 0.15) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card-electric:hover::after {
+  opacity: 1;
+}
+
+.card-electric:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BACKGROUND EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    var(--color-flux-darker) 0%,
+    var(--color-flux-dark) 50%,
+    var(--color-flux-secondary) 100%
+  );
+}
+
+/* Grid overlay */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Scan line effect - DISABLED for performance */
+.scan-lines::before {
+  display: none;
+}
+
+/* Noise texture overlay */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PARTICLE EFFECTS (CSS Only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #22d3ee;
+  box-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee;
+  animation: float 6s ease-in-out infinite;
+}
+
+.particle-pink {
+  background: #ec4899;
+  box-shadow: 0 0 10px #ec4899, 0 0 20px #ec4899;
+}
+
+.particle-purple {
+  background: #a855f7;
+  box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+}
+
+.particle-blue {
+  background: #3b82f6;
+  box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SPECIAL EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Holographic effect */
+.holographic {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(168, 85, 247, 0.1) 25%,
+    rgba(236, 72, 153, 0.1) 50%,
+    rgba(34, 211, 238, 0.1) 75%,
+    rgba(59, 130, 246, 0.1) 100%
+  );
+  background-size: 400% 400%;
+  animation: holo-shift 5s ease-in-out infinite;
+}
+
+/* Chrome text effect */
+.chrome-text {
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    #c0c0c0 45%,
+    #fff 50%,
+    #c0c0c0 55%,
+    #fff 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Lightning flash */
+.lightning-flash {
+  animation: lightning 5s infinite;
+}
+
+/* Power surge effect */
+.power-surge {
+  animation: power-surge 2s ease-in-out infinite;
+}
+
+/* Status indicators */
+.status-live {
+  position: relative;
+}
+
+.status-live::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80;
+  animation: electric-pulse 1.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR STYLING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-flux-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #a855f7);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #60a5fa, #c084fc);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-glow-blue {
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.5);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 10px rgba(236, 72, 153, 0.8), 0 0 20px rgba(236, 72, 153, 0.5);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8), 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.box-glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.2);
+}
+
+.box-glow-purple {
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 0 40px rgba(168, 85, 247, 0.2);
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+.animate-delay-1000 { animation-delay: 1000ms; }
+.animate-delay-2000 { animation-delay: 2000ms; }
+.animate-delay-3000 { animation-delay: 3000ms; }
+
+/* Electric Logo Animations */
+.animate-spin-slow {
+  animation: orb-rotate 8s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: orb-rotate 6s linear infinite reverse;
+}
+
+.animate-electric-spark {
+  animation: electric-spark 1s ease-in-out infinite;
+}
+
+.animate-electric-border {
+  animation: electric-border 2s ease-in-out infinite;
+}
+
+.animate-electric-ring {
+  animation: electric-ring 2s ease-out infinite;
+}
+
+/* Chaotic lightning bolt classes - different durations for randomness */
+.animate-lightning-1 {
+  animation: lightning-flash-1 2.5s ease-in-out infinite;
+}
+
+.animate-lightning-2 {
+  animation: lightning-flash-2 3.2s ease-in-out infinite;
+}
+
+.animate-lightning-3 {
+  animation: lightning-flash-3 2.8s ease-in-out infinite;
+}
+
+.animate-lightning-4 {
+  animation: lightning-flash-4 2.1s ease-in-out infinite;
+}
+
+.animate-lightning-5 {
+  animation: lightning-flash-5 3.5s ease-in-out infinite;
+}
+
+.animate-lightning-6 {
+  animation: lightning-flash-6 2.9s ease-in-out infinite;
+}
+
+.animate-lightning-7 {
+  animation: lightning-flash-7 3.1s ease-in-out infinite;
+}
+
+.animate-lightning-8 {
+  animation: lightning-flash-8 2.4s ease-in-out infinite;
+}
+
+.animate-logo-pulse {
+  animation: logo-pulse 3s ease-in-out infinite;
+}
+
+.animate-electron-pulse {
+  animation: electron-pulse 0.8s ease-in-out infinite;
+}
+
+.animate-nucleus-pulse {
+  animation: nucleus-pulse 4s ease-in-out infinite;
+}
+
+/* Orbiting node tier animations - GPU optimized */
+.animate-orbit-1 {
+  animation: orbit-1 4s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.animate-orbit-2 {
+  animation: orbit-2 6s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.animate-orbit-3 {
+  animation: orbit-3 8s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Float animation - GPU optimized */
+.animate-float {
+  will-change: transform;
 }

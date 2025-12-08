@@ -1,113 +1,209 @@
-import React from 'react'
-import { Github, X, MessageCircle, Heart } from 'lucide-react'
+import React, { useState } from 'react'
+import { Github, X, ChatBubble } from 'iconoir-react'
+
+// Social Link Component
+const SocialLink = ({ icon, href, title }) => {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative w-10 h-10 rounded-lg overflow-hidden"
+      title={title}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Background */}
+      <div
+        className="absolute inset-0 transition-all duration-300"
+        style={{
+          background: isHovered ? 'rgba(34, 211, 238, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(10px)'
+        }}
+      />
+
+      {/* Border glow */}
+      <div
+        className="absolute inset-0 rounded-lg transition-all duration-300"
+        style={{
+          boxShadow: isHovered ? '0 0 15px rgba(34, 211, 238, 0.4), inset 0 0 15px rgba(34, 211, 238, 0.1)' : 'none',
+          border: isHovered ? '1px solid rgba(34, 211, 238, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)'
+        }}
+      />
+
+      {/* Icon */}
+      <div className="relative w-full h-full flex items-center justify-center">
+        <span
+          className="transition-all duration-300"
+          style={{
+            color: isHovered ? '#22d3ee' : 'white',
+            filter: isHovered ? 'drop-shadow(0 0 8px #22d3ee)' : 'none',
+            transform: isHovered ? 'scale(1.1)' : 'scale(1)'
+          }}
+        >
+          {icon}
+        </span>
+      </div>
+    </a>
+  )
+}
+
+// Footer Link Component
+const FooterLink = ({ href, children }) => {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="transition-all duration-300 inline-flex items-center gap-1"
+      style={{
+        color: isHovered ? '#22d3ee' : '#94a3b8',
+        textShadow: isHovered ? '0 0 10px rgba(34, 211, 238, 0.5)' : 'none'
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+    </a>
+  )
+}
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="py-12 px-4 border-t border-white/10">
-      <div className="max-w-7xl mx-auto">
+    <footer className="relative py-12 px-4 overflow-hidden">
+      {/* Top border with animated gradient */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[1px]"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.5) 25%, rgba(168, 85, 247, 0.5) 50%, rgba(236, 72, 153, 0.5) 75%, transparent 100%)'
+        }}
+      />
+
+      {/* Animated energy line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] animate-[circuit-flow_4s_linear_infinite]"
+        style={{
+          background: 'linear-gradient(90deg, transparent, #22d3ee, #a855f7, #ec4899, transparent)',
+          backgroundSize: '200% 100%'
+        }}
+      />
+
+      {/* Background glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Main Footer Content */}
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* About */}
           <div className="md:col-span-2">
-            <h3 className="text-xl font-bold mb-4 gradient-text">Flux Community</h3>
+            <h3 className="text-xl font-bold mb-4 electric-text">
+              Flux Community
+            </h3>
             <p className="text-slate-400 mb-4">
               A decentralized Web3 cloud infrastructure comprised of user-operated,
               scalable and globally distributed computational nodes.
             </p>
+
+            {/* Social Links */}
             <div className="flex gap-4">
-              <a
+              <SocialLink
+                icon={<X className="w-5 h-5" strokeWidth={2} />}
                 href="https://x.com/RunOnFlux"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-lg glass hover:bg-white/10 transition-all flex items-center justify-center"
                 title="Official Flux X"
-              >
-                <X className="w-5 h-5" />
-              </a>
-              <a
+              />
+              <SocialLink
+                icon={<ChatBubble className="w-5 h-5" strokeWidth={1.5} />}
                 href="https://discord.com/invite/runonflux"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-lg glass hover:bg-white/10 transition-all flex items-center justify-center"
                 title="Discord Server"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </a>
-              <a
+              />
+              <SocialLink
+                icon={<Github className="w-5 h-5" strokeWidth={1.5} />}
                 href="https://github.com/RunOnFlux"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-lg glass hover:bg-white/10 transition-all flex items-center justify-center"
                 title="GitHub"
-              >
-                <Github className="w-5 h-5" />
-              </a>
+              />
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-slate-400">
+            <h4 className="font-semibold mb-4 text-slate-200">Quick Links</h4>
+            <ul className="space-y-2">
               <li>
-                <a href="https://runonflux.io" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://runonflux.io">
                   Official Website
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://docs.runonflux.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://docs.runonflux.com">
                   Documentation
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://explorer.runonflux.io" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://explorer.runonflux.io">
                   Block Explorer
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://academy.app.runonflux.io/?utm_source=community" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://academy.app.runonflux.io/?utm_source=community">
                   Flux Academy
-                </a>
+                </FooterLink>
               </li>
             </ul>
           </div>
 
           {/* Developers */}
           <div>
-            <h4 className="font-semibold mb-4">Developers</h4>
-            <ul className="space-y-2 text-slate-400">
+            <h4 className="font-semibold mb-4 text-slate-200">Developers</h4>
+            <ul className="space-y-2">
               <li>
-                <a href="https://github.com/RunOnFlux" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://github.com/RunOnFlux">
                   GitHub
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://docs.runonflux.io/fluxapi" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://docs.runonflux.io/fluxapi">
                   API Docs
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://docs.runonflux.com/fluxnodes/what-are-fluxnodes" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://docs.runonflux.com/fluxnodes/what-are-fluxnodes">
                   FluxNode Setup
-                </a>
+                </FooterLink>
               </li>
               <li>
-                <a href="https://cloud.runonflux.com/?utm_source=community" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                <FooterLink href="https://cloud.runonflux.com/?utm_source=community">
                   Deploy Your App
-                </a>
+                </FooterLink>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10 text-center">
-          <p className="text-slate-400 text-sm">
-            {currentYear} Flux Community Portal. Built with{' '}
-            <Heart className="w-4 h-4 inline text-red-400" /> by the community.
+        <div className="pt-8 relative">
+          {/* Separator line */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[1px]"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%)'
+            }}
+          />
+
+          <p className="text-slate-500 text-sm text-center font-mono">
+            <span className="text-slate-600">//</span> {currentYear} · Powered by{' '}
+            <span className="text-cyan-500">decentralized nodes</span> worldwide
           </p>
+
+          {/* Decorative bottom element */}
+          <div className="mt-6 flex justify-center">
+            <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+          </div>
         </div>
       </div>
     </footer>
