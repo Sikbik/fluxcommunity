@@ -177,7 +177,7 @@ export default function FeaturedApps() {
       category: 'Onboarding',
       icon: <GlobeGlyph className="w-6 h-6" />,
       color: 'from-blue-500 to-cyan-500',
-      status: 'WIP',
+      status: 'Live',
       link: 'https://fluxme.io/?utm_source=community'
     },
     {
