@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Github, X, ChatBubble } from 'iconoir-react'
+import { GithubGlyph, XGlyph, ChatGlyph } from './FluxGlyphs'
 
 // Social Link Component
 const SocialLink = ({ icon, href, title }) => {
@@ -10,26 +10,29 @@ const SocialLink = ({ icon, href, title }) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative w-10 h-10 rounded-lg overflow-hidden"
+      aria-label={title}
+      className="relative w-11 h-11 rounded-xl overflow-hidden transition-all duration-500"
       title={title}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Background */}
       <div
-        className="absolute inset-0 transition-all duration-300"
+        className="absolute inset-0 transition-all duration-500"
         style={{
-          background: isHovered ? 'rgba(34, 211, 238, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+          background: isHovered
+            ? 'linear-gradient(145deg, rgba(34, 211, 238, 0.22), rgba(15, 23, 42, 0.62))'
+            : 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(10px)'
         }}
       />
 
       {/* Border glow */}
       <div
-        className="absolute inset-0 rounded-lg transition-all duration-300"
+        className="absolute inset-0 rounded-xl transition-all duration-500"
         style={{
-          boxShadow: isHovered ? '0 0 15px rgba(34, 211, 238, 0.4), inset 0 0 15px rgba(34, 211, 238, 0.1)' : 'none',
-          border: isHovered ? '1px solid rgba(34, 211, 238, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)'
+          boxShadow: isHovered ? '0 0 18px rgba(34, 211, 238, 0.55), inset 0 0 16px rgba(34, 211, 238, 0.14)' : 'none',
+          border: isHovered ? '1px solid rgba(34, 211, 238, 0.58)' : '1px solid rgba(255, 255, 255, 0.14)'
         }}
       />
 
@@ -97,9 +100,25 @@ export default function Footer() {
       {/* Background glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div
+        className="max-w-7xl mx-auto relative z-10 rounded-[1.8rem] overflow-hidden p-6 sm:p-8"
+        style={{
+          background: 'linear-gradient(145deg, rgba(8, 13, 28, 0.86), rgba(10, 18, 35, 0.88), rgba(7, 12, 25, 0.9))',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          backdropFilter: 'blur(16px)'
+        }}
+      >
+        <div
+          className="absolute inset-0 opacity-35 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }}
+        />
+
         {/* Main Footer Content */}
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-4 gap-8 mb-8 relative z-10">
           {/* About */}
           <div className="md:col-span-2">
             <h3 className="text-xl font-bold mb-4 electric-text">
@@ -113,17 +132,17 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex gap-4">
               <SocialLink
-                icon={<X className="w-5 h-5" strokeWidth={2} />}
+                icon={<XGlyph className="w-5 h-5" />}
                 href="https://x.com/RunOnFlux"
                 title="Official Flux X"
               />
               <SocialLink
-                icon={<ChatBubble className="w-5 h-5" strokeWidth={1.5} />}
+                icon={<ChatGlyph className="w-5 h-5" />}
                 href="https://discord.com/invite/runonflux"
                 title="Discord Server"
               />
               <SocialLink
-                icon={<Github className="w-5 h-5" strokeWidth={1.5} />}
+                icon={<GithubGlyph className="w-5 h-5" />}
                 href="https://github.com/RunOnFlux"
                 title="GitHub"
               />
@@ -186,7 +205,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 relative">
+        <div className="pt-8 relative z-10">
           {/* Separator line */}
           <div
             className="absolute top-0 left-0 right-0 h-[1px]"

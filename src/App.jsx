@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import {
-  Cube,
-  Book,
-  Flash,
-  OpenNewWindow,
-  Github,
-  X,
-  ChatBubble,
-  Cloud,
-  Wallet,
-  Group
-} from 'iconoir-react'
+  CubeGlyph,
+  BookGlyph,
+  FlashGlyph,
+  ExternalLinkGlyph,
+  GithubGlyph,
+  XGlyph,
+  ChatGlyph,
+  CloudGlyph,
+  WalletGlyph,
+  GroupGlyph
+} from './components/FluxGlyphs'
 import Hero from './components/Hero'
 import EcosystemCard from './components/EcosystemCard'
 import FeaturedApps from './components/FeaturedApps'
@@ -102,40 +102,54 @@ const WalletCard = ({ name, description, icon, link, color, tagline }) => {
       href={link}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative rounded-2xl cursor-pointer group block"
+      className="relative rounded-[1.65rem] cursor-pointer group block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated border */}
       <div
-        className="absolute inset-0 rounded-2xl transition-all duration-300"
+        className="absolute inset-0 rounded-[1.65rem] transition-all duration-500"
         style={{
-          background: `linear-gradient(135deg, ${colors.glow}, transparent, ${colors.glow})`,
-          opacity: isHovered ? 0.8 : 0.2
+          background: `linear-gradient(132deg, ${colors.glow}, transparent 45%, ${colors.glow})`,
+          opacity: isHovered ? 1 : 0.35
         }}
       />
 
       {/* Card content */}
       <div
-        className="relative m-[2px] rounded-2xl p-6 sm:p-8 transition-all duration-300 overflow-hidden"
+        className="relative m-[1px] rounded-[1.6rem] p-6 sm:p-8 transition-all duration-500 overflow-hidden"
         style={{
-          background: 'rgba(15, 23, 42, 0.9)',
+          clipPath: 'polygon(0 12px, 12px 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%)',
+          background: 'linear-gradient(155deg, rgba(10, 15, 29, 0.92), rgba(14, 22, 40, 0.9), rgba(7, 10, 23, 0.94))',
           backdropFilter: 'blur(20px)'
         }}
       >
+        <div
+          className="absolute inset-0 opacity-35 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(125, 211, 252, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(125, 211, 252, 0.08) 1px, transparent 1px)',
+            backgroundSize: '18px 18px'
+          }}
+        />
+
         {/* Top accent line */}
         <div
-          className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-300"
+          className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-500"
           style={{
             background: `linear-gradient(90deg, transparent, ${colors.accent}, transparent)`,
-            opacity: isHovered ? 1 : 0.3
+            opacity: isHovered ? 1 : 0.5,
+            animation: isHovered ? 'circuit-flow 2s linear infinite' : 'none'
           }}
         />
 
         {/* Header */}
-        <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 relative">
+        <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 relative z-10">
           <div
-            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-300 relative ${isHovered ? 'scale-105' : ''}`}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-500 relative ${isHovered ? 'scale-110 -rotate-3' : ''}`}
+            style={{
+              boxShadow: isHovered ? `0 0 30px ${colors.glow}` : '0 10px 22px rgba(2,6,23,0.55)'
+            }}
           >
             <div className="w-8 h-8 sm:w-9 sm:h-9">
               {icon}
@@ -150,30 +164,32 @@ const WalletCard = ({ name, description, icon, link, color, tagline }) => {
         </div>
 
         {/* Description */}
-        <p className="text-sm sm:text-base text-slate-300 mb-4">
+        <p className="relative z-10 text-sm sm:text-base text-slate-300 mb-4 leading-relaxed">
           {description}
         </p>
 
         {/* CTA */}
         <div
-          className="flex items-center gap-2 font-semibold text-sm sm:text-base transition-all duration-300"
+          className="relative z-10 inline-flex items-center gap-2 font-semibold text-sm sm:text-base transition-all duration-300 px-3 py-1.5 rounded-md border"
           style={{
-            color: isHovered ? colors.accent : '#60a5fa'
+            color: isHovered ? colors.accent : '#60a5fa',
+            borderColor: isHovered ? `${colors.accent}80` : 'rgba(96, 165, 250, 0.35)',
+            background: isHovered ? `${colors.accent}18` : 'rgba(15, 23, 42, 0.4)'
           }}
         >
           <span>Learn More</span>
-          <OpenNewWindow className={`w-4 h-4 transition-transform duration-300 ${isHovered ? 'translate-x-1 -translate-y-1' : ''}`} strokeWidth={2} />
+          <ExternalLinkGlyph className={`w-4 h-4 transition-transform duration-300 ${isHovered ? 'translate-x-1 -translate-y-1' : ''}`} />
         </div>
       </div>
 
       {/* Outer glow */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300"
+        className="absolute inset-0 rounded-[1.65rem] pointer-events-none transition-all duration-500"
         style={{
           boxShadow: isHovered
-            ? `0 0 30px ${colors.glow}, 0 10px 40px rgba(0,0,0,0.4)`
-            : '0 4px 20px rgba(0,0,0,0.2)',
-          transform: isHovered ? 'scale(1.01)' : 'scale(1)'
+            ? `0 0 36px ${colors.glow}, 0 18px 52px rgba(2,6,23,0.7)`
+            : '0 6px 20px rgba(2,6,23,0.42)',
+          transform: isHovered ? 'translateY(-3px) scale(1.01)' : 'translateY(0) scale(1)'
         }}
       />
     </a>
@@ -185,7 +201,7 @@ function App() {
     {
       title: 'Cloud',
       description: 'Deploy and manage decentralized applications on Flux network with our intuitive deployment portal.',
-      icon: <Cloud className="w-8 h-8" strokeWidth={1.5} />,
+      icon: <CloudGlyph className="w-8 h-8" />,
       link: 'https://cloud.runonflux.com/?utm_source=community',
       color: 'from-blue-500 to-cyan-500',
       features: ['App Deployment', 'Container Management', 'Scaling Tools', 'Resource Monitoring']
@@ -193,7 +209,7 @@ function App() {
     {
       title: 'Explorer',
       description: 'Real-time blockchain explorer with advanced analytics, FluxNode tracking, and rich list features.',
-      icon: <Cube className="w-8 h-8" strokeWidth={1.5} />,
+      icon: <CubeGlyph className="w-8 h-8" />,
       link: 'https://explorer.runonflux.io/?utm_source=community',
       color: 'from-indigo-500 to-purple-500',
       features: ['Block Explorer', 'Transaction Tracking', 'Address Analytics', 'Rich List']
@@ -201,7 +217,7 @@ function App() {
     {
       title: 'Edge AI',
       description: 'High-performance AI inference platform powered by Flux decentralized GPU infrastructure.',
-      icon: <Flash className="w-8 h-8" strokeWidth={1.5} />,
+      icon: <FlashGlyph className="w-8 h-8" />,
       link: 'https://console.fluxedge.ai/?utm_source=community',
       color: 'from-purple-500 to-pink-500',
       features: ['GPU Computing', 'AI Inference', 'Model Deployment', 'Decentralized Processing']
@@ -209,7 +225,7 @@ function App() {
     {
       title: 'Academy',
       description: 'Learn how to build and deploy applications on Flux through hands-on tutorials and interactive guides.',
-      icon: <Book className="w-8 h-8" strokeWidth={1.5} />,
+      icon: <BookGlyph className="w-8 h-8" />,
       link: 'https://academy.app.runonflux.io/?utm_source=community',
       color: 'from-orange-500 to-red-500',
       features: ['Tutorials', 'Documentation', 'Deployment Playground', 'Interactive Learning']
@@ -217,7 +233,7 @@ function App() {
   ]
 
   return (
-    <div className="min-h-screen gradient-bg noise-overlay">
+    <div className="min-h-screen gradient-bg noise-overlay nextgen-stage">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Energy Orbs */}
@@ -262,7 +278,7 @@ function App() {
         <Hero />
 
         {/* Ecosystem Section */}
-        <section className="py-20 px-4 relative">
+        <section className="py-20 px-4 relative section-surface">
           {/* Section divider line */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
 
@@ -295,7 +311,7 @@ function App() {
         </section>
 
         {/* Wallets Section */}
-        <section className="py-20 px-4 relative">
+        <section className="py-20 px-4 relative section-surface">
           {/* Section dividers */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
@@ -326,7 +342,7 @@ function App() {
                 name="Zelcore"
                 tagline="Multi-Asset Wallet"
                 description="Feature-rich multi-cryptocurrency wallet with built-in exchange, staking, and comprehensive asset management."
-                icon={<Wallet className="w-full h-full text-white relative z-10" strokeWidth={1.5} />}
+                icon={<WalletGlyph className="w-full h-full text-white relative z-10" />}
                 link="https://zelcore.io/?utm_source=community"
                 color="from-blue-500 to-cyan-500"
               />
@@ -334,7 +350,7 @@ function App() {
                 name="SSP Wallet"
                 tagline="Enterprise Multisig Security"
                 description="Enterprise-grade wallet with multisignature security, self-sovereign protocol, and advanced privacy features for institutional and individual users."
-                icon={<Wallet className="w-full h-full text-white relative z-10" strokeWidth={1.5} />}
+                icon={<WalletGlyph className="w-full h-full text-white relative z-10" />}
                 link="https://sspwallet.io/?utm_source=community"
                 color="from-purple-500 to-pink-500"
               />
@@ -349,7 +365,7 @@ function App() {
         <Resources />
 
         {/* CTA Section */}
-        <section className="py-20 px-4 relative">
+        <section className="py-20 px-4 relative section-surface">
           {/* Section divider */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-pink-500/50 to-transparent" />
 
@@ -369,50 +385,60 @@ const CTASection = () => {
   const [isHovered, setIsHovered] = useState(false)
 
   const socialLinks = [
-    { name: 'Discord', icon: <ChatBubble className="w-5 h-5" strokeWidth={1.5} />, url: 'https://discord.com/invite/runonflux' },
-    { name: 'Official X', icon: <X className="w-5 h-5" strokeWidth={2} />, url: 'https://x.com/RunOnFlux' },
-    { name: 'X Community', icon: <Group className="w-5 h-5" strokeWidth={1.5} />, url: 'https://x.com/i/communities/1783579310768411056' },
-    { name: 'GitHub', icon: <Github className="w-5 h-5" strokeWidth={1.5} />, url: 'https://github.com/RunOnFlux' }
+    { name: 'Discord', icon: <ChatGlyph className="w-5 h-5" />, url: 'https://discord.com/invite/runonflux' },
+    { name: 'Official X', icon: <XGlyph className="w-5 h-5" />, url: 'https://x.com/RunOnFlux' },
+    { name: 'X Community', icon: <GroupGlyph className="w-5 h-5" />, url: 'https://x.com/i/communities/1783579310768411056' },
+    { name: 'GitHub', icon: <GithubGlyph className="w-5 h-5" />, url: 'https://github.com/RunOnFlux' }
   ]
 
   return (
     <div
-      className="relative rounded-3xl overflow-hidden"
+      className="relative rounded-[1.8rem] overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated border */}
       <div
-        className="absolute inset-0 rounded-3xl transition-all duration-300"
+        className="absolute inset-0 rounded-[1.8rem] transition-all duration-500"
         style={{
-          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.5), transparent, rgba(168, 85, 247, 0.5), transparent, rgba(236, 72, 153, 0.5))',
-          opacity: isHovered ? 0.8 : 0.4
+          background: 'linear-gradient(132deg, rgba(59, 130, 246, 0.7), transparent 35%, rgba(168, 85, 247, 0.7), transparent 70%, rgba(236, 72, 153, 0.7))',
+          opacity: isHovered ? 1 : 0.5
         }}
       />
 
       {/* Content */}
       <div
-        className="relative m-[2px] rounded-3xl p-8 sm:p-12"
+        className="relative m-[1px] rounded-[1.75rem] p-8 sm:p-12 overflow-hidden"
         style={{
-          background: 'rgba(15, 23, 42, 0.9)',
+          clipPath: 'polygon(0 14px, 14px 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%)',
+          background: 'linear-gradient(155deg, rgba(8, 14, 29, 0.92), rgba(13, 20, 38, 0.88), rgba(7, 10, 22, 0.94))',
           backdropFilter: 'blur(20px)'
         }}
       >
+        <div
+          className="absolute inset-0 opacity-35 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(96, 165, 250, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(96, 165, 250, 0.08) 1px, transparent 1px)',
+            backgroundSize: '22px 22px'
+          }}
+        />
+
         {/* Animated top line */}
         <div
           className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent transition-opacity duration-300"
           style={{ opacity: isHovered ? 1 : 0.5 }}
         />
 
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+        <h2 className="relative z-10 text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
           <span className="electric-text">Join the Flux Community</span>
         </h2>
-        <p className="text-lg sm:text-xl text-slate-300 mb-8">
+        <p className="relative z-10 text-lg sm:text-xl text-slate-300 mb-8 leading-relaxed">
           Be part of the <span className="text-cyan-400">decentralized cloud revolution</span>
         </p>
 
         {/* Social Links */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
+        <div className="relative z-10 flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
           {socialLinks.map((link, index) => (
             <SocialButton key={index} {...link} />
           ))}
@@ -421,11 +447,11 @@ const CTASection = () => {
 
       {/* Outer glow */}
       <div
-        className="absolute inset-0 rounded-3xl pointer-events-none transition-all duration-300"
+        className="absolute inset-0 rounded-[1.8rem] pointer-events-none transition-all duration-500"
         style={{
           boxShadow: isHovered
-            ? '0 0 50px rgba(59, 130, 246, 0.3), 0 0 80px rgba(168, 85, 247, 0.2)'
-            : '0 4px 30px rgba(0,0,0,0.3)'
+            ? '0 0 54px rgba(59, 130, 246, 0.34), 0 22px 66px rgba(2, 6, 23, 0.7)'
+            : '0 8px 26px rgba(2, 6, 23, 0.45)'
         }}
       />
     </div>
@@ -441,22 +467,22 @@ const SocialButton = ({ name, icon, url }) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative rounded-xl overflow-hidden w-full sm:w-auto"
+      className="relative rounded-[0.95rem] overflow-hidden w-full sm:w-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Border */}
       <div
-        className="absolute inset-0 rounded-xl transition-opacity duration-300"
+        className="absolute inset-0 rounded-[0.95rem] transition-opacity duration-500"
         style={{
-          background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.3), transparent)',
-          opacity: isHovered ? 1 : 0.2
+          background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.5), transparent, rgba(96, 165, 250, 0.45))',
+          opacity: isHovered ? 1 : 0.3
         }}
       />
 
       {/* Content */}
       <div
-        className="relative m-[1px] rounded-xl px-6 sm:px-8 py-3 sm:py-4 font-semibold inline-flex items-center justify-center gap-2 transition-all duration-300"
+        className="relative m-[1px] rounded-[0.9rem] px-6 sm:px-8 py-3 sm:py-4 font-semibold inline-flex items-center justify-center gap-2 transition-all duration-500"
         style={{
           background: isHovered ? 'rgba(34, 211, 238, 0.1)' : 'rgba(15, 23, 42, 0.8)',
           backdropFilter: 'blur(10px)'
@@ -471,14 +497,14 @@ const SocialButton = ({ name, icon, url }) => {
           {icon}
         </span>
         <span className={isHovered ? 'text-white' : 'text-slate-200'}>{name}</span>
-        <OpenNewWindow className={`w-4 h-4 transition-all duration-300 ${isHovered ? 'text-cyan-400 translate-x-0.5 -translate-y-0.5' : 'text-slate-400'}`} strokeWidth={2} />
+        <ExternalLinkGlyph className={`w-4 h-4 transition-all duration-300 ${isHovered ? 'text-cyan-400 translate-x-0.5 -translate-y-0.5' : 'text-slate-400'}`} />
       </div>
 
       {/* Glow */}
       <div
-        className="absolute inset-0 rounded-xl pointer-events-none transition-all duration-300"
+        className="absolute inset-0 rounded-[0.95rem] pointer-events-none transition-all duration-500"
         style={{
-          boxShadow: isHovered ? '0 0 20px rgba(34, 211, 238, 0.3)' : 'none'
+          boxShadow: isHovered ? '0 0 22px rgba(34, 211, 238, 0.32)' : 'none'
         }}
       />
     </a>

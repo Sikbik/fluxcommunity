@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Activity } from 'iconoir-react'
+import { ActivityGlyph } from './FluxGlyphs'
 
 // Stat Item Component
 const StatItem = ({ value, label, color, isLoading }) => {
@@ -16,7 +16,7 @@ const StatItem = ({ value, label, color, isLoading }) => {
       <div className={`text-lg md:text-3xl font-bold ${colorClasses[color]} transition-all`}>
         {isLoading ? (
           <span className="inline-flex items-center gap-1">
-            <Activity className="w-4 h-4 md:w-5 md:h-5 animate-pulse" strokeWidth={2} />
+            <ActivityGlyph className="w-4 h-4 md:w-5 md:h-5 animate-pulse" />
             <span className="animate-pulse">...</span>
           </span>
         ) : (

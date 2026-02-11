@@ -1,5 +1,11 @@
 import React, { useState } from 'react'
-import { Book, Code, MediaVideoList, ChatBubble, OpenNewWindow } from 'iconoir-react'
+import {
+  BookGlyph,
+  CodeGlyph,
+  VideoGlyph,
+  ChatGlyph,
+  ExternalLinkGlyph
+} from './FluxGlyphs'
 
 // Resource Link Component
 const ResourceLink = ({ name, url, description, accent }) => {
@@ -10,26 +16,35 @@ const ResourceLink = ({ name, url, description, accent }) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block relative rounded-lg overflow-hidden transition-all duration-300"
+      className="block relative rounded-xl overflow-hidden transition-all duration-500"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Background */}
       <div
-        className="absolute inset-0 transition-all duration-300"
+        className="absolute inset-0 transition-all duration-500"
         style={{
-          background: isHovered ? `rgba(${accent}, 0.1)` : 'rgba(255, 255, 255, 0.03)',
+          background: isHovered ? `linear-gradient(120deg, rgba(${accent}, 0.14), rgba(15, 23, 42, 0.5))` : 'rgba(255, 255, 255, 0.03)',
+        }}
+      />
+
+      <div
+        className="absolute inset-0 opacity-30 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px)',
+          backgroundSize: '16px 16px'
         }}
       />
 
       {/* Left accent line */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-[2px] transition-all duration-300"
+        className="absolute left-0 top-0 bottom-0 w-[2px] transition-all duration-500"
         style={{
           background: isHovered
             ? `linear-gradient(180deg, transparent, rgb(${accent}), transparent)`
             : 'transparent',
-          boxShadow: isHovered ? `0 0 10px rgba(${accent}, 0.5)` : 'none'
+          boxShadow: isHovered ? `0 0 14px rgba(${accent}, 0.7)` : 'none'
         }}
       />
 
@@ -46,13 +61,12 @@ const ResourceLink = ({ name, url, description, accent }) => {
               >
                 {name}
               </span>
-              <OpenNewWindow
+              <ExternalLinkGlyph
                 className={`w-4 h-4 transition-all duration-300 ${isHovered ? 'translate-x-1 -translate-y-1' : ''}`}
                 style={{ color: isHovered ? `rgb(${accent})` : '#94a3b8' }}
-                strokeWidth={2}
               />
             </div>
-            <div className="text-sm text-slate-400">{description}</div>
+            <div className="text-sm text-slate-400 leading-relaxed">{description}</div>
           </div>
         </div>
       </div>
@@ -75,27 +89,37 @@ const ResourceCard = ({ category, icon, color, links, accentRgb }) => {
 
   return (
     <div
-      className="relative rounded-2xl overflow-hidden"
+      className="relative rounded-[1.65rem] overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated border */}
       <div
-        className="absolute inset-0 rounded-2xl transition-all duration-500"
+        className="absolute inset-0 rounded-[1.65rem] transition-all duration-500"
         style={{
-          background: `linear-gradient(135deg, ${colors.glow}, transparent, ${colors.glow})`,
-          opacity: isHovered ? 1 : 0.2
+          background: `linear-gradient(130deg, ${colors.glow}, transparent 42%, ${colors.glow})`,
+          opacity: isHovered ? 1 : 0.32
         }}
       />
 
       {/* Card content */}
       <div
-        className="relative m-[2px] rounded-2xl p-6 sm:p-8 transition-all duration-500"
+        className="relative m-[1px] rounded-[1.6rem] p-6 sm:p-8 transition-all duration-500 overflow-hidden"
         style={{
-          background: 'rgba(15, 23, 42, 0.9)',
+          clipPath: 'polygon(0 10px, 10px 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%)',
+          background: 'linear-gradient(150deg, rgba(9, 14, 28, 0.92), rgba(13, 20, 38, 0.88), rgba(7, 11, 23, 0.94))',
           backdropFilter: 'blur(20px)'
         }}
       >
+        <div
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.08) 1px, transparent 1px)',
+            backgroundSize: '18px 18px'
+          }}
+        />
+
         {/* Top accent line */}
         <div
           className="absolute top-0 left-0 right-0 h-[2px] transition-all duration-300"
@@ -108,9 +132,12 @@ const ResourceCard = ({ category, icon, color, links, accentRgb }) => {
 
 
         {/* Category Header */}
-        <div className="flex items-center gap-3 sm:gap-4 mb-6 relative">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 relative z-10">
           <div
-            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-300 relative ${isHovered ? 'scale-105' : ''}`}
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-500 relative ${isHovered ? 'scale-110 -rotate-2' : ''}`}
+            style={{
+              boxShadow: isHovered ? `0 0 22px ${colors.glow}` : '0 8px 18px rgba(2,6,23,0.45)'
+            }}
           >
             <div className="text-white relative z-10 w-5 h-5 sm:w-6 sm:h-6">
               {icon}
@@ -129,7 +156,7 @@ const ResourceCard = ({ category, icon, color, links, accentRgb }) => {
 
         {/* Links */}
         {category === 'Community' ? (
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             {/* Discord and Telegram - Full Width */}
             {links.slice(0, 2).map((link, linkIndex) => (
               <ResourceLink
@@ -150,7 +177,7 @@ const ResourceCard = ({ category, icon, color, links, accentRgb }) => {
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             {links.map((link, linkIndex) => (
               <ResourceLink
                 key={linkIndex}
@@ -173,11 +200,11 @@ const ResourceCard = ({ category, icon, color, links, accentRgb }) => {
 
       {/* Outer glow */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-500"
+        className="absolute inset-0 rounded-[1.65rem] pointer-events-none transition-all duration-500"
         style={{
           boxShadow: isHovered
-            ? `0 0 30px ${colors.glow}, 0 10px 40px rgba(0,0,0,0.4)`
-            : '0 4px 20px rgba(0,0,0,0.2)'
+            ? `0 0 34px ${colors.glow}, 0 18px 56px rgba(2,6,23,0.65)`
+            : '0 6px 20px rgba(2,6,23,0.42)'
         }}
       />
     </div>
@@ -188,7 +215,7 @@ export default function Resources() {
   const resources = [
     {
       category: 'Documentation',
-      icon: <Book className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <BookGlyph className="w-6 h-6" />,
       color: 'from-blue-500 to-cyan-500',
       links: [
         { name: 'Official Flux Docs', url: 'https://docs.runonflux.com/', description: 'Complete technical documentation' },
@@ -198,7 +225,7 @@ export default function Resources() {
     },
     {
       category: 'Developer Resources',
-      icon: <Code className="w-6 h-6" strokeWidth={2} />,
+      icon: <CodeGlyph className="w-6 h-6" />,
       color: 'from-purple-500 to-pink-500',
       links: [
         { name: 'RunOnFlux GitHub', url: 'https://github.com/RunOnFlux', description: 'Main organization repository' },
@@ -208,7 +235,7 @@ export default function Resources() {
     },
     {
       category: 'Learning Materials',
-      icon: <MediaVideoList className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <VideoGlyph className="w-6 h-6" />,
       color: 'from-orange-500 to-red-500',
       links: [
         { name: 'YouTube Channel', url: 'https://www.youtube.com/@runonflux_official', description: 'Video tutorials and updates' },
@@ -218,7 +245,7 @@ export default function Resources() {
     },
     {
       category: 'Community',
-      icon: <ChatBubble className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <ChatGlyph className="w-6 h-6" />,
       color: 'from-green-500 to-emerald-500',
       links: [
         { name: 'Discord Server', url: 'https://discord.com/invite/runonflux', description: 'Join the conversation' },
@@ -230,7 +257,7 @@ export default function Resources() {
   ]
 
   return (
-    <section className="py-20 px-4 relative overflow-hidden">
+    <section className="py-20 px-4 relative overflow-hidden section-surface">
       {/* Background decorations */}
       <div className="absolute inset-0 grid-overlay opacity-20" />
 

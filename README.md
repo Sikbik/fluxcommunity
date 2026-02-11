@@ -37,6 +37,19 @@ Runs at `http://localhost:42069`
 
 Resource usage is minimal (~17MB RAM, <1% CPU idle). Image size is around 14MB.
 
+## GitHub Actions (Docker Hub Publish)
+
+A workflow is included at `.github/workflows/dockerhub-publish.yml`.
+
+It runs on pushes to `main` (and manual trigger), builds the image, and pushes:
+
+- `littlestache/community:latest`
+
+Required repository secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
 ## Project Structure
 
 ```

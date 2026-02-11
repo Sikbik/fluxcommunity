@@ -1,5 +1,15 @@
 import React, { useState } from 'react'
-import { Map, GraduationCap, GraphUp, OpenNewWindow, Server, Globe, Sparks, Reports, Calculator } from 'iconoir-react'
+import {
+  MapGlyph,
+  AcademyGlyph,
+  GraphGlyph,
+  ExternalLinkGlyph,
+  ServerGlyph,
+  GlobeGlyph,
+  AIStarGlyph,
+  ReportGlyph,
+  CalculatorGlyph
+} from './FluxGlyphs'
 
 // App Card Component with Electric Effects
 const AppCard = ({ app, index }) => {
@@ -25,28 +35,38 @@ const AppCard = ({ app, index }) => {
       href={app.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative rounded-xl cursor-pointer group block"
+      className="relative rounded-[1.5rem] cursor-pointer group block"
       style={{ animationDelay: `${index * 50}ms` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated border */}
       <div
-        className="absolute inset-0 rounded-xl transition-all duration-500"
+        className="absolute inset-0 rounded-[1.5rem] transition-all duration-500"
         style={{
-          background: `linear-gradient(135deg, ${colors.glow}, transparent, ${colors.glow})`,
-          opacity: isHovered ? 1 : 0.2
+          background: `linear-gradient(135deg, ${colors.glow}, transparent 45%, ${colors.glow})`,
+          opacity: isHovered ? 1 : 0.35
         }}
       />
 
       {/* Card content */}
       <div
-        className="relative m-[1px] rounded-xl p-6 transition-all duration-500 overflow-hidden"
+        className="relative m-[1px] rounded-[1.45rem] p-6 transition-all duration-500 overflow-hidden"
         style={{
-          background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(16px)'
+          clipPath: 'polygon(0 10px, 10px 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%)',
+          background: 'linear-gradient(155deg, rgba(8, 13, 28, 0.9) 0%, rgba(15, 23, 42, 0.86) 58%, rgba(7, 9, 20, 0.94) 100%)',
+          backdropFilter: 'blur(18px)'
         }}
       >
+        <div
+          className="absolute inset-0 opacity-35 pointer-events-none"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(52, 211, 153, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(52, 211, 153, 0.08) 1px, transparent 1px)',
+            backgroundSize: '18px 18px'
+          }}
+        />
+
         {/* Top accent line */}
         <div
           className="absolute top-0 left-0 right-0 h-[1px] transition-all duration-300"
@@ -59,9 +79,12 @@ const AppCard = ({ app, index }) => {
 
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-4 relative">
+        <div className="flex items-start justify-between mb-4 relative z-10">
           <div
-            className={`w-12 h-12 rounded-lg bg-gradient-to-br ${app.color} flex items-center justify-center transform transition-all duration-300 relative ${isHovered ? 'scale-105' : ''}`}
+            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${app.color} flex items-center justify-center transform transition-all duration-500 relative ${isHovered ? 'scale-110 -rotate-3' : ''}`}
+            style={{
+              boxShadow: isHovered ? `0 0 24px ${colors.glow}` : '0 8px 18px rgba(2,6,23,0.55)'
+            }}
           >
             <div className="text-white relative z-10 w-6 h-6">
               {app.icon}
@@ -71,12 +94,12 @@ const AppCard = ({ app, index }) => {
           <div className="flex items-center gap-2">
             {/* Status badge with pulse */}
             <span
-              className="px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-300 relative"
+              className="px-3 py-1 rounded-md text-[10px] tracking-[0.15em] uppercase font-semibold border transition-all duration-300 relative"
               style={{
-                backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                borderColor: 'rgba(74, 222, 128, 0.3)',
-                color: '#4ade80',
-                boxShadow: isHovered ? '0 0 10px rgba(74, 222, 128, 0.4)' : 'none'
+                backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                borderColor: `${colors.accent}77`,
+                color: isHovered ? colors.accent : '#cbd5e1',
+                boxShadow: isHovered ? `0 0 14px ${colors.glow}` : 'none'
               }}
             >
               {isHovered && (
@@ -89,28 +112,35 @@ const AppCard = ({ app, index }) => {
             </span>
 
             {/* External link icon */}
-            <OpenNewWindow
-              className={`w-4 h-4 transition-all duration-300 ${isHovered ? 'text-white translate-x-0.5 -translate-y-0.5' : 'text-slate-400'}`}
-              strokeWidth={2}
-            />
+            <ExternalLinkGlyph className={`w-4 h-4 transition-all duration-300 ${isHovered ? 'text-white translate-x-0.5 -translate-y-0.5' : 'text-slate-400'}`} />
           </div>
         </div>
 
         {/* Content */}
-        <h3 className={`text-xl font-bold mb-2 transition-all duration-300 ${isHovered ? 'text-white' : 'text-slate-100'}`}>
+        <div className="relative z-10 mb-2">
+          <span
+            className="text-[10px] uppercase tracking-[0.2em]"
+            style={{
+              color: isHovered ? colors.accent : '#64748b'
+            }}
+          >
+            {app.category}
+          </span>
+        </div>
+        <h3 className={`relative z-10 text-xl font-bold mb-2 transition-all duration-300 ${isHovered ? 'text-white' : 'text-slate-100'}`}>
           {app.name}
         </h3>
-        <p className="text-slate-400 text-sm mb-3">{app.description}</p>
+        <p className="relative z-10 text-slate-400 text-sm mb-4 leading-relaxed">{app.description}</p>
 
-        {/* Category with glow */}
         <span
-          className="text-xs uppercase tracking-wider transition-all duration-300"
+          className="relative z-10 inline-flex items-center rounded-md border px-2 py-1 text-[10px] uppercase tracking-[0.15em] transition-all duration-300"
           style={{
-            color: isHovered ? colors.accent : '#64748b',
-            textShadow: isHovered ? `0 0 10px ${colors.accent}` : 'none'
+            color: isHovered ? colors.accent : '#94a3b8',
+            borderColor: isHovered ? `${colors.accent}88` : 'rgba(148, 163, 184, 0.25)',
+            background: isHovered ? `${colors.accent}1f` : 'rgba(15, 23, 42, 0.35)'
           }}
         >
-          {app.category}
+          Flux Community Build
         </span>
 
         {/* Bottom energy line */}
@@ -125,12 +155,12 @@ const AppCard = ({ app, index }) => {
 
       {/* Outer glow */}
       <div
-        className="absolute inset-0 rounded-xl pointer-events-none transition-all duration-300"
+        className="absolute inset-0 rounded-[1.5rem] pointer-events-none transition-all duration-500"
         style={{
           boxShadow: isHovered
-            ? `0 0 25px ${colors.glow}, 0 8px 32px rgba(0,0,0,0.4)`
-            : '0 2px 15px rgba(0,0,0,0.2)',
-          transform: isHovered ? 'scale(1.01)' : 'scale(1)'
+            ? `0 0 28px ${colors.glow}, 0 18px 48px rgba(2,6,23,0.62)`
+            : '0 4px 16px rgba(2,6,23,0.38)',
+          transform: isHovered ? 'translateY(-3px) scale(1.01)' : 'translateY(0) scale(1)'
         }}
       />
     </a>
@@ -142,28 +172,28 @@ export default function FeaturedApps() {
 
   const featuredApps = [
     {
+      name: 'Fluxme.io',
+      description: 'Community onboarding and discovery hub with Academy tracks, Knowledge Base, FAQ, provider comparisons, and live ecosystem dashboards in English and French',
+      category: 'Onboarding',
+      icon: <GlobeGlyph className="w-6 h-6" />,
+      color: 'from-blue-500 to-cyan-500',
+      status: 'WIP',
+      link: 'https://fluxme.io/?utm_source=community'
+    },
+    {
       name: 'FluxAI',
       description: 'AI-powered assistant for Flux ecosystem built on decentralized infrastructure',
       category: 'AI',
-      icon: <Sparks className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <AIStarGlyph className="w-6 h-6" />,
       color: 'from-purple-500 to-pink-500',
       status: 'Live',
       link: 'https://ai.runonflux.com/?utm_source=community'
     },
     {
-      name: 'DAA Flux',
-      description: 'Difficulty Adjustment Algorithm monitoring and analysis for Flux blockchain',
-      category: 'Infrastructure',
-      icon: <GraphUp className="w-6 h-6" strokeWidth={2} />,
-      color: 'from-blue-500 to-cyan-500',
-      status: 'Live',
-      link: 'https://daaflux.app.runonflux.io/?utm_source=community'
-    },
-    {
       name: 'Flux Atlas',
       description: 'Network infrastructure mapping with detailed node distribution and statistics',
       category: 'Infrastructure',
-      icon: <Map className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <MapGlyph className="w-6 h-6" />,
       color: 'from-purple-500 to-pink-500',
       status: 'Live',
       link: 'https://atlas.app.runonflux.io/?utm_source=community'
@@ -172,7 +202,7 @@ export default function FeaturedApps() {
       name: 'Flux Academy',
       description: 'Interactive learning platform for Flux blockchain and FluxNode operations',
       category: 'Education',
-      icon: <GraduationCap className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <AcademyGlyph className="w-6 h-6" />,
       color: 'from-orange-500 to-red-500',
       status: 'Live',
       link: 'https://academy.app.runonflux.io/?utm_source=community'
@@ -181,7 +211,7 @@ export default function FeaturedApps() {
       name: 'FluxNode Dashboard',
       description: 'Track block rewards and parallel asset rewards with real-time monitoring',
       category: 'Infrastructure',
-      icon: <GraphUp className="w-6 h-6" strokeWidth={2} />,
+      icon: <GraphGlyph className="w-6 h-6" />,
       color: 'from-green-500 to-emerald-500',
       status: 'Live',
       link: 'https://fluxnode.app.runonflux.io/?utm_source=community'
@@ -190,7 +220,7 @@ export default function FeaturedApps() {
       name: 'Flux Tracker',
       description: 'Application revenue and network analytics for the Flux ecosystem',
       category: 'Analytics',
-      icon: <Reports className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <ReportGlyph className="w-6 h-6" />,
       color: 'from-cyan-500 to-blue-500',
       status: 'Live',
       link: 'https://fluxtracker.app.runonflux.io/?utm_source=community'
@@ -199,7 +229,7 @@ export default function FeaturedApps() {
       name: 'FluxNode Calculator',
       description: 'Calculate post-fork PoN rewards in comparison to pre-PoN earnings',
       category: 'Tools',
-      icon: <Calculator className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <CalculatorGlyph className="w-6 h-6" />,
       color: 'from-emerald-500 to-teal-500',
       status: 'Live',
       link: 'https://fluxnodecalc.app.runonflux.io/?utm_source=community'
@@ -208,7 +238,7 @@ export default function FeaturedApps() {
       name: 'Flux Runner',
       description: 'Managed WordPress hosting solution powered by Flux decentralized infrastructure',
       category: 'Hosting',
-      icon: <Globe className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <GlobeGlyph className="w-6 h-6" />,
       color: 'from-indigo-500 to-purple-500',
       status: 'Live',
       link: 'https://fluxrunner.com/?utm_source=community'
@@ -217,7 +247,7 @@ export default function FeaturedApps() {
       name: 'GoldieTech Nodes',
       description: 'Professional FluxNode hosting and management services',
       category: 'Hosting',
-      icon: <Server className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <ServerGlyph className="w-6 h-6" />,
       color: 'from-yellow-500 to-amber-500',
       status: 'Live',
       link: 'https://goldietechnodes.com/?utm_source=community'
@@ -226,7 +256,7 @@ export default function FeaturedApps() {
       name: 'Node Orbit',
       description: 'A Distributed Node Hosting Platform',
       category: 'Hosting',
-      icon: <Server className="w-6 h-6" strokeWidth={1.5} />,
+      icon: <ServerGlyph className="w-6 h-6" />,
       color: 'from-blue-500 to-teal-500',
       status: 'Live',
       link: 'https://nodeorbit.com/?utm_source=community'
@@ -234,7 +264,7 @@ export default function FeaturedApps() {
   ]
 
   return (
-    <section className="py-20 px-4 relative overflow-hidden">
+    <section className="py-20 px-4 relative overflow-hidden section-surface">
       {/* Background circuit pattern */}
       <div className="absolute inset-0 grid-overlay opacity-30" />
 
@@ -272,38 +302,48 @@ export default function FeaturedApps() {
         {/* Submit Your App CTA */}
         <div className="mt-12 sm:mt-16 text-center">
           <div
-            className="relative rounded-2xl max-w-2xl mx-auto overflow-hidden"
+            className="relative rounded-[1.6rem] max-w-2xl mx-auto overflow-hidden"
             onMouseEnter={() => setIsCtaHovered(true)}
             onMouseLeave={() => setIsCtaHovered(false)}
           >
             {/* Animated border */}
             <div
-              className="absolute inset-0 rounded-2xl transition-opacity duration-500"
+              className="absolute inset-0 rounded-[1.6rem] transition-opacity duration-500"
               style={{
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.5), transparent, rgba(168, 85, 247, 0.5))',
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.7), transparent, rgba(168, 85, 247, 0.7), transparent)',
                 animation: isCtaHovered ? 'plasma-flow 3s ease-in-out infinite' : 'none',
-                opacity: isCtaHovered ? 1 : 0.3
+                opacity: isCtaHovered ? 1 : 0.45
               }}
             />
 
             {/* CTA Content */}
             <div
-              className="relative m-[2px] rounded-2xl p-6 sm:p-8"
+              className="relative m-[1px] rounded-[1.55rem] p-6 sm:p-8 overflow-hidden"
               style={{
-                background: 'rgba(15, 23, 42, 0.9)',
+                clipPath: 'polygon(0 10px, 10px 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%)',
+                background: 'linear-gradient(145deg, rgba(11, 17, 34, 0.93), rgba(10, 16, 31, 0.9))',
                 backdropFilter: 'blur(20px)'
               }}
             >
+              <div
+                className="absolute inset-0 opacity-30 pointer-events-none"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(rgba(96, 165, 250, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(96, 165, 250, 0.1) 1px, transparent 1px)',
+                  backgroundSize: '20px 20px'
+                }}
+              />
+
               {/* Animated top line */}
               <div
                 className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"
                 style={{ animation: isCtaHovered ? 'circuit-flow 2s linear infinite' : 'none' }}
               />
 
-              <h3 className="text-xl sm:text-2xl font-bold mb-3">
+              <h3 className="relative z-10 text-xl sm:text-2xl font-bold mb-3">
                 <span className={isCtaHovered ? 'text-white' : 'text-slate-100'}>Built Something Amazing?</span>
               </h3>
-              <p className="text-sm sm:text-base text-slate-300 mb-6">
+              <p className="relative z-10 text-sm sm:text-base text-slate-300 mb-6 leading-relaxed">
                 Submit your application to be featured in the Flux Community portal.
                 Join our Discord and ping <span className="text-cyan-400">@bigstache</span> with your app details.
               </p>
@@ -313,7 +353,7 @@ export default function FeaturedApps() {
                 rel="noopener noreferrer"
                 className="btn-electric inline-block w-full sm:w-auto px-6 py-3 rounded-lg font-semibold"
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
+                <span className="relative z-10 flex items-center justify-center gap-2 tracking-wide">
                   Submit Your App
                 </span>
               </a>
@@ -321,11 +361,11 @@ export default function FeaturedApps() {
 
             {/* Outer glow */}
             <div
-              className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-500"
+              className="absolute inset-0 rounded-[1.6rem] pointer-events-none transition-all duration-500"
               style={{
                 boxShadow: isCtaHovered
-                  ? '0 0 40px rgba(59, 130, 246, 0.3), 0 0 60px rgba(168, 85, 247, 0.2)'
-                  : '0 4px 20px rgba(0,0,0,0.3)'
+                  ? '0 0 44px rgba(59, 130, 246, 0.35), 0 20px 60px rgba(2, 6, 23, 0.65)'
+                  : '0 6px 24px rgba(2, 6, 23, 0.45)'
               }}
             />
           </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { OpenNewWindow, NavArrowRight } from 'iconoir-react'
+import { ExternalLinkGlyph, ArrowRightGlyph } from './FluxGlyphs'
 
 export default function EcosystemCard({ title, description, icon, link, color, features, delay = 0 }) {
   const [isHovered, setIsHovered] = useState(false)
@@ -32,7 +32,7 @@ export default function EcosystemCard({ title, description, icon, link, color, f
 
   return (
     <div
-      className="relative rounded-2xl cursor-pointer group"
+      className="relative cursor-pointer group"
       style={{ animationDelay: `${delay}ms` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -43,34 +43,59 @@ export default function EcosystemCard({ title, description, icon, link, color, f
     >
       {/* Border gradient */}
       <div
-        className="absolute inset-0 rounded-2xl transition-opacity duration-300"
+        className="absolute inset-0 rounded-[1.7rem] transition-all duration-500"
         style={{
-          background: `linear-gradient(135deg, ${colors.border}, transparent, ${colors.border})`,
-          opacity: isHovered ? 0.8 : 0.3
+          background: `linear-gradient(120deg, ${colors.border}, transparent 40%, ${colors.border})`,
+          opacity: isHovered ? 1 : 0.45
         }}
       />
 
       {/* Inner card */}
       <div
-        className="relative m-[2px] rounded-2xl p-6 sm:p-8 transition-all duration-300 overflow-hidden"
+        className="relative m-[1px] rounded-[1.65rem] p-6 sm:p-8 transition-all duration-500 overflow-hidden"
         style={{
-          background: 'rgba(15, 23, 42, 0.9)',
-          backdropFilter: 'blur(20px)'
+          clipPath: 'polygon(0 12px, 12px 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%)',
+          background: 'linear-gradient(145deg, rgba(9, 16, 31, 0.92) 0%, rgba(15, 23, 42, 0.88) 48%, rgba(6, 10, 23, 0.94) 100%)',
+          backdropFilter: 'blur(24px)'
         }}
       >
+        {/* Surface noise and grid detail */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-45"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(56, 189, 248, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.06) 1px, transparent 1px)',
+            backgroundSize: '20px 20px'
+          }}
+        />
+
         {/* Top accent line */}
         <div
-          className="absolute top-0 left-0 right-0 h-[2px] transition-opacity duration-300"
+          className="absolute top-0 left-0 right-0 h-[2px] transition-opacity duration-500"
           style={{
             background: `linear-gradient(90deg, transparent, ${colors.accent}, transparent)`,
-            opacity: isHovered ? 1 : 0.4
+            opacity: isHovered ? 1 : 0.5,
+            backgroundSize: '200% 100%',
+            animation: isHovered ? 'circuit-flow 1.8s linear infinite' : 'none'
+          }}
+        />
+
+        {/* Corner accent */}
+        <div
+          className="absolute top-0 right-0 h-14 w-14 pointer-events-none transition-opacity duration-300"
+          style={{
+            background: `linear-gradient(135deg, ${colors.accent}40, transparent 65%)`,
+            opacity: isHovered ? 1 : 0.55
           }}
         />
 
         {/* Icon */}
-        <div className="relative mb-6">
+        <div className="relative mb-6 z-10">
           <div
-            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-300 relative ${isHovered ? 'scale-105' : ''}`}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center transform transition-all duration-500 relative ${isHovered ? 'scale-110 -rotate-3' : ''}`}
+            style={{
+              boxShadow: isHovered ? `0 0 28px ${colors.glow}` : '0 8px 20px rgba(2,6,23,0.5)'
+            }}
           >
             <div className="text-white relative z-10 w-8 h-8">
               {icon}
@@ -79,35 +104,32 @@ export default function EcosystemCard({ title, description, icon, link, color, f
         </div>
 
         {/* Title */}
-        <h3 className="text-xl sm:text-2xl font-bold mb-3 flex items-center justify-between">
+        <h3 className="text-xl sm:text-2xl font-bold mb-3 flex items-center justify-between relative z-10">
           <span className={`transition-colors duration-300 ${isHovered ? 'text-white' : 'text-slate-100'}`}>
             {title}
           </span>
-          <OpenNewWindow
-            className={`w-5 h-5 transition-all duration-300 ${isHovered ? 'translate-x-1 -translate-y-1 text-white' : 'text-slate-400'}`}
-            strokeWidth={2}
-          />
+          <ExternalLinkGlyph className={`w-5 h-5 transition-all duration-300 ${isHovered ? 'translate-x-1 -translate-y-1 text-white' : 'text-slate-400'}`} />
         </h3>
 
         {/* Description */}
-        <p className="text-slate-300 mb-6">
+        <p className="text-slate-300 mb-6 relative z-10 leading-relaxed">
           {description}
         </p>
 
         {/* Features */}
-        <div className="space-y-2">
+        <div className="grid gap-2 relative z-10">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 text-sm text-slate-400 transition-all duration-300"
+              className="flex items-center gap-2 text-sm text-slate-400 transition-all duration-500 rounded-lg px-2 py-1"
               style={{
-                transform: isHovered ? 'translateX(4px)' : 'translateX(0)'
+                transform: isHovered ? 'translateX(6px)' : 'translateX(0)',
+                background: isHovered ? 'rgba(15, 23, 42, 0.45)' : 'transparent'
               }}
             >
-              <NavArrowRight
+              <ArrowRightGlyph
                 className="w-4 h-4 transition-colors duration-300"
                 style={{ color: isHovered ? colors.accent : '#60a5fa' }}
-                strokeWidth={2}
               />
               <span>{feature}</span>
             </div>
@@ -117,12 +139,12 @@ export default function EcosystemCard({ title, description, icon, link, color, f
 
       {/* Outer glow */}
       <div
-        className="absolute inset-0 rounded-2xl pointer-events-none transition-all duration-300"
+        className="absolute inset-0 rounded-[1.7rem] pointer-events-none transition-all duration-500"
         style={{
           boxShadow: isHovered
-            ? `0 0 30px ${colors.glow}, 0 10px 40px rgba(0,0,0,0.4)`
-            : '0 4px 20px rgba(0,0,0,0.3)',
-          transform: isHovered ? 'scale(1.01)' : 'scale(1)'
+            ? `0 0 36px ${colors.glow}, 0 18px 60px rgba(2,6,23,0.7)`
+            : '0 8px 24px rgba(2,6,23,0.45)',
+          transform: isHovered ? 'translateY(-4px) scale(1.01)' : 'translateY(0) scale(1)'
         }}
       />
     </div>
