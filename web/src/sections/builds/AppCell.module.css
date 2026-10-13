@@ -85,19 +85,6 @@
     pointer-events: none;
   }
 
-  .spot {
-    flex: none;
-    display: grid;
-    place-items: center;
-    inline-size: 23px;
-    block-size: 25px;
-    margin-inline-start: auto;
-    color: #fff;
-    background: linear-gradient(180deg, rgb(var(--accent-hot-rgb) / 0.8), rgb(var(--accent-deep-rgb) / 0.9));
-    clip-path: var(--hex-clip);
-    pointer-events: auto;
-  }
-
   /* ---- launch -------------------------------------------------------------------------- */
 
   /* Over the picture's bottom right on a wide card; it appears on hover and on focus. */

@@ -8,7 +8,6 @@ export const COPY = {
   unchecked: 'Not checked yet',
   emptySearch: 'No match. Try a category, or add your own.',
   externalHint: 'Opens in a new tab',
-  spotlight: 'Spotlighted by the Flux team',
   youAreHere: 'You are here',
   builtBy: (handle: string) => `Built by ${handle}`,
   retiring: (date: string, successor: string) => `Retiring ${date}. ${successor} takes over.`,

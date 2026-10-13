@@ -27,7 +27,7 @@ export function OverlayKit() {
   const [tab, setTab] = useState<'describe' | 'place' | 'run'>('describe');
   const [on, setOn] = useState(true);
   const [query, setQuery] = useState('');
-  const [sort, setSort] = useState<'spotlight' | 'az' | 'status'>('spotlight');
+  const [sort, setSort] = useState<'default' | 'az' | 'status'>('default');
 
   return (
     <>
@@ -96,7 +96,7 @@ export function OverlayKit() {
                 value={sort}
                 onValueChange={setSort}
                 options={[
-                  { value: 'spotlight', label: 'Spotlight' },
+                  { value: 'default', label: 'Default' },
                   { value: 'az', label: 'A to Z' },
                   { value: 'status', label: 'Status' },
                 ]}

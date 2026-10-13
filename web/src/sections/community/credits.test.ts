@@ -13,7 +13,6 @@ function app(id: string, builder: string | null, name = id): CommunityApp {
     builder,
     url: `https://${id}.example`,
     host: `${id}.example`,
-    spotlight: false,
     lifecycle: 'live',
   };
 }

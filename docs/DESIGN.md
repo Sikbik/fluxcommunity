@@ -247,17 +247,17 @@ No tile is purely decorative; every one links somewhere real.
 
 ### 5.4 Builds (the flagship)
 
-H2 "What the community built." Sub: "Apps and tools from Flux community members, spotlighted by the Flux
-team. Every status is checked live."
+H2 "What the community built." Sub: "Apps and tools from Flux community members. Every status is checked
+live."
 
 Controls row: a search field (mono prompt, `/` focuses it), category chips with counts, a sort select
-(Spotlight, A to Z, Status), and a view switch **Cells | Constellation**.
+(Default, A to Z, Status), and a view switch **Cells | Constellation**.
 
 - **Cells view (default, accessible):** a responsive grid of `AppCell`: screenshot thumbnail (or art
   fallback), name, tagline, builder credit ("by 2ndTL Mining"), a health pill (`Live`, `142 ms`), a
-  lifecycle ribbon (`New`, or `Retiring <date>` when an app is being phased out), and a spotlight mark
-  for team-spotlighted apps. Hover reveals a Launch button and parallaxes the thumbnail. Click opens
-  the detail drawer.
+  lifecycle ribbon (`New`, or `Retiring <date>` when an app is being phased out). Hover reveals a Launch
+  button and parallaxes the thumbnail. Click opens the detail drawer. No build is ranked or marked above
+  another: the default order is the catalog's.
 - **Constellation view (visual alternative):** an interactive 2D/3D graph: a centre node, category hubs,
   app nodes orbiting, builder links; hover highlights a neighbourhood, click selects, drag to pan and
   rotate, slow auto-drift. It is `aria-hidden` and always paired with the keyboard list. Lazy loaded.
@@ -426,7 +426,7 @@ operable at 200 percent zoom and 320 px width, and `prefers-contrast` and `force
 - Loading: "Syncing with the chain". Offline: "Showing the last known numbers". Unchecked: "Not checked yet".
 - Empty search: "No match. Try a category, or add your own."
 - External link hint (visually hidden): "Opens in a new tab".
-- Credit format: "Built by <handle>". Spotlight mark: "Spotlighted by the Flux team".
+- Credit format: "Built by <handle>". The site makes no claim that the Flux team endorses or spotlights a build.
 - Retiring: "Retiring <date>. <Successor> takes over." New successor: "New. Takes over from <name> on <date>."
 - Submission message template: "Hi @bigstache, please add my Flux app to the community portal.\nName:
   <name>\nURL: <url>\nWhat it does: <one line>\nBuilt by: <handle>"

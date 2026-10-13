@@ -199,8 +199,11 @@ function glow(
   ctx.drawImage(s.sprites.glow(c), x - r, y - r, r * 2, r * 2);
 }
 
-/** Node radius in px for a size factor, before perspective: grows gently with the zoomed scale. */
-export function nodeRadius(scale: number, size: number): number {
+/**
+ * Node radius in px before perspective, grown gently with the zoomed scale. Every build is size 1; a
+ * hub passes a larger factor.
+ */
+export function nodeRadius(scale: number, size = 1): number {
   return (6 + 0.05 * scale) * size;
 }
 
@@ -770,7 +773,7 @@ function drawApp(ctx: CanvasRenderingContext2D, s: Scene, i: number): void {
   const retired = look.lifecycle === 'retired';
   const a = at(s.presence, i) * (0.5 + 0.5 * nearOf(p.depth)) * (retired ? 0.55 : 1);
   if (a < 0.02) return;
-  const r = nodeRadius(s.scale, look.size) * p.scale * (1 + 0.18 * lit + 0.14 * flash);
+  const r = nodeRadius(s.scale) * p.scale * (1 + 0.18 * lit + 0.14 * flash);
   const c = toneColour(s.pal, look.tone);
   const x = p.x;
   const y = p.y;
@@ -973,7 +976,6 @@ function drawLabels(ctx: CanvasRenderingContext2D, s: Scene): LabelPlacement[] {
     const node = s.graph.nodes[i];
     const p = s.proj[i];
     if (!node || !p || node.kind === 'center') continue;
-    const look = s.looks[i];
     const lit = at(s.lit, i);
     const pres = at(s.presence, i);
     const focus = i === s.hover || i === s.selected || (s.ping?.index === i && s.ping.age < 2.4);
@@ -998,7 +1000,7 @@ function drawLabels(ctx: CanvasRenderingContext2D, s: Scene): LabelPlacement[] {
     } else {
       const font = focus ? fontAppBold : fontApp;
       const w = textWidth(ctx, font, node.label);
-      const r = nodeRadius(s.scale, look?.size ?? 1) * p.scale * 1.2;
+      const r = nodeRadius(s.scale) * p.scale * 1.2;
       text.set(i, { text: node.label, count: '', font });
       requests.push({
         index: i,
@@ -1007,7 +1009,7 @@ function drawLabels(ctx: CanvasRenderingContext2D, s: Scene): LabelPlacement[] {
         r,
         w,
         h: 13,
-        priority: 30 + near * 20 + (look?.size === 1 ? 6 : 0) + lit * 30 + (focus ? 100 : 0),
+        priority: 30 + near * 20 + lit * 30 + (focus ? 100 : 0),
         force: focus,
       });
     }
@@ -1026,8 +1028,7 @@ function drawLabels(ctx: CanvasRenderingContext2D, s: Scene): LabelPlacement[] {
       rx = h * 0.5;
       ry = h * 0.56;
     } else {
-      const size = node.kind === 'hub' ? 1.55 : (s.looks[i]?.size ?? 1);
-      rx = ry = nodeRadius(s.scale, size) * p.scale * 1.15;
+      rx = ry = nodeRadius(s.scale, node.kind === 'hub' ? 1.55 : 1) * p.scale * 1.15;
     }
     blocked.push({ x0: p.x - rx - 2, y0: p.y - ry - 2, x1: p.x + rx + 2, y1: p.y + ry + 2 });
   }

@@ -121,16 +121,13 @@ describe('lookOf', () => {
     expect(none.word).toBe('Not checked yet');
   });
 
-  it('marks the site itself and sizes spotlighted builds up', () => {
+  it('marks the site itself', () => {
     const self = SYNTH.find((a) => a.self);
     if (!self) throw new Error('no self app');
     const look = lookOf(entryOf(self.id, undefined), NOW);
     expect(look.tone).toBe('self');
     expect(look.mark).toBe('reticle');
     expect(look.word).toBe('You are here');
-    expect(lookOf(entryOf('node-watch', probe('up')), NOW).size).toBeGreaterThan(
-      lookOf(entryOf('learn-lab', probe('up')), NOW).size,
-    );
   });
 
   it('carries the lifecycle', () => {

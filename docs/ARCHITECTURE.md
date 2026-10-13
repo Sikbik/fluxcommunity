@@ -236,12 +236,13 @@ A piece of work is done when all of these hold for the paths you own:
 
 Docker image `littlestache/community:latest` is built and smoke tested by GitHub Actions on every pull
 request and push to `main`, and pushed to Docker Hub only when the workflow is run by hand from `main` with
-`publish` ticked. The registered Flux app follows `latest` and updates itself, so what is published is what
-the network runs soon after, and a merge alone changes nothing. The image runs the Node server as an
-unprivileged user on 42069 with a `/healthz` check and carries its own environment defaults, so the app needs
-no environment variables. It is deployed with `deploy/flux_app_spec.json` (two instances, so every in-process
-cache and prober exists once per instance; the design tolerates that). `owner` in the spec is a placeholder:
-the real ZelID is supplied by the operator at deploy time and is never committed.
+`publish` ticked. The registered Flux app follows `latest` and updates itself (every node checks its apps'
+images every six hours), so what is published is what the network runs within about six hours, and a merge
+alone changes nothing. The image runs the Node server as an unprivileged user on 42069 with a `/healthz`
+check and carries its own environment defaults, so the app needs no environment variables. It is deployed
+with `deploy/flux_app_spec.json` (two instances, so every in-process cache and prober exists once per
+instance; the design tolerates that). `owner` in the spec is a placeholder: the real ZelID is supplied by
+the operator at deploy time and is never committed.
 
 ## 11. Decisions made on purpose
 

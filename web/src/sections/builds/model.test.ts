@@ -20,7 +20,6 @@ const entries = (now = BEFORE, byId: Parameters<typeof entriesOf>[2] = {}, ctx =
 
 const ids = (list: readonly AppEntry[]) => list.map((e) => e.app.id);
 const state = (over: Partial<FilterState> = {}): FilterState => ({ ...DEFAULT_FILTERS, ...over });
-const SPOTLIT = SYNTH.filter((a) => a.spotlight).length;
 
 describe('buildEntries', () => {
   it('joins every app with lifecycle and health', () => {
@@ -67,9 +66,8 @@ describe('buildEntries', () => {
 });
 
 describe('sorting', () => {
-  it('puts spotlighted apps first, in the Flux team order', () => {
+  it('lists the builds in catalog order by default', () => {
     const r = filterAndSort(entries(), state());
-    expect(r.entries.slice(0, SPOTLIT).every((e) => e.app.spotlight)).toBe(true);
     expect(ids(r.entries)).toEqual([
       'orbit-pay',
       'old-ledger',
@@ -79,6 +77,9 @@ describe('sorting', () => {
       'learn-lab',
       'node-sizer',
     ]);
+    // The catalog alone decides: no build is lifted above another, so a reversed catalog reverses the list.
+    const reversed = filterAndSort(entriesOf([...SYNTH].reverse()), state());
+    expect(ids(reversed.entries)).toEqual(ids(r.entries).reverse());
   });
 
   it('sorts A to Z', () => {
@@ -172,7 +173,6 @@ describe('filtering', () => {
     expect(run('cat:nodes')).toEqual(['node-watch', 'node-sizer']);
     expect(run('host:sizer')).toEqual(['node-sizer']);
     expect(run('is:self')).toEqual(['north-star']);
-    expect(run('is:spotlight')).toHaveLength(SPOTLIT);
   });
 
   it('filters by live status from the data layer', () => {
@@ -190,9 +190,9 @@ describe('filtering', () => {
   });
 
   it('combines an operator with words', () => {
-    const r = filterAndSort(entries(), state({ query: 'node is:spotlight' }));
-    expect(r.entries.every((e) => e.app.spotlight)).toBe(true);
-    expect(ids(r.entries).sort()).toEqual(['grid-view', 'node-watch']);
+    // The words alone reach three builds; the operator narrows them to one builder's.
+    expect(filterAndSort(entries(), state({ query: 'node' })).entries).toHaveLength(3);
+    expect(ids(filterAndSort(entries(), state({ query: 'node by:beta' })).entries)).toEqual(['node-watch']);
   });
 
   it('returns nothing for a query with no match', () => {
@@ -223,7 +223,7 @@ describe('category counts', () => {
     for (const base of [
       { query: 'node', builder: null },
       { query: '', builder: 'Acme Labs' },
-      { query: 'is:spotlight', builder: null },
+      { query: 'is:retiring', builder: null },
     ]) {
       const c = categoryCounts(list, base);
       expect(c.all).toBe(filterAndSort(list, state(base)).entries.length);
@@ -240,7 +240,6 @@ describe('builders, related apps and lifecycle links', () => {
   it('profiles a builder', () => {
     const p = builderProfile(entries(), 'Acme Labs');
     expect(p?.apps).toHaveLength(3);
-    expect(p?.spotlighted).toBe(3);
     expect(p?.categories).toEqual(['rewards', 'network']);
     expect(builderProfile(entries(), 'Nobody')).toBeNull();
   });
@@ -343,15 +342,13 @@ describe('the real catalog', () => {
     expect(CATEGORIES.reduce((n, cat) => n + c[cat.id], 0)).toBe(c.all);
   });
 
-  it('lists the spotlighted builds first, in catalog order', () => {
+  it('lists the builds in catalog order, a promoted build first and a retired one last', () => {
     const r = filterAndSort(real, state());
     expect(r.entries).toHaveLength(COMMUNITY_APPS.length);
-    const live = r.entries.filter((e) => e.lifecycle.state !== 'retired');
-    const lit = live.filter((e) => e.app.spotlight);
-    expect(live.slice(0, lit.length).every((e) => e.app.spotlight)).toBe(true);
-    const order = (list: readonly AppEntry[]) => list.map((e) => e.order);
-    const plain = lit.filter((e) => !e.lifecycle.promoted);
-    expect(order(plain)).toEqual([...order(plain)].sort((a, b) => a - b));
+    const rank = (e: AppEntry) => (e.lifecycle.state === 'retired' ? 2 : e.lifecycle.promoted ? 0 : 1);
+    const keys = r.entries.map((e) => ({ rank: rank(e), order: e.order }));
+    const expected = [...keys].sort((a, b) => a.rank - b.rank || a.order - b.order);
+    expect(keys).toEqual(expected);
   });
 
   it('finds every app by its own name, first', () => {

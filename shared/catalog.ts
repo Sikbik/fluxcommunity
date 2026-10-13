@@ -3,9 +3,9 @@
  * site presents. One source of truth for BOTH `web/` (display) and `server/`
  * (health probes), so the two can never drift.
  *
- * Sources: the Flux team's community spotlight posts (apps and node hosting
- * services), each project's own published page title and description, and the
- * official Flux properties. Copy here is plain and factual; presentation-only
+ * Sources: the Flux team's community posts (apps and node hosting services),
+ * each project's own published page title and description, and the official
+ * Flux properties. Copy here is plain and factual; presentation-only
  * extras (glyphs, art, accents) live in `web/src/content/`, keyed by `id`.
  *
  * ERASABLE TYPESCRIPT ONLY (see shared/api.ts). No enums, no runtime imports.
@@ -35,8 +35,6 @@ export interface CommunityApp {
    * false = never probe (for example the site itself).
    */
   probe?: string | false;
-  /** Named in the Flux team's community spotlight posts. */
-  spotlight: boolean;
   lifecycle: Lifecycle;
   /** ISO date (UTC) the app is retired, for lifecycle 'retiring'. */
   retiresOn?: string;
@@ -113,7 +111,6 @@ export const CATEGORIES: readonly CategoryInfo[] = [
 // ---------------------------------------------------------------------------
 
 export const COMMUNITY_APPS: readonly CommunityApp[] = [
-  // ---- Spotlighted by the Flux team --------------------------------------
   {
     id: 'noxide',
     name: 'Noxide',
@@ -124,7 +121,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: '2ndTL Mining',
     url: 'https://noxide.app.runonflux.io',
     host: 'noxide.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'new',
   },
   {
@@ -137,7 +133,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: '2ndTL Mining',
     url: 'https://fluxtracker.app.runonflux.io',
     host: 'fluxtracker.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'live',
   },
   {
@@ -149,7 +144,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: 'Physalis',
     url: 'https://node-flux-tools.app.runonflux.io',
     host: 'node-flux-tools.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'live',
   },
   {
@@ -162,7 +156,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: 'Little Stache',
     url: 'https://atlas.app.runonflux.io',
     host: 'atlas.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'live',
   },
   {
@@ -175,7 +168,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     url: 'https://community.app.runonflux.io',
     host: 'community.app.runonflux.io',
     probe: false,
-    spotlight: true,
     lifecycle: 'live',
     self: true,
   },
@@ -188,7 +180,6 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: 'Method',
     url: 'https://claimcalc.app.runonflux.io',
     host: 'claimcalc.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'live',
   },
   {
@@ -200,11 +191,8 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: 'CarRamRodB16_228',
     url: 'https://view.app.runonflux.io',
     host: 'view.app.runonflux.io',
-    spotlight: true,
     lifecycle: 'live',
   },
-
-  // ---- More from the ecosystem -------------------------------------------
   {
     id: 'academy',
     name: 'Flux Academy',
@@ -215,13 +203,12 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     builder: 'Little Stache',
     url: 'https://academy.app.runonflux.io',
     host: 'academy.app.runonflux.io',
-    spotlight: false,
     lifecycle: 'live',
   },
 ];
 
 // ---------------------------------------------------------------------------
-// Node hosting services (spotlighted by the Flux team)
+// Node hosting services
 // ---------------------------------------------------------------------------
 
 export const NODE_HOSTS: readonly NodeHost[] = [

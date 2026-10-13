@@ -14,7 +14,6 @@ function app(id: string, probe?: string | false): CommunityApp {
     url: `https://${id}.example`,
     host: `${id}.example`,
     probe,
-    spotlight: false,
     lifecycle: 'live',
   };
 }

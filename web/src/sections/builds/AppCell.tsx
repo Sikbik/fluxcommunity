@@ -127,11 +127,6 @@ export const AppCell = memo(function AppCell({
           <Preview id={app.id} category={app.category} />
           <div className={styles.badges}>
             <Ribbon entry={entry} />
-            {app.spotlight ? (
-              <span className={styles.spot} role="img" aria-label={COPY.spotlight} title={COPY.spotlight}>
-                <Glyph name="spark" size={13} />
-              </span>
-            ) : null}
           </div>
         </div>
 

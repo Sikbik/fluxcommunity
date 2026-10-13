@@ -332,7 +332,7 @@ export function createEngine(opts: EngineOptions): ConstellationEngine | null {
       let r: number;
       if (nd.kind === 'center') r = (30 + 0.1 * scale) * q.scale * 0.62;
       else if (nd.kind === 'hub') r = nodeRadius(scale, 1.55) * q.scale * 1.15;
-      else r = nodeRadius(scale, looks[i]?.size ?? 1) * q.scale * 1.15;
+      else r = nodeRadius(scale) * q.scale * 1.15;
       const t = targets[i] ?? { x: 0, y: 0, r: 0, depth: 0 };
       t.x = q.x;
       t.y = q.y;

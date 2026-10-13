@@ -85,7 +85,6 @@ describe('the playlist', () => {
     builder: 'Someone',
     url: `https://${over.id}.example`,
     host: `${over.id}.example`,
-    spotlight: false,
     lifecycle: 'live',
     ...over,
   });
@@ -93,7 +92,6 @@ describe('the playlist', () => {
     apps: [
       app({ id: 'old', lifecycle: 'retiring', retiresOn: '2026-11-01', replacedBy: 'fresh', builder: null }),
       app({ id: 'fresh', lifecycle: 'new', replaces: 'old' }),
-      app({ id: 'star', spotlight: true }),
       app({ id: 'plain' }),
       app({ id: 'here', self: true }),
     ],
@@ -154,16 +152,14 @@ describe('the playlist', () => {
   it('puts the retiring and successor notes from the copy deck on the right apps', () => {
     expect(note('app:old')).toBe('Retiring Nov 1. FRESH takes over.');
     expect(note('app:fresh')).toBe('New. Takes over from OLD on Nov 1.');
-    expect(note('app:star')).toBe('Spotlighted by the Flux team');
     expect(note('app:plain')).toBeNull();
   });
 
-  it('gives every real app the note its lifecycle and spotlight call for', () => {
+  it('gives every real app the note its lifecycle calls for', () => {
     for (const a of COMMUNITY_APPS.filter((x) => !x.self)) {
       const n = list.find((x) => x.id === `app:${a.id}`)?.note;
       if (a.lifecycle === 'retiring' && a.retiresOn) expect(n).toMatch(/^Retiring /);
       else if (a.lifecycle === 'new' && a.replaces) expect(n).toMatch(/^New/);
-      else if (a.spotlight) expect(n).toBe('Spotlighted by the Flux team');
       else expect(n).toBeNull();
     }
   });
@@ -178,10 +174,9 @@ describe('the playlist', () => {
     expect(hosts.map((c) => c.position)).toEqual(hosts.map((_, i) => i + 1));
     expect(new Set(hosts.map((c) => c.total))).toEqual(new Set([NODE_HOSTS.length]));
     expect(fixture.filter((c) => c.group === 'apps').map((c) => `${c.position}/${c.total}`)).toEqual([
-      '1/4',
-      '2/4',
-      '3/4',
-      '4/4',
+      '1/3',
+      '2/3',
+      '3/3',
     ]);
   });
 

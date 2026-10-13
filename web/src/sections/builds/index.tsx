@@ -24,9 +24,8 @@ import { useEntries } from './useEntries';
 
 const Constellation = lazy(() => import('./Constellation'));
 
-const LEAD_LIVE =
-  'Apps and tools from Flux community members, spotlighted by the Flux team. Every status is checked live.';
-const LEAD_QUIET = 'Apps and tools from Flux community members, spotlighted by the Flux team.';
+const LEAD_LIVE = 'Apps and tools from Flux community members. Every status is checked live.';
+const LEAD_QUIET = 'Apps and tools from Flux community members.';
 
 function GraphFallback({ failed, onShowCells }: { failed: boolean; onShowCells: () => void }) {
   return (

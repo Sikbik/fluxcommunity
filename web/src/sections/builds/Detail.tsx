@@ -327,12 +327,6 @@ export function Detail({ entry, entries, onNavigate, onPivot }: DetailProps) {
           <Preview id={app.id} category={app.category} alt={`Screenshot of ${app.name}`} eager />
           <div className={styles.heroBadges}>
             <Ribbon entry={entry} />
-            {app.spotlight ? (
-              <span className={styles.spot}>
-                <Glyph name="spark" size={13} />
-                {COPY.spotlight}
-              </span>
-            ) : null}
           </div>
         </div>
         {hasShot ? (

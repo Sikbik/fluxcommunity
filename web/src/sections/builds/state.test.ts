@@ -37,7 +37,7 @@ const probe = (id: string, state: AppHealth['state']): AppHealth => ({
 
 describe('the builds store', () => {
   beforeEach(() => {
-    useBuilds.setState({ query: '', category: 'all', builder: null, sort: 'spotlight' });
+    useBuilds.setState({ query: '', category: 'all', builder: null, sort: 'default' });
   });
 
   it('sets and clears filters', () => {

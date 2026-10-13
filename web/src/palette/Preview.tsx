@@ -154,7 +154,6 @@ function PreviewBody({ item }: { item: DeckItem }) {
             <AppStatus id={app.id} />
             <Fact label="Host">{app.host}</Fact>
             {category ? <Fact label="Category">{category}</Fact> : null}
-            {app.spotlight && !app.self ? <Fact label="Team">{COPY.spotlight}</Fact> : null}
             {app.lifecycle === 'retiring' && app.retiresOn ? (
               <Fact label="Lifecycle">
                 {COPY.retiring(

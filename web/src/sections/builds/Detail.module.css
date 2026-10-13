@@ -30,31 +30,6 @@
     pointer-events: none;
   }
 
-  .spot {
-    --c: 7px;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    min-block-size: 24px;
-    margin-inline-start: auto;
-    padding: 0 10px 0 8px;
-    color: #fff;
-    font: 600 var(--fs-2xs) / 1 var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, rgb(var(--accent-hot-rgb) / 0.55), rgb(var(--accent-deep-rgb) / 0.9));
-    clip-path: polygon(
-      0 3px,
-      3px 0,
-      calc(100% - 7px) 0,
-      100% 7px,
-      100% calc(100% - 3px),
-      calc(100% - 3px) 100%,
-      7px 100%,
-      0 calc(100% - 7px)
-    );
-  }
-
   .caption {
     margin-block-start: 8px;
     color: var(--text-3);

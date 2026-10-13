@@ -1,6 +1,5 @@
 import { COMMUNITY_APPS, NODE_HOSTS } from '@shared/catalog';
-import { COPY } from '@/content/copy';
-import { Chip, HexBullet, Marquee, Panel, Reveal } from '@/ui';
+import { HexBullet, Marquee, Panel, Reveal } from '@/ui';
 import { collectCredits } from './credits';
 import styles from './credits.module.css';
 
@@ -46,10 +45,6 @@ export function Credits() {
           </div>
         </Panel>
       </Reveal>
-      {/* A chip, not bare text: it sits on the lattice, and the chip's dark fill keeps the line legible. */}
-      <div className={styles.spotlight}>
-        <Chip icon="spark">{COPY.spotlight}.</Chip>
-      </div>
     </div>
   );
 }
