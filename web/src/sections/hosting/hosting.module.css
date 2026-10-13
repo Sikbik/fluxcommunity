@@ -1,0 +1,119 @@
+@layer section {
+  /* The one quiet line under the lead. */
+  .fine {
+    max-inline-size: 60ch;
+    padding-inline-start: var(--space-5);
+    border-inline-start: 1px solid var(--line-3);
+    color: var(--text-3);
+    font: 500 var(--fs-xs) / 1.5 var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+
+  .stack {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 3vw, 5rem);
+  }
+
+  /* ---- the hosts sub-header ------------------------------------------------------------------------ */
+
+  .hostsHead {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  .hostsTitle {
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+  }
+
+  .hostsLead {
+    max-inline-size: 56ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+  }
+
+  /* ---- do it yourself --------------------------------------------------------------------------------- */
+
+  .diy {
+    --diy-art: 104px;
+  }
+
+  .diyGrid {
+    display: grid;
+    grid-template-columns: var(--diy-art) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-6) var(--space-8);
+  }
+
+  /* The art is light on black, so it is shown as a small framed picture, on purpose. */
+  .diyArt {
+    --c: 14px;
+    --cm: 5px;
+    --bw: 1px;
+    position: relative;
+    display: block;
+    inline-size: var(--diy-art);
+    block-size: 88px;
+    background: var(--line-blue);
+    clip-path: var(--clip-outer);
+    pointer-events: none;
+  }
+
+  .diyArtFill {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    background: var(--ink-0);
+    clip-path: var(--clip-inner);
+  }
+
+  .diyArt img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center;
+    mix-blend-mode: screen;
+    scale: 1.55;
+  }
+
+  .diyText {
+    display: grid;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .diyLabel {
+    max-inline-size: none;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .diyTitle {
+    color: var(--text-1);
+    font: var(--type-h4);
+    font-size: 1.25rem;
+  }
+
+  .diyBody {
+    max-inline-size: 62ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+
+  @media (max-width: 719.98px) {
+    .diyGrid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .diyArt {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,243 @@
+/*
+ * Lattice2D: the hexagonal lattice in CSS. A hairline hex grid, a few lit cells that
+ * breathe, a slow drift of exactly one lattice vector (so it loops seamlessly), and a
+ * vignette. It is the page backdrop until the WebGL stage is ready, and the stage's
+ * no-WebGL fallback. Everything animates transform or opacity.
+ */
+@layer ui {
+  .root {
+    --s: 1;
+    --i: 0.6;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    contain: layout paint;
+    isolation: isolate;
+  }
+
+  .root[data-fixed="true"] {
+    position: fixed;
+  }
+
+  /* ---- light --------------------------------------------------------------------------- */
+
+  .wash {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        72% 58% at 50% var(--glow-y, 0%),
+        rgb(var(--accent-deep-rgb) / calc(0.42 * var(--i) + 0.08)),
+        rgb(var(--accent-deep-rgb) / calc(0.1 * var(--i))) 46%,
+        transparent 74%
+      ),
+      radial-gradient(
+        46% 40% at 82% 100%,
+        rgb(var(--accent-deep-rgb) / calc(0.22 * var(--i))),
+        transparent 70%
+      );
+    animation: breathe 11s ease-in-out infinite;
+  }
+
+  .root[data-glow="bottom"] .wash {
+    --glow-y: 100%;
+  }
+
+  .root[data-glow="center"] .wash {
+    --glow-y: 50%;
+  }
+
+  @keyframes breathe {
+    50% {
+      opacity: 0.72;
+    }
+  }
+
+  /* ---- the lattice plane ------------------------------------------------------------------ */
+
+  .plane {
+    position: absolute;
+    inset: calc(-96px * var(--s)) calc(-55.43px * var(--s));
+    animation: drift calc(80s / var(--speed, 1)) linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes drift {
+    to {
+      transform: translate3d(calc(-55.43px * var(--s)), calc(-96px * var(--s)), 0);
+    }
+  }
+
+  .grid,
+  .cells {
+    position: absolute;
+    inset: 0;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+  }
+
+  .grid {
+    background: rgb(var(--accent-rgb) / calc(0.2 * var(--i) + 0.03));
+    -webkit-mask-image: var(--pattern-hex-mask);
+    mask-image: var(--pattern-hex-mask);
+    -webkit-mask-size: calc(var(--pattern-hex-w) * var(--s)) calc(var(--pattern-hex-h) * var(--s));
+    mask-size: calc(var(--pattern-hex-w) * var(--s)) calc(var(--pattern-hex-h) * var(--s));
+  }
+
+  .cells {
+    background: rgb(var(--accent-rgb) / calc(0.16 * var(--i) + 0.02));
+    -webkit-mask-image: var(--cells-url);
+    mask-image: var(--cells-url);
+    -webkit-mask-size: calc(var(--cells-w) * var(--s)) calc(var(--cells-h) * var(--s));
+    mask-size: calc(var(--cells-w) * var(--s)) calc(var(--cells-h) * var(--s));
+    opacity: 0;
+    animation: twinkle var(--tw-dur, 9s) ease-in-out var(--tw-delay, 0s) infinite;
+  }
+
+  .cells[data-layer="b"] {
+    --tw-dur: 13s;
+    --tw-delay: -4s;
+  }
+
+  .cells[data-layer="c"] {
+    --tw-dur: 17s;
+    --tw-delay: -9s;
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    45%,
+    55% {
+      opacity: 1;
+    }
+  }
+
+  /* An interactive lattice holds still so the revealed layer stays aligned with it. */
+  .root[data-interactive="true"] .plane {
+    animation: none;
+  }
+
+  .root[data-animate="false"] .plane,
+  .root[data-animate="false"] .wash {
+    animation: none;
+  }
+
+  /* The pointer reveals a brighter lattice under the cursor (interactive only). */
+  .reveal {
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--accent-hot-rgb) / 0.9);
+    -webkit-mask-image:
+      var(--pattern-hex-mask),
+      radial-gradient(circle 190px at var(--mx, -400px) var(--my, -400px), #000, transparent 72%);
+    mask-image:
+      var(--pattern-hex-mask),
+      radial-gradient(circle 190px at var(--mx, -400px) var(--my, -400px), #000, transparent 72%);
+    -webkit-mask-size:
+      calc(var(--pattern-hex-w) * var(--s)) calc(var(--pattern-hex-h) * var(--s)),
+      100% 100%;
+    mask-size:
+      calc(var(--pattern-hex-w) * var(--s)) calc(var(--pattern-hex-h) * var(--s)),
+      100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    opacity: 0.55;
+  }
+
+  /* ---- the vignette that keeps the corners black ------------------------------------------------- */
+
+  .fade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 85% 75% at 50% 38%, transparent 30%, rgb(0 0 0 / 0.78) 100%),
+      linear-gradient(180deg, transparent 55%, rgb(0 0 0 / 0.55));
+  }
+
+  .root[data-vignette="false"] .fade {
+    display: none;
+  }
+
+  /* ---- floor: a lattice receding to a horizon (ref-hero) ----------------------------------------------- */
+
+  .root[data-variant="floor"] {
+    perspective: 520px;
+    perspective-origin: 50% 8%;
+  }
+
+  .root[data-variant="floor"] .floor {
+    position: absolute;
+    inset-inline: -60%;
+    inset-block: 24% -40%;
+    transform: rotateX(68deg);
+    transform-origin: 50% 0%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 100%);
+  }
+
+  .root[data-variant="floor"] .plane {
+    animation-name: drift-floor;
+    animation-duration: calc(14s / var(--speed, 1));
+  }
+
+  @keyframes drift-floor {
+    to {
+      transform: translate3d(0, calc(96px * var(--s)), 0);
+    }
+  }
+
+  .root[data-variant="floor"] .grid {
+    background: rgb(var(--accent-hot-rgb) / calc(0.6 * var(--i) + 0.12));
+  }
+
+  .root[data-variant="floor"] .cells {
+    background: rgb(var(--accent-rgb) / calc(0.5 * var(--i) + 0.08));
+  }
+
+  .root[data-variant="floor"] .wash {
+    --glow-y: 26%;
+  }
+
+  /* The horizon: a hairline of white-hot light with a bloom above it. */
+  .horizon {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(24% - 44px);
+    block-size: 44px;
+    background:
+      linear-gradient(90deg, transparent 4%, rgb(var(--accent-hot-rgb) / 0.85) 50%, transparent 96%) bottom /
+      100% 1px no-repeat,
+      radial-gradient(
+        60% 100% at 50% 100%,
+        rgb(var(--accent-rgb) / calc(0.55 * var(--i) + 0.1)),
+        transparent 74%
+      );
+  }
+
+  /* ---- reduced motion: a calm, complete, still lattice ------------------------------------------------- */
+
+  :global(html[data-motion="reduced"]) .plane,
+  :global(html[data-motion="reduced"]) .wash {
+    animation: none;
+  }
+
+  :global(html[data-motion="reduced"]) .cells {
+    animation: none;
+    opacity: 0.55;
+  }
+
+  :global(html[data-motion="reduced"]) .cells[data-layer="b"],
+  :global(html[data-motion="reduced"]) .cells[data-layer="c"] {
+    display: none;
+  }
+
+  @media (forced-colors: active) {
+    .root {
+      display: none;
+    }
+  }
+}

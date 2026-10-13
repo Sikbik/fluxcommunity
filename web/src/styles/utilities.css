@@ -1,0 +1,318 @@
+/* ==========================================================================
+   Utilities: the few global classes sections and primitives can rely on.
+   Typography roles, the accessible hiding helpers, the gradient emphasis, the Beat
+   container, the full-bleed helper and the svg opt-out. Everything else belongs in a
+   CSS Module.
+
+   This layer is the LAST one, so it beats the section layer: a property set here
+   cannot be overridden from a section's CSS Module. Anything a section may want to
+   change is therefore a custom property with a default (--lead-max, --t-wrap,
+   --parallax-dur, --parallax-ease, --bleed-w), not a hard value.
+   ========================================================================== */
+
+@layer utility {
+  /*
+   * The chamfered silhouette (see DESIGN 3.3). Add the class `chamfer` to an element (or
+   * compose it in a module) and set --c (big cut) and --cm (micro bevel); then
+   *   clip-path: var(--clip-outer)   the full shape: big cuts top-right and bottom-left
+   *   clip-path: var(--clip-inner)   the same shape inset by --bw (default 1px), the cuts
+   *                                  reduced by 0.586 * bw so a gradient edge stays an
+   *                                  even width along the diagonals
+   * Pseudo-elements inherit both, so ::before can be the edge and ::after the fill.
+   */
+  .chamfer {
+    --clip-outer: polygon(
+      0 var(--cm, 4px),
+      var(--cm, 4px) 0,
+      calc(100% - var(--c, 14px)) 0,
+      100% var(--c, 14px),
+      100% calc(100% - var(--cm, 4px)),
+      calc(100% - var(--cm, 4px)) 100%,
+      var(--c, 14px) 100%,
+      0 calc(100% - var(--c, 14px))
+    );
+    --clip-inner: polygon(
+      0 calc(var(--cm, 4px) - 0.586 * var(--bw, 1px)),
+      calc(var(--cm, 4px) - 0.586 * var(--bw, 1px)) 0,
+      calc(100% - var(--c, 14px) + 0.586 * var(--bw, 1px)) 0,
+      100% calc(var(--c, 14px) - 0.586 * var(--bw, 1px)),
+      100% calc(100% - var(--cm, 4px) + 0.586 * var(--bw, 1px)),
+      calc(100% - var(--cm, 4px) + 0.586 * var(--bw, 1px)) 100%,
+      calc(var(--c, 14px) - 0.586 * var(--bw, 1px)) 100%,
+      0 calc(100% - var(--c, 14px) + 0.586 * var(--bw, 1px))
+    );
+  }
+
+  /* Visually hidden, still announced. */
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Hidden until focused (skip links). */
+  .sr-only-focusable:not(:focus, :focus-within) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- Type roles (DESIGN 3.2) ----------------------------------------------- */
+
+  /* Display: weight 300 for the line, 700 for the key words (wrap them in <b>). */
+  .t-display {
+    font: var(--type-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--text-1);
+    text-wrap: var(--t-wrap, balance);
+  }
+
+  .t-display :where(b, strong, em) {
+    font-weight: var(--fw-bold);
+    font-style: normal;
+  }
+
+  .t-h2 {
+    font: var(--type-h2);
+    letter-spacing: var(--tracking-h2);
+    color: var(--text-1);
+    text-wrap: var(--t-wrap, balance);
+  }
+
+  .t-h3 {
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+    text-wrap: var(--t-wrap, balance);
+  }
+
+  .t-h4 {
+    font: var(--type-h4);
+    color: var(--text-1);
+  }
+
+  /* The measure is a default: a section narrows or widens it with --lead-max on the element or an
+     ancestor (`--lead-max: 44ch`), and --t-wrap changes how the lines break. */
+  .t-lead {
+    font: var(--type-lead);
+    color: var(--text-2);
+    max-inline-size: var(--lead-max, 58ch);
+    text-wrap: var(--t-wrap, pretty);
+  }
+
+  .t-body {
+    font: var(--type-body);
+    color: var(--text-2);
+  }
+
+  .t-small {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+    color: var(--text-3);
+  }
+
+  /* The instrument voice: mono, uppercase, tracked. Eyebrows, chips, axis labels. */
+  .t-label {
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .t-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .t-num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: var(--num-tabular);
+  }
+
+  /* Big stat numbers: Montserrat 300 to 600, tabular. */
+  .t-stat {
+    font: var(--type-stat);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+  }
+
+  /* The accent voice: Lora italic, at most one editorial line per section. */
+  .t-accent {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text-2);
+  }
+
+  /* Gradient emphasis for key words in headlines. */
+  .t-grad {
+    background: linear-gradient(100deg, #fff 0%, var(--accent-strong) 38%, var(--accent-text) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Words split by SplitReveal sit in transformed spans, which background-clip: text
+     cannot see through; give each word the gradient itself. */
+  .t-grad [data-w] > * {
+    background: linear-gradient(100deg, #fff 0%, var(--accent-strong) 38%, var(--accent-text) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /* The word is one line-height tall and the clip paints only inside it: room for the tails of
+       g, y, p and q, taken back with a negative margin (see SectionHeader.module.css). */
+    padding-block: 0.12em;
+    margin-block: -0.12em;
+    --split-travel: 90%;
+  }
+
+  .t-1 {
+    color: var(--text-1);
+  }
+  .t-2 {
+    color: var(--text-2);
+  }
+  .t-3 {
+    color: var(--text-3);
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  /*
+   * The Beat. Every real block restarts one of two identical animations (the shell alternates
+   * html[data-beat] a/b), which pulses --flash from 1 to 0; tick marks, hairlines and the like read
+   * it. No block, no beat: there is no simulated one.
+   *
+   * It runs on the element that carries class="beat", and nowhere else. --flash is a registered
+   * INHERITED property, so wherever it is animated every descendant is restyled on every frame of
+   * the 1.4 s: on <html> that was every element of the document (about 20 ms a frame and 1.1 s of
+   * main thread a beat on the home page, 6,400 elements, growing with the DOM). So put class="beat"
+   * on the smallest element that holds what reads var(--flash) (a dial's tick group, a hairline
+   * ruler, a HUD; not a whole section). In a CSS module, `composes: beat from global;` in the rule
+   * that reads --flash says the same thing next to the code that needs it. A custom property
+   * computed from --flash (--tick: rgb(... / calc(... var(--flash) ...))) must be declared on the
+   * .beat element or below it, not above. The ui primitives do not read --flash: Panel brightens
+   * its own layers with compositor opacity animations keyed off html[data-beat].
+   */
+  html[data-beat="a"] .beat {
+    animation: beat-a 1400ms var(--ease-out) both;
+  }
+
+  html[data-beat="b"] .beat {
+    animation: beat-b 1400ms var(--ease-out) both;
+  }
+
+  html[data-motion="reduced"] .beat {
+    animation: none;
+  }
+
+  @keyframes beat-a {
+    from {
+      --flash: 1;
+    }
+    to {
+      --flash: 0;
+    }
+  }
+
+  @keyframes beat-b {
+    from {
+      --flash: 1;
+    }
+    to {
+      --flash: 0;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .t-grad {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: CanvasText;
+    }
+  }
+}
+
+@layer utility {
+  /*
+   * Parallax: a child that drifts opposite the pointer inside an element that writes
+   * --pxp and --pyp (an interactive Panel, a Tilt, a Spotlight). Set --depth in px.
+   *   <img class="parallax" style="--depth: 18px" />
+   */
+  .parallax {
+    translate: calc((0.5 - var(--pxp, 0.5)) * var(--depth, 12px))
+      calc((0.5 - var(--pyp, 0.5)) * var(--depth, 12px));
+    transition: translate var(--parallax-dur, var(--dur-2)) var(--parallax-ease, var(--ease-out));
+  }
+
+  :root[data-motion="reduced"] .parallax {
+    translate: none;
+    transition: none;
+  }
+}
+
+@layer utility {
+  /*
+   * Full bleed: a box that spans the page edge to edge from inside a centred Container.
+   *
+   *   <Container>
+   *     <h2>...</h2>
+   *     <div class="bleed">a band, a rail, a marquee</div>
+   *   </Container>
+   *
+   * It is 100vw wide and pulled back by half of the difference between its parent and the page
+   * (50% of the parent minus 50vw), so it only lines up inside a parent that is centred in the
+   * page. 100vw includes the scrollbar, so beside a classic scrollbar the box is wider than the
+   * visible page by the scrollbar's width, half on each side; #root has overflow-x: clip
+   * (base.css), which cuts it exactly at the visible edge, so there is no horizontal scrollbar.
+   * Do not remove that clip. Nothing between the .bleed box and #root may clip or scroll
+   * horizontally (overflow hidden or auto, a clip-path, contain: paint), or the band is cut to
+   * that ancestor instead.
+   *
+   * Prefer structure when you can: an element that is a direct child of the Section (outside the
+   * Container) is already full width and needs no class.
+   *
+   * --bleed-w (default 100vw) is the width to bleed to. Set it where 100vw is wrong, for example
+   * to 100cqw inside a size container (a Panel with `container`), to bleed to the container.
+   */
+  .bleed {
+    inline-size: var(--bleed-w, 100vw);
+    max-inline-size: none;
+    margin-inline: calc(50% - var(--bleed-w, 100vw) / 2);
+  }
+
+  /*
+   * With .bleed: puts the content back on the Container's edges (a full-bleed rail whose first
+   * card lines up with the heading above it, scrolling out to the viewport on the other side).
+   */
+  .bleed-pad {
+    padding-inline: calc(var(--bleed-w, 100vw) / 2 - 50%);
+  }
+
+  /*
+   * The reset gives every svg, img, picture, video and canvas `max-inline-size: 100%` so media
+   * never overflows its column. An element that is meant to be wider than its box (a ring that
+   * overhangs its slot, a glow, a canvas that bleeds) opts out with this class:
+   *   <svg class="svg-free" ...>
+   * (Setting max-inline-size in your own module also works, but only if you know the reset is
+   * there; this makes the intent visible and wins in any layer.)
+   */
+  .svg-free {
+    max-inline-size: none;
+  }
+}

@@ -1,0 +1,401 @@
+/*
+ * Provider bays: lit docking bays. A recessed viewport (the host's own site, dimmed to sit in the
+ * dark UI) over a lit floor, a dock rail along the top that a light sweeps down on hover, and the
+ * lattice lighting up beneath through the glass (Panel stageFocus). Accent blue only: tier colours
+ * belong to the explainer.
+ */
+@layer section {
+  .grid {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  }
+
+  .grid > * {
+    display: grid;
+  }
+
+  .bay {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+  }
+
+  .bayContent {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  /* The lit floor under the viewport: a pad of light that brightens on hover. */
+  .bayContent::before {
+    content: "";
+    position: absolute;
+    inset-inline: 8%;
+    inset-block-end: -24%;
+    block-size: 60%;
+    background: radial-gradient(ellipse at 50% 100%, rgb(var(--accent-rgb) / 0.42), transparent 68%);
+    opacity: 0.45;
+    transition: opacity var(--dur-3) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .bay[data-hover="true"] .bayContent::before,
+  .bay:focus-within .bayContent::before {
+    opacity: 1;
+  }
+
+  /* ---- dock rail ------------------------------------------------------------------------------- */
+
+  .rail {
+    position: relative;
+    display: block;
+    block-size: 3px;
+    margin-block-start: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--accent-rgb) / 0.5) 18%,
+      rgb(var(--accent-rgb) / 0.5) 82%,
+      transparent
+    );
+    overflow: hidden;
+  }
+
+  .rail::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 34%;
+    background: linear-gradient(90deg, transparent, var(--text-1) 50%, transparent);
+    translate: -110% 0;
+    opacity: 0;
+  }
+
+  .bay[data-hover="true"] .rail::after,
+  .bay:focus-within .rail::after {
+    animation: dock-sweep 1100ms var(--ease-in-out) both;
+  }
+
+  @keyframes dock-sweep {
+    0% {
+      translate: -110% 0;
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      translate: 310% 0;
+      opacity: 0.2;
+    }
+  }
+
+  /* ---- viewport --------------------------------------------------------------------------------- */
+
+  .thumb {
+    --c: 12px;
+    --cm: 3px;
+    position: relative;
+    margin: var(--space-5) var(--space-5) 0;
+    aspect-ratio: 16 / 6.2;
+    overflow: hidden;
+    clip-path: var(--clip-outer);
+    background: var(--ink-1);
+  }
+
+  .thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 1px rgb(var(--accent-hot-rgb) / 0.22);
+    pointer-events: none;
+  }
+
+  .thumbLink {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .shot {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: 50% 0;
+    filter: saturate(0.92);
+    transition: scale var(--dur-4) var(--ease-out);
+  }
+
+  /* A light-theme page must not blow out the dark UI. */
+  .thumb[data-light] .shot {
+    filter: saturate(0.9) brightness(0.7) contrast(1.05);
+  }
+
+  .bay[data-hover="true"] .shot,
+  .bay:focus-within .shot {
+    scale: 1.035;
+  }
+
+  /* The bay is dimmed at rest and lights up under the pointer: an overlay whose opacity moves, so
+     nothing but opacity and transform is ever animated. */
+  .dim {
+    position: absolute;
+    inset: 0;
+    background: var(--ink-0);
+    opacity: 0.3;
+    transition: opacity var(--dur-3) var(--ease-out);
+    pointer-events: none;
+  }
+
+  /* A light page is multiplied into the bay's blue so it sits in the dark UI instead of on it. */
+  .thumb[data-light] .dim {
+    background: rgb(var(--accent-deep-rgb));
+    mix-blend-mode: multiply;
+    opacity: 0.8;
+  }
+
+  .bay[data-hover="true"] .dim,
+  .bay:focus-within .dim {
+    opacity: 0;
+  }
+
+  .bay[data-hover="true"] .thumb[data-light] .dim,
+  .bay:focus-within .thumb[data-light] .dim {
+    opacity: 0.35;
+  }
+
+  /* One band of light crossing the picture as the bay lights up. */
+  .sheen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgb(var(--accent-hot-rgb) / 0.45) 50%,
+      transparent 62%
+    );
+    translate: -110% 0;
+    pointer-events: none;
+  }
+
+  .bay[data-hover="true"] .sheen,
+  .bay:focus-within .sheen {
+    animation: thumb-sheen 1000ms var(--ease-in-out) both;
+  }
+
+  @keyframes thumb-sheen {
+    from {
+      translate: -110% 0;
+    }
+    to {
+      translate: 110% 0;
+    }
+  }
+
+  /* A floor and a ceiling of the bay's own colour over the page. */
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, var(--glass-bg-strong), transparent 62%),
+      linear-gradient(180deg, rgb(var(--accent-deep-rgb) / 0.16), transparent 40%);
+    pointer-events: none;
+  }
+
+  .tag {
+    position: absolute;
+    inset-block-end: 8px;
+    inset-inline-start: 10px;
+    color: var(--text-2);
+    font: 500 0.625rem / 1 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* The procedural bay for a host with no site. */
+  .proc {
+    position: relative;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-4);
+    inline-size: 100%;
+    block-size: 100%;
+    background:
+      radial-gradient(70% 90% at 50% 100%, rgb(var(--accent-rgb) / 0.3), transparent 70%), var(--ink-1);
+  }
+
+  .procLattice {
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--accent-rgb) / 0.5);
+    -webkit-mask-image: var(--pattern-hex-mask), radial-gradient(circle at 50% 100%, #000, transparent 85%);
+    mask-image: var(--pattern-hex-mask), radial-gradient(circle at 50% 100%, #000, transparent 85%);
+    -webkit-mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    opacity: 0.55;
+  }
+
+  .procMark {
+    position: relative;
+    display: block;
+    inline-size: 56px;
+    block-size: 62px;
+    filter: drop-shadow(0 0 12px rgb(var(--accent-rgb) / 0.6));
+  }
+
+  .procHex {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    color: var(--accent-strong);
+    background: linear-gradient(160deg, rgb(var(--accent-rgb) / 0.34), rgb(var(--accent-rgb) / 0.12));
+    clip-path: var(--hex-clip);
+  }
+
+  .procLabel {
+    position: relative;
+    color: var(--text-2);
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* ---- text ---------------------------------------------------------------------------------------- */
+
+  .info {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-7) var(--space-7);
+  }
+
+  .titleRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .name {
+    color: var(--text-1);
+    font: var(--type-h3);
+    font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .operator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-4);
+    max-inline-size: none;
+    color: var(--text-2);
+    font: 500 var(--fs-sm) / 1.3 var(--font-mono);
+    overflow-wrap: anywhere;
+  }
+
+  .operator span {
+    color: var(--text-3);
+    font-size: var(--fs-2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .blurb {
+    flex: 1;
+    max-inline-size: none;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-5);
+    margin-block-start: var(--space-3);
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-inline-size: 0;
+    color: var(--text-3);
+    font: 500 var(--fs-xs) / 1.2 var(--font-mono);
+    letter-spacing: 0.03em;
+    overflow-wrap: anywhere;
+  }
+
+  .host svg {
+    flex: none;
+    color: var(--accent-text);
+  }
+
+  /* ---- the add line ----------------------------------------------------------------------------------- */
+
+  .add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    margin-block-start: var(--space-7);
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .add p {
+    max-inline-size: none;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+  }
+
+  :global(html[data-motion="reduced"]) .shot,
+  :global(html[data-motion="reduced"]) .bayContent::before {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .bay[data-hover="true"] .shot {
+    scale: 1;
+  }
+
+  :global(html[data-motion="reduced"]) .bay[data-hover="true"] .sheen,
+  :global(html[data-motion="reduced"]) .bay:focus-within .sheen {
+    animation: none;
+  }
+
+  :global(html[data-motion="reduced"]) .bay[data-hover="true"] .rail::after,
+  :global(html[data-motion="reduced"]) .bay:focus-within .rail::after {
+    animation: none;
+    translate: 0 0;
+    inline-size: 100%;
+    opacity: 0.5;
+  }
+
+  @media (prefers-contrast: more) {
+    .shade,
+    .procLattice {
+      display: none;
+    }
+  }
+}

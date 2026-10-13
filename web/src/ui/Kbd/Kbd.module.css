@@ -1,0 +1,32 @@
+@layer ui {
+  .group {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+  }
+
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 1.65rem;
+    block-size: 1.5rem;
+    padding: 0 0.4rem;
+    color: var(--text-2);
+    font: 500 var(--fs-2xs) / 1 var(--font-mono);
+    letter-spacing: 0.02em;
+    background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+    border: 1px solid var(--line-3);
+    border-block-end-width: 2px;
+    border-radius: var(--r-xs);
+    box-shadow: var(--inset-hi);
+    white-space: nowrap;
+  }
+
+  .kbd[data-size="sm"] {
+    min-inline-size: 1.35rem;
+    block-size: 1.25rem;
+    padding: 0 0.3rem;
+    font-size: 0.625rem;
+  }
+}

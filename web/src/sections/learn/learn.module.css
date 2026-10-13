@@ -1,0 +1,27 @@
+@layer section {
+  .stack {
+    display: grid;
+    gap: clamp(2.5rem, 2rem + 3vw, 5rem);
+  }
+
+  /* ---- the sub-header over the reading list ------------------------------------------------------ */
+
+  .indexHead {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  .indexTitle {
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+  }
+
+  .indexLead {
+    max-inline-size: 56ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+  }
+}

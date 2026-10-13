@@ -1,0 +1,110 @@
+/*
+ * The picture of an app. A 16:10 frame with a chamfered silhouette; the screenshot fades up out of a
+ * blurred placeholder, and drifts opposite the pointer inside an interactive Panel (.parallax).
+ */
+@layer section {
+  .frame {
+    --c: 10px;
+    --cm: 3px;
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    clip-path: var(--clip-outer);
+    background-color: var(--ink-1);
+    isolation: isolate;
+  }
+
+  /* A soft wash of the captured page (a 16x10 WebP, stretched) under the real image. */
+  .frame[data-kind="image"] {
+    background-image: var(--lqip);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .img {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    object-fit: cover;
+    opacity: 0;
+    scale: 1.07;
+    --depth: 12px;
+    translate: calc((0.5 - var(--pxp, 0.5)) * var(--depth)) calc((0.5 - var(--pyp, 0.5)) * var(--depth));
+    transition:
+      opacity var(--dur-4) var(--ease-out),
+      translate var(--dur-2) var(--ease-out);
+  }
+
+  .frame[data-loaded="true"] .img {
+    opacity: 1;
+  }
+
+  /* The generated art is emissive light on black: let the black fall away. */
+  .art {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    object-fit: contain;
+    object-position: center;
+    mix-blend-mode: screen;
+    scale: 1.04;
+    --depth: 8px;
+    translate: calc((0.5 - var(--pxp, 0.5)) * var(--depth)) calc((0.5 - var(--pyp, 0.5)) * var(--depth));
+    transition: translate var(--dur-2) var(--ease-out);
+  }
+
+  :global(html[data-motion="reduced"]) .art {
+    translate: none;
+    transition: none;
+  }
+
+  .frame[data-kind="art"][data-fit="cover"] .art {
+    object-fit: cover;
+    scale: 1.02;
+  }
+
+  .frame[data-kind="art"] picture {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  /* The lattice texture behind generated art and under the procedural emblem. */
+  .lattice {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 90% at 50% 100%, rgb(var(--accent-rgb) / 0.22), transparent 70%),
+      rgb(var(--accent-rgb) / 0.4);
+    -webkit-mask-image: var(--pattern-hex-mask), radial-gradient(circle at 50% 100%, #000 0, transparent 85%);
+    mask-image: var(--pattern-hex-mask), radial-gradient(circle at 50% 100%, #000 0, transparent 85%);
+    -webkit-mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    opacity: 0.55;
+  }
+
+  .emblem {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--accent-text);
+    filter: drop-shadow(0 0 14px rgb(var(--accent-deep-rgb) / 0.7));
+  }
+
+  :global(html[data-motion="reduced"]) .img {
+    translate: none;
+    transition: opacity var(--dur-3) linear;
+  }
+}

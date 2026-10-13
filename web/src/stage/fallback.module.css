@@ -1,0 +1,95 @@
+/* The no-WebGL stage: an animated hex pattern with a slow glow sweep and a static, correct symbol at the
+   anchor. Everything is plain CSS and SVG, so it works with the GPU blocked and costs almost nothing. */
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      120% 70% at 50% 108%,
+      color-mix(in srgb, var(--stage-accent, #2b61d1) 34%, #000) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      60% 50% at 70% 38%,
+      color-mix(in srgb, var(--stage-accent, #2b61d1) 20%, #000) 0%,
+      transparent 70%
+    ),
+    #000;
+}
+
+.field {
+  position: absolute;
+  inset: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  display: block;
+}
+
+/* The same pattern again, brighter, revealed only where a slow band sweeps across. */
+.sweep {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(105deg, transparent 38%, #000 50%, transparent 62%);
+  mask-image: linear-gradient(105deg, transparent 38%, #000 50%, transparent 62%);
+  -webkit-mask-size: 260% 100%;
+  mask-size: 260% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 130% 0;
+  mask-position: 130% 0;
+  animation: sweep 11s linear infinite;
+}
+
+@keyframes sweep {
+  from {
+    -webkit-mask-position: 130% 0;
+    mask-position: 130% 0;
+  }
+  to {
+    -webkit-mask-position: -30% 0;
+    mask-position: -30% 0;
+  }
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 100% at 50% 45%, transparent 38%, rgba(0, 0, 0, 0.78) 100%);
+}
+
+.symbol {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  will-change: transform;
+}
+
+.symbol[data-on="true"] {
+  opacity: 1;
+}
+
+.symbol svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 14px rgba(43, 97, 209, 0.85)) drop-shadow(0 0 46px rgba(43, 97, 209, 0.45));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+    -webkit-mask-position: 60% 0;
+    mask-position: 60% 0;
+  }
+}
+
+.root[data-still="true"] .sweep {
+  animation: none;
+  -webkit-mask-position: 60% 0;
+  mask-position: 60% 0;
+}

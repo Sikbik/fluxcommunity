@@ -1,0 +1,18 @@
+@layer ui {
+  .section {
+    position: relative;
+    padding-block: var(--section-y);
+  }
+
+  .section[data-tight="true"] {
+    padding-block: calc(var(--section-y) * 0.6);
+  }
+
+  .body {
+    margin-block-start: var(--section-gap);
+  }
+
+  .body:first-child {
+    margin-block-start: 0;
+  }
+}

@@ -1,0 +1,121 @@
+@layer ui {
+  .root {
+    --marquee-fade: clamp(20px, 12%, 72px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    /* The track is as wide as its content; never let that widen a grid or flex parent. */
+    contain: inline-size;
+  }
+
+  /*
+   * The track slides inside the viewport and fades out at both ends. The fade is a fixed length
+   * (not a share of the width) so a name is always fully dim before it reaches the edge, and the
+   * pause control sits in its own cell after the viewport: a name can fade out beside it, never
+   * under it and never cut off against it.
+   */
+  .viewport {
+    position: relative;
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent
+    );
+  }
+
+  .track {
+    display: flex;
+    inline-size: max-content;
+    animation: run var(--marquee-dur, 40s) linear infinite;
+    animation-direction: var(--marquee-dir, normal);
+    animation-play-state: var(--marquee-state, running);
+  }
+
+  /* Promote the track only while it moves. */
+  .root:not([data-paused="true"]) .track {
+    will-change: transform;
+  }
+
+  .copy {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--marquee-gap, 32px);
+    margin: 0;
+    padding: 0;
+    padding-inline-end: var(--marquee-gap, 32px);
+    list-style: none;
+  }
+
+  .item {
+    flex: none;
+  }
+
+  .root[data-paused="true"] {
+    --marquee-state: paused;
+  }
+
+  .viewport:hover,
+  .viewport:focus-within {
+    --marquee-state: paused;
+  }
+
+  .viewport:hover .track,
+  .viewport:focus-within .track {
+    animation-play-state: paused;
+  }
+
+  @keyframes run {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* The control's own cell: it keeps its width and a breath of space before the viewport's end. */
+  .dock {
+    display: grid;
+    flex: none;
+    place-items: center;
+    padding-inline-start: 10px;
+  }
+
+  .control {
+    flex: none;
+  }
+
+  /* Reduced motion: no travel. The row wraps and is simply a list. */
+  :global(html[data-motion="reduced"]) .viewport {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow: visible;
+  }
+
+  :global(html[data-motion="reduced"]) .track {
+    animation: none;
+    inline-size: auto;
+    flex-wrap: wrap;
+  }
+
+  :global(html[data-motion="reduced"]) .copy {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+
+  :global(html[data-motion="reduced"]) .dup,
+  :global(html[data-motion="reduced"]) .dock {
+    display: none;
+  }
+}

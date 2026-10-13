@@ -1,0 +1,41 @@
+@layer ui {
+  .tilt {
+    /* useTilt writes the inline transform (and will-change) while the pointer is over it. */
+    transform-origin: 50% 50%;
+  }
+
+  .magnetic {
+    display: inline-block;
+    translate: var(--mx, 0px) var(--my, 0px);
+  }
+
+  .spot {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      var(--spot-r, 260px) circle at var(--px, 50%) var(--py, 50%),
+      rgb(var(--accent-hot-rgb) / 0.2),
+      rgb(var(--accent-rgb) / 0.08) 45%,
+      transparent 75%
+    );
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .spot[data-hover="true"]::before {
+    opacity: 1;
+  }
+
+  :global(html[data-motion="reduced"]) .tilt {
+    transform: none;
+  }
+}

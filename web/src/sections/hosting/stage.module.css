@@ -1,0 +1,353 @@
+/*
+ * The orbit diagram. Three layers share one square: a static SVG (rings, ticks, gates), one canvas
+ * for everything that moves, and a few DOM overlays (the hub clock, tier chips, payout pops).
+ * Tier colour comes from [data-tier] (--tier, --tier-rgb), set on each orbit group, chip and pop.
+ */
+@layer section {
+  .stage {
+    position: relative;
+    container-type: inline-size;
+    inline-size: min(100%, 500px);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .rings,
+  .canvas {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .rings {
+    overflow: visible;
+  }
+
+  .canvas {
+    pointer-events: none;
+  }
+
+  /* ---- static rings ------------------------------------------------------------------------ */
+
+  .spokes line {
+    stroke: rgb(var(--accent-rgb) / 0.14);
+    stroke-width: 1;
+    stroke-dasharray: 2 5;
+  }
+
+  .orbit {
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .orbit[data-state="dim"] {
+    opacity: 0.22;
+  }
+
+  .band {
+    fill: none;
+    stroke: rgb(var(--tier-rgb) / 0.06);
+    stroke-width: 26;
+    stroke-linejoin: round;
+    transition: stroke var(--dur-3) var(--ease-out);
+  }
+
+  .orbit[data-state="active"] .band {
+    stroke: rgb(var(--tier-rgb) / 0.16);
+  }
+
+  .ticks {
+    fill: none;
+    stroke: rgb(var(--tier-rgb) / 0.4);
+    stroke-width: 8;
+    stroke-dasharray: 0.45 2.55;
+  }
+
+  .line {
+    fill: none;
+    stroke: rgb(var(--tier-rgb) / 0.78);
+    stroke-width: 1.4;
+  }
+
+  .glow {
+    fill: none;
+    stroke: rgb(var(--tier-rgb));
+    stroke-width: 4;
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .orbit[data-state="active"] .glow {
+    opacity: 0.8;
+  }
+
+  .bolt {
+    fill: var(--ink-0);
+    stroke: rgb(var(--tier-rgb) / 0.9);
+    stroke-width: 1;
+  }
+
+  .gate {
+    fill: none;
+    stroke: rgb(var(--hot-rgb) / 0.75);
+    stroke-width: 1.5;
+    stroke-linecap: butt;
+  }
+
+  .gatePointer {
+    fill: rgb(var(--hot-rgb) / 0.85);
+    stroke: none;
+  }
+
+  .hubFrame {
+    fill: var(--glass-bg-strong);
+    stroke: rgb(var(--accent-rgb) / 0.6);
+    stroke-width: 1.4;
+  }
+
+  .hubInner {
+    fill: none;
+    stroke: rgb(var(--accent-rgb) / 0.22);
+    stroke-width: 1;
+  }
+
+  /* ---- hub clock ----------------------------------------------------------------------------- */
+
+  .hub {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 14%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.25em;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .hubLabel {
+    color: var(--text-3);
+    font: 500 clamp(6.5px, 1.5cqw, 9px) / 1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Too small to hold a label inside the hub: the number says it, the caption explains it. */
+  @container (max-width: 380px) {
+    .hubLabel {
+      display: none;
+    }
+  }
+
+  .hubValue {
+    color: var(--text-1);
+    font: 300 clamp(17px, 4.7cqw, 28px) / 1 var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .hubUnit {
+    color: var(--text-3);
+    font: 500 0.42em / 1 var(--font-mono);
+    letter-spacing: 0;
+  }
+
+  /* ---- tier tags hanging from the bottom vertices ----------------------------------------------- */
+
+  .chips {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Sized by the diagram (cqw), not by the page, so the tag keeps its place between two rings from a
+     phone to a wide screen. The gap under the vertex keeps the ring line, the vertex bolt and any
+     dot passing the vertex fully in view. */
+  .chip {
+    --c: 5px;
+    --cm: 2px;
+    --bw: 1px;
+    position: absolute;
+    translate: -50% 0;
+    margin-block-start: 1.5cqw;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    min-block-size: clamp(15px, 4.2cqw, 22px);
+    padding: 0 clamp(5px, 1.6cqw, 8px);
+    color: var(--tier);
+    font: 500 clamp(8px, 2.1cqw, 11px) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .chip::before,
+  .chip::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .chip::before {
+    inset: 0;
+    clip-path: var(--clip-outer);
+    background: rgb(var(--tier-rgb) / 0.45);
+  }
+
+  .chip::after {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    background: var(--glass-bg-solid);
+  }
+
+  .chip[data-state="dim"] {
+    opacity: 0.4;
+  }
+
+  .chipGlyph {
+    flex: none;
+    inline-size: 1.35em;
+    block-size: 1.35em;
+  }
+
+  /* On a small diagram the name alone is enough (the lanes carry the glyph), and it keeps the tag
+     narrow enough to sit between two rings without touching either. */
+  @container (max-width: 420px) {
+    .chipGlyph {
+      display: none;
+    }
+  }
+
+  /* ---- payout pops at the gates --------------------------------------------------------------- */
+
+  .pops {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .pop {
+    position: absolute;
+    translate: -50% calc(-100% - 2.6cqw);
+    color: var(--tier);
+    font: 600 clamp(11px, 2.7cqw, 16px) / 1 var(--font-mono);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-shadow: 0 0 14px rgb(var(--tier-rgb) / 0.85);
+    opacity: 0;
+  }
+
+  .pops[data-pop="a"] .pop {
+    animation: pop-a 1800ms var(--ease-out) both;
+  }
+
+  .pops[data-pop="b"] .pop {
+    animation: pop-b 1800ms var(--ease-out) both;
+  }
+
+  .pops[data-pop] .pop:nth-child(2) {
+    animation-delay: 110ms;
+  }
+
+  .pops[data-pop] .pop:nth-child(3) {
+    animation-delay: 220ms;
+  }
+
+  /* Two identical keyframes so the animation restarts on every block. */
+  @keyframes pop-a {
+    0% {
+      opacity: 0;
+      translate: -50% calc(-100% - 1.4cqw);
+    }
+    14% {
+      opacity: 1;
+    }
+    68% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      translate: -50% calc(-100% - 6.4cqw);
+    }
+  }
+
+  @keyframes pop-b {
+    0% {
+      opacity: 0;
+      translate: -50% calc(-100% - 1.4cqw);
+    }
+    14% {
+      opacity: 1;
+    }
+    68% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      translate: -50% calc(-100% - 6.4cqw);
+    }
+  }
+
+  /* Reduced motion: the payout is still marked, with opacity alone. */
+  :global(html[data-motion="reduced"]) .pops[data-pop] .pop {
+    animation-name: pop-fade;
+    animation-duration: 1600ms;
+    translate: -50% calc(-100% - 2.6cqw);
+  }
+
+  @keyframes pop-fade {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    20%,
+    70% {
+      opacity: 1;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .orbit,
+  :global(html[data-motion="reduced"]) .band,
+  :global(html[data-motion="reduced"]) .glow,
+  :global(html[data-motion="reduced"]) .chip {
+    transition: none;
+  }
+
+  @media (prefers-contrast: more) {
+    .ticks,
+    .spokes {
+      display: none;
+    }
+
+    .line {
+      stroke: var(--text-1);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .line,
+    .bolt,
+    .gate,
+    .hubFrame {
+      stroke: CanvasText;
+    }
+
+    .band,
+    .ticks,
+    .glow,
+    .spokes {
+      display: none;
+    }
+  }
+}

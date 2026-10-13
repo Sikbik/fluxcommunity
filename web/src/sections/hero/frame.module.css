@@ -1,0 +1,291 @@
+/*
+ * The symbol's frame. One plain, empty element carries data-stage-anchor="symbol": the stage draws
+ * the 3D symbol into its rectangle and hit-tests gestures against it. Everything else here is HUD
+ * decoration around it (corner ticks, a slowly turning ring of words, a pointer reticle), drawn
+ * above the anchor with pointer-events: none so the stage's cursor and gestures are untouched.
+ */
+@layer section {
+  .frame {
+    position: relative;
+    inline-size: var(--frame-w);
+    aspect-ratio: 280 / 323;
+    /* Room for the ring, which is wider than the frame. */
+    margin-inline-end: calc(var(--frame-w) * 0.13);
+    /* A touch above centre: the symbol floats above the horizon, as in the reference frame. */
+    translate: 0 -0.6svh;
+  }
+
+  .anchor {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The Beat runs here, on the HUD and nothing wider: --tick and --hair are computed from --flash on
+     this box, so a block restyles the ring, the ticks and the reticle, not the whole hero. */
+  .hud {
+    composes: beat from global;
+    --tick: rgb(var(--accent-hot-rgb) / calc(0.38 + var(--flash) * 0.5));
+    --hair: rgb(var(--accent-hot-rgb) / calc(0.14 + var(--flash) * 0.42));
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ---- corner ticks -------------------------------------------------------------------------- */
+
+  .corner {
+    position: absolute;
+    inline-size: 22px;
+    block-size: 22px;
+    border: 0 solid var(--tick);
+    transition: translate var(--dur-3) var(--ease-out);
+  }
+
+  .corner[data-c="tl"] {
+    inset: -10px auto auto -10px;
+    border-width: 1px 0 0 1px;
+  }
+
+  .corner[data-c="tr"] {
+    inset: -10px -10px auto auto;
+    border-width: 1px 1px 0 0;
+  }
+
+  .corner[data-c="bl"] {
+    inset: auto auto -10px -10px;
+    border-width: 0 0 1px 1px;
+  }
+
+  .corner[data-c="br"] {
+    inset: auto -10px -10px auto;
+    border-width: 0 1px 1px 0;
+  }
+
+  /* Lock on: the corners draw in a little while the pointer is inside the frame. */
+  .frame[data-inside="true"] .corner[data-c="tl"] {
+    translate: 7px 7px;
+  }
+
+  .frame[data-inside="true"] .corner[data-c="tr"] {
+    translate: -7px 7px;
+  }
+
+  .frame[data-inside="true"] .corner[data-c="bl"] {
+    translate: 7px -7px;
+  }
+
+  .frame[data-inside="true"] .corner[data-c="br"] {
+    translate: -7px -7px;
+  }
+
+  /* ---- the ring ------------------------------------------------------------------------------ */
+
+  .ring {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 139%;
+    /* The reset caps svg at 100% of its container; the ring is meant to be wider than the frame. */
+    max-inline-size: none;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    overflow: visible;
+  }
+
+  /* Narrower side by side layouts (small laptops, landscape tablets): a tighter ring keeps its
+     lettering clear of the end of the subhead. */
+  @media (min-width: 900px) and (max-width: 1279.98px) {
+    .frame {
+      margin-inline-end: calc(var(--frame-w) * 0.1);
+    }
+
+    .ring {
+      inline-size: 130%;
+    }
+  }
+
+  .ring circle {
+    fill: none;
+  }
+
+  /* The svg inside the turning box fills it. */
+  .ringSvg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    overflow: visible;
+  }
+
+  .hairline {
+    stroke: var(--hair);
+    stroke-width: 1;
+  }
+
+  .tickMinor {
+    stroke: rgb(var(--accent-hot-rgb) / calc(0.2 + var(--flash) * 0.35));
+    stroke-width: 6;
+  }
+
+  .tickMajor {
+    stroke: rgb(var(--accent-hot-rgb) / calc(0.42 + var(--flash) * 0.45));
+    stroke-width: 11;
+  }
+
+  /* A box of its own, so the turn is composited: no layout, no repaint, no main thread. */
+  .spin {
+    animation: ring-spin 160s linear infinite;
+  }
+
+  @keyframes ring-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  .ringText {
+    font: 500 10.5px / 1 var(--font-mono);
+    fill: rgb(var(--accent-hot-rgb) / 0.62);
+    text-transform: uppercase;
+    /* The lettering turns and scales with the ring: lay it out once, at its own size, instead of
+       re-measuring the glyphs for the on-screen scale every time the box is restyled. */
+    text-rendering: geometricPrecision;
+  }
+
+  /* ---- the reticle --------------------------------------------------------------------------- */
+
+  .reticle {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+
+  .frame[data-inside="true"] .reticle {
+    opacity: 1;
+  }
+
+  .reticleV,
+  .reticleH {
+    position: absolute;
+    background: rgb(var(--accent-hot-rgb) / 0.26);
+  }
+
+  .reticleV {
+    inset-block: 0;
+    inline-size: 1px;
+    translate: var(--rx, 50%) 0;
+  }
+
+  .reticleH {
+    inset-inline: 0;
+    block-size: 1px;
+    translate: 0 var(--ry, 50%);
+  }
+
+  .reticleDot {
+    position: absolute;
+    inset: 0 auto auto 0;
+    inline-size: 11px;
+    block-size: 11px;
+    margin: -5px 0 0 -5px;
+    border: 1px solid rgb(255 255 255 / 0.8);
+    border-radius: 50%;
+    translate: var(--rx, 50%) var(--ry, 50%);
+  }
+
+  .readout {
+    position: absolute;
+    inset: 0 auto auto 0;
+    translate: calc(var(--rx, 50%) + 14px) calc(var(--ry, 50%) + 12px);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 7px 5px;
+    font: 500 var(--fs-2xs) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    white-space: pre;
+    color: var(--accent-strong);
+    /* Dark enough to read over the white glass of the symbol. */
+    background: rgb(3 6 16 / 0.78);
+    border: 1px solid rgb(var(--accent-hot-rgb) / 0.3);
+  }
+
+  .readoutHint {
+    color: var(--text-3);
+    text-transform: uppercase;
+  }
+
+  /* ---- the keyboard pulse button: visually hidden until it has focus ------------------------- */
+
+  .pulse {
+    position: absolute;
+    inset: auto 50% -4px auto;
+    z-index: 2;
+    translate: 50% 100%;
+  }
+
+  /* ---- stacked layout ------------------------------------------------------------------------ */
+
+  /* The same condition as the stacked layout in hero.module.css. */
+  @media (max-width: 899.98px), (max-width: 1099.98px) and (max-aspect-ratio: 11 / 10) {
+    /* Stacked: the symbol sits above the headline, centred. */
+    .frame {
+      order: -1;
+      justify-self: center;
+      margin-inline-end: 0;
+      translate: none;
+    }
+
+    .ring {
+      inline-size: 124%;
+      max-inline-size: none;
+    }
+  }
+
+  @media (max-width: 719.98px) {
+    .ring {
+      inline-size: 128%;
+      max-inline-size: none;
+    }
+
+    .ringText {
+      font-size: 17px;
+    }
+
+    .corner {
+      inline-size: 16px;
+      block-size: 16px;
+    }
+  }
+
+  /* ---- states -------------------------------------------------------------------------------- */
+
+  /* Nothing turns off screen, while the page is ambient, or under reduced motion. */
+  :global(html[data-motion="reduced"]) .spin {
+    animation: none;
+  }
+
+  :global(html[data-ambient="true"]) .spin {
+    animation-play-state: paused;
+  }
+
+  :global([data-section="hero"][data-inview="false"]) .spin {
+    animation-play-state: paused;
+  }
+
+  :global(html[data-motion="reduced"]) .frame .corner {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    .corner {
+      border-color: CanvasText;
+    }
+
+    .ring {
+      display: none;
+    }
+  }
+}

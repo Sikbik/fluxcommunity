@@ -1,0 +1,132 @@
+@layer ui {
+  .host {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: max(var(--safe-bottom), 16px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-inline: 12px;
+    pointer-events: none;
+  }
+
+  .toast {
+    --c: 10px;
+    --cm: 3px;
+    --bw: 1px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-inline-size: min(520px, 100%);
+    min-block-size: 44px;
+    padding: 10px 16px 10px 14px;
+    color: var(--text-1);
+    font: 500 var(--fs-md) / 1.3 var(--font-sans);
+    pointer-events: auto;
+    animation: in var(--dur-3) var(--ease-out) both;
+  }
+
+  .toast::before,
+  .toast::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .toast::before {
+    inset: 0;
+    clip-path: var(--clip-outer);
+    background: linear-gradient(
+      165deg,
+      rgb(255 255 255 / 0.55),
+      rgb(var(--accent-rgb) / 0.3) 40%,
+      rgb(var(--accent-rgb) / 0.4)
+    );
+  }
+
+  .toast::after {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+  }
+
+  .toast[data-leaving="true"] {
+    animation: out var(--dur-2) var(--ease-in) both;
+  }
+
+  .icon {
+    flex: none;
+    color: var(--status, var(--accent-text));
+  }
+
+  .message {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .action {
+    flex: none;
+    margin-inline-start: 6px;
+    padding: 4px 8px;
+    color: var(--accent-text);
+    font: 600 var(--fs-sm) / 1 var(--font-display);
+    border-radius: var(--r-xs);
+  }
+
+  .action:hover {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+
+  @keyframes in {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+      scale: 0.97;
+    }
+  }
+
+  @keyframes out {
+    to {
+      opacity: 0;
+      translate: 0 8px;
+      scale: 0.98;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .toast {
+    animation: fade var(--dur-3) linear both;
+  }
+
+  :global(html[data-motion="reduced"]) .toast[data-leaving="true"] {
+    animation: fade-out var(--dur-2) linear both;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .toast::before {
+      background: CanvasText;
+    }
+
+    .toast::after {
+      background: Canvas;
+    }
+  }
+}

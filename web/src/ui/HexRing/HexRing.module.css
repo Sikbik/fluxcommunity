@@ -1,0 +1,73 @@
+/*
+ * HexRing: a gauge drawn as a hexagonal ring of cells. Each segment fills in turn.
+ * Colour comes from `color` (accent by default; set data-tier for a tier colour).
+ *
+ * Size: the `size` prop is the default; --hex-ring-size (on the ring or any ancestor) overrides it.
+ * The component writes --ring-size from the two, so read --hex-ring-size, never --ring-size, from
+ * outside.
+ */
+@layer ui {
+  .root {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--ring-size, 120px);
+    block-size: var(--ring-size, 120px);
+    color: var(--accent);
+    flex: none;
+  }
+
+  .svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+
+  .track {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.1);
+    stroke-width: var(--ring-stroke, 5);
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+  }
+
+  .fill {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--ring-stroke, 5);
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    transition: stroke-dasharray var(--dur-4) var(--ease-out);
+    transition-delay: calc(var(--seg, 0) * 70ms);
+    filter: drop-shadow(0 0 5px rgb(var(--accent-rgb) / 0.55));
+  }
+
+  .root[data-dim="true"] {
+    opacity: 0.4;
+  }
+
+  .center {
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  :global(html[data-motion="reduced"]) .fill {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    .track {
+      stroke: GrayText;
+    }
+
+    .fill {
+      stroke: Highlight;
+      filter: none;
+    }
+  }
+}

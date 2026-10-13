@@ -1,0 +1,19 @@
+@layer section {
+  /* The three movements of the section, with room between them. */
+  .stack {
+    display: grid;
+    gap: clamp(3.5rem, 2rem + 5vw, 7rem);
+    justify-items: center;
+  }
+
+  /* A lead of two sentences breaks between them, never mid-way through the second. */
+  .sentence {
+    display: inline-block;
+  }
+
+  /* The honeycomb is the picture: it gets its own breathing room above and below. */
+  .channels {
+    inline-size: 100%;
+    padding-block-start: clamp(0.5rem, 1vw, 1.5rem);
+  }
+}

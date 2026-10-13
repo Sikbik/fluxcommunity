@@ -1,0 +1,58 @@
+@layer ui {
+  .link {
+    --link-color: var(--accent-text);
+    display: inline;
+    color: var(--link-color);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgb(var(--accent-rgb) / 0.4);
+    text-underline-offset: 0.22em;
+    transition:
+      color var(--dur-1) var(--ease-out),
+      text-decoration-color var(--dur-1) var(--ease-out);
+  }
+
+  .link:hover {
+    color: var(--accent-strong);
+    text-decoration-color: currentColor;
+  }
+
+  .link[data-tone="plain"] {
+    --link-color: inherit;
+    text-decoration-color: rgb(255 255 255 / 0.3);
+  }
+
+  .link[data-tone="plain"]:hover {
+    color: var(--text-1);
+  }
+
+  .link[data-tone="bare"] {
+    --link-color: inherit;
+    text-decoration-line: none;
+  }
+
+  .icon {
+    display: inline-block;
+    margin-inline-start: 0.2em;
+    vertical-align: -0.12em;
+    transition: translate var(--dur-2) var(--ease-out);
+  }
+
+  .link:hover .icon {
+    translate: 2px -2px;
+  }
+
+  :global(html[data-motion="reduced"]) .icon {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .link:hover .icon {
+    translate: none;
+  }
+
+  @media (forced-colors: active) {
+    .link {
+      color: LinkText;
+    }
+  }
+}

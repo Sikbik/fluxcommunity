@@ -1,0 +1,19 @@
+@layer section {
+  .connection {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    max-inline-size: none;
+  }
+
+  .word {
+    margin-inline-start: var(--space-3);
+  }
+
+  .note {
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.4 var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+}

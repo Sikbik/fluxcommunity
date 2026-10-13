@@ -1,0 +1,49 @@
+@layer ui {
+  .bullet {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    vertical-align: middle;
+    line-height: 0;
+  }
+
+  .bullet svg {
+    display: block;
+  }
+
+  /* The pulse ring: an HTML box (not an SVG node) so the animation can be composited. */
+  .ring {
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    clip-path: var(--hex-clip);
+    opacity: 0;
+  }
+
+  .ring[data-ring="live"] {
+    animation: ring 2.4s var(--ease-out) infinite;
+  }
+
+  /* Wants to pulse, and the page's live rings are taken: the same ring, held at a quiet size. */
+  .ring[data-ring="still"] {
+    scale: 1.7;
+    opacity: 0.22;
+  }
+
+  @keyframes ring {
+    0% {
+      scale: 1;
+      opacity: 0.55;
+    }
+    70%,
+    100% {
+      scale: 2.6;
+      opacity: 0;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .ring {
+    animation: none;
+    display: none;
+  }
+}

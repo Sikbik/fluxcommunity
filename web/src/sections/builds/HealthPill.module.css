@@ -1,0 +1,23 @@
+@layer section {
+  .pill {
+    max-inline-size: 100%;
+  }
+
+  .word {
+    white-space: nowrap;
+  }
+
+  .detail {
+    margin-inline-start: 0.5em;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  .loading {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 22px;
+  }
+}

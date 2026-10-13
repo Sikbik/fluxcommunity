@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" data-accent="flux">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#000000" />
+    <title>Flux Community</title>
+    <meta
+      name="description"
+      content="Community-built apps, node hosting services and guides for the Flux decentralized cloud, with live network stats."
+    />
+    <meta name="application-name" content="Flux Community" />
+    <meta property="og:site_name" content="Flux Community" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Flux Community: the decentralized cloud, built by its community" />
+    <meta
+      property="og:description"
+      content="Community-built apps, node hosting services and guides for the Flux decentralized cloud, with live network stats."
+    />
+    <meta property="og:url" content="https://community.app.runonflux.io/" />
+    <meta property="og:image" content="https://community.app.runonflux.io/og/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Four glowing glass hexagons forming the Flux symbol float above a lattice of hexagonal cells, beside the Flux logo and the words Flux Community: built by the community, ran by the network."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Flux Community: the decentralized cloud, built by its community" />
+    <meta
+      name="twitter:description"
+      content="Community-built apps, node hosting services and guides for the Flux decentralized cloud, with live network stats."
+    />
+    <meta name="twitter:image" content="https://community.app.runonflux.io/og/og-image.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="Four glowing glass hexagons forming the Flux symbol float above a lattice of hexagonal cells, beside the Flux logo and the words Flux Community."
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- The display face is on the critical path of the hero headline: fetch it at once. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="/node_modules/@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2"
+    />
+    <link rel="canonical" href="https://community.app.runonflux.io/" />
+    <!-- First paint is the void, so there is never a white flash before the stylesheet lands. -->
+    <style>
+      /*
+       * The cascade layer order must be declared before any stylesheet, in document order. The built
+       * app links its CSS in chunks (the first one holds only the "ui" layer), and a layer's order is
+       * fixed by its first appearance, so declaring it inside tokens.css is too late in production.
+       */
+      @layer reset, tokens, base, ui, section, utility;
+
+      html,
+      body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Flux Community needs JavaScript. Everything it links to lives at runonflux.com and docs.runonflux.com.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

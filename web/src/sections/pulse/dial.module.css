@@ -1,0 +1,247 @@
+/*
+ * The hex dial. One lap is the 30 s protocol target: six edges of 5 s. Ticks are one per second and
+ * light as the lap passes them; the Beat (--flash) brightens them on every real block.
+ */
+@layer section {
+  .dial {
+    position: relative;
+    inline-size: 13.25rem;
+    max-inline-size: 100%;
+    aspect-ratio: 1;
+    flex: none;
+  }
+
+  .svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+
+  .track {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.13);
+    stroke-width: 1;
+    stroke-linejoin: miter;
+  }
+
+  /* The ticks' <g>: the Beat runs here, so a block restyles the ticks and nothing else. */
+  .ticks {
+    composes: beat from global;
+  }
+
+  .tick {
+    stroke: rgb(255 255 255 / calc(0.14 + var(--flash) * 0.2));
+    stroke-width: 1;
+    transition: stroke var(--dur-3) var(--ease-out);
+  }
+
+  .tickMajor {
+    stroke: rgb(255 255 255 / calc(0.3 + var(--flash) * 0.25));
+    stroke-width: 1.4;
+  }
+
+  .tick[data-lit="true"] {
+    stroke: var(--accent-strong);
+  }
+
+  .arc,
+  .arcGlow,
+  .head {
+    fill: none;
+    stroke-linejoin: miter;
+    stroke-linecap: butt;
+  }
+
+  .arc {
+    stroke: var(--accent);
+    stroke-width: 3.2;
+  }
+
+  .arcGlow {
+    stroke: var(--accent);
+    stroke-width: 10;
+    opacity: 0.2;
+  }
+
+  .head {
+    stroke: var(--hot);
+    stroke-width: 5;
+    opacity: 0;
+  }
+
+  .head[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .labels text {
+    fill: var(--text-3);
+    font: 500 10px var(--font-mono);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- the readout in the middle -------------------------------------------------------------- */
+
+  .centre {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-3);
+    padding-inline: 18%;
+    text-align: center;
+  }
+
+  .kicker {
+    color: var(--text-3);
+    font: 500 0.625rem / 1 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .height {
+    color: var(--text-1);
+    font: 300 1.375rem / 1 var(--font-display);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .none {
+    color: var(--text-3);
+  }
+
+  .caption {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-2);
+    font: 400 0.6875rem / 1.25 var(--font-mono);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    text-wrap: balance;
+  }
+
+  .captionDot {
+    flex: none;
+    inline-size: 6px;
+    block-size: 6px;
+    background: var(--accent);
+    clip-path: var(--hex-clip);
+  }
+
+  .caption[data-phase="waiting"] {
+    color: var(--status-warn);
+  }
+
+  .caption[data-phase="offline"] {
+    color: var(--text-3);
+  }
+
+  /* ---- phases ------------------------------------------------------------------------------------- */
+
+  .dial[data-phase="complete"] .arc {
+    stroke: var(--accent-strong);
+  }
+
+  .dial[data-phase="complete"] .arcGlow {
+    opacity: 0.32;
+  }
+
+  .dial[data-phase="waiting"] .arc,
+  .dial[data-phase="waiting"] .arcGlow {
+    animation: waiting 2.6s var(--ease-in-out) infinite;
+  }
+
+  .dial[data-phase="offline"] .arc,
+  .dial[data-phase="offline"] .arcGlow,
+  .dial[data-phase="offline"] .head {
+    opacity: 0;
+  }
+
+  .dial[data-phase="offline"] .track {
+    stroke-dasharray: 3 5;
+  }
+
+  @keyframes waiting {
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  /* ---- the flare when a real block lands ------------------------------------------------------------ */
+
+  .shock {
+    fill: none;
+    stroke: var(--hot);
+    stroke-width: 2;
+    stroke-linejoin: miter;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .dial[data-flare] .shock {
+    animation: shock 1100ms var(--ease-out) both;
+  }
+
+  .dial[data-flare="a"] .tick {
+    animation: tick-a 900ms var(--ease-out);
+  }
+
+  .dial[data-flare="b"] .tick {
+    animation: tick-b 900ms var(--ease-out);
+  }
+
+  @keyframes shock {
+    from {
+      opacity: 0.95;
+      scale: 1;
+    }
+    to {
+      opacity: 0;
+      scale: 1.3;
+    }
+  }
+
+  @keyframes tick-a {
+    from {
+      stroke: var(--hot);
+    }
+  }
+
+  @keyframes tick-b {
+    from {
+      stroke: var(--hot);
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .tick {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .shock,
+  :global(html[data-motion="reduced"]) .dial[data-flare] .shock,
+  :global(html[data-motion="reduced"]) .dial[data-flare] .tick,
+  :global(html[data-motion="reduced"]) .dial[data-phase="waiting"] .arc,
+  :global(html[data-motion="reduced"]) .dial[data-phase="waiting"] .arcGlow {
+    animation: none;
+  }
+
+  @media (forced-colors: active) {
+    .arc {
+      stroke: Highlight;
+    }
+
+    .track,
+    .tick {
+      stroke: GrayText;
+    }
+
+    .labels text {
+      fill: CanvasText;
+    }
+  }
+}

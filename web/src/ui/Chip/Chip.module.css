@@ -1,0 +1,233 @@
+/*
+ * Chip: a small chamfered tag. Three layers, bottom to top, all inside the chip's own box:
+ *
+ *   edge  (::before)  the whole chip in --chip-edge. Only its 1px rim is ever visible.
+ *   body  (::after)   inset by the border width, clipped to the inner chamfer:
+ *                       --chip-sheen   an optional image (a lit top, for the selected state)
+ *                       --chip-fill    the tone's soft wash, as a colour
+ *                       --chip-base    a dark, opaque ground
+ *   text  (.content)  --chip-fg
+ *
+ * The base is what keeps the label readable. A translucent wash painted straight over the edge
+ * colour lifts the whole body to a mid tone of the same hue as the text (about 2.5:1 for the
+ * green LIVE word); with an opaque dark base under the wash the body stays near-black with a hint
+ * of the tone, so every label reaches AA against its own body wherever the chip sits (a Panel, or
+ * straight over the lit lattice). Overrides from call sites keep working: --chip-fill takes a
+ * colour (opaque is fine), --chip-edge takes a colour or a gradient.
+ */
+
+/* Registered so a hover or selection cross-fades the wash instead of snapping. */
+@property --chip-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@layer ui {
+  .chip {
+    --c: 6px;
+    --cm: 2px;
+    --bw: 1px;
+    --chip-fg: var(--text-2);
+    --chip-edge: var(--line-3);
+    --chip-fill: var(--ink-3);
+    --chip-base: var(--glass-bg-solid);
+    --chip-sheen: none;
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 26px;
+    padding: 0 10px;
+    color: var(--chip-fg);
+    font: 500 var(--fs-2xs) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color var(--dur-1) var(--ease-out),
+      scale var(--dur-1) var(--ease-snap),
+      --chip-fill var(--dur-2) var(--ease-out);
+  }
+
+  .chip::before,
+  .chip::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* The edge: the full silhouette. Covered by the opaque body except for the 1px rim. */
+  .chip::before {
+    inset: 0;
+    clip-path: var(--clip-outer);
+    background: var(--chip-edge);
+    transition: background var(--dur-2) var(--ease-out);
+  }
+
+  /* The body. The last layer is the only one that may be a bare colour. */
+  .chip::after {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    background: var(--chip-sheen), linear-gradient(var(--chip-fill), var(--chip-fill)), var(--chip-base);
+  }
+
+  .chip[data-size="sm"] {
+    min-block-size: 22px;
+    padding: 0 8px;
+    --c: 5px;
+  }
+
+  /* Icon, children and count sit in one row; the children are a row too, so
+     <Chip><Glyph name="spark" /> Label</Chip> keeps its gap without a wrapper of the caller's. */
+  .content,
+  .text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .count {
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Filter chips: sentence case, a little larger. */
+  .chip[data-kind="filter"] {
+    min-block-size: 34px;
+    padding: 0 14px;
+    font: 500 var(--fs-sm) / 1 var(--font-display);
+    letter-spacing: 0.005em;
+    text-transform: none;
+    --c: 8px;
+  }
+
+  @media (pointer: coarse) {
+    .chip[data-kind="filter"] {
+      min-block-size: 44px;
+    }
+  }
+
+  /* ---- tones ------------------------------------------------------------------------------ */
+
+  .chip[data-tone="accent"] {
+    --chip-fg: var(--accent-text);
+    --chip-edge: var(--accent-line);
+    --chip-fill: var(--accent-soft);
+  }
+
+  .chip[data-status] {
+    --chip-fg: var(--status);
+    --chip-edge: color-mix(in srgb, var(--status) 46%, transparent);
+    --chip-fill: var(--status-soft);
+  }
+
+  /* The off grey (#717171) is the one status colour that cannot carry 11px text on a dark body
+     (4.0:1 at best). Its label steps up to the tertiary text colour; the edge and the dot keep
+     the status grey. */
+  .chip[data-status="off"] {
+    --chip-fg: var(--text-3);
+  }
+
+  .chip[data-tier] {
+    --chip-fg: var(--tier);
+    --chip-edge: rgb(var(--tier-rgb) / 0.5);
+    --chip-fill: rgb(var(--tier-rgb) / 0.13);
+  }
+
+  /* ---- interaction ------------------------------------------------------------------------ */
+
+  .chip[data-interactive="true"] {
+    cursor: pointer;
+  }
+
+  .chip[data-interactive="true"]:hover {
+    --chip-fg: var(--text-1);
+    --chip-edge: rgb(var(--accent-hot-rgb) / 0.6);
+    --chip-fill: rgb(var(--accent-rgb) / 0.28);
+  }
+
+  .chip[data-interactive="true"]:active {
+    scale: 0.97;
+  }
+
+  /*
+   * Selected: white label on a lit accent body with a white-hot top rim. The wash is flat so a call
+   * site can replace it with one colour; the lit top is the sheen. Same specificity as hover, later in
+   * the file, so a selected chip keeps its look under the pointer (and brightens a little).
+   */
+  .chip[data-interactive="true"][data-selected="true"],
+  .chip[data-selected="true"] {
+    --chip-fg: var(--text-1);
+    --chip-edge: linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(var(--accent-hot-rgb) / 0.55));
+    --chip-fill: rgb(var(--accent-rgb) / 0.42);
+    --chip-sheen: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 72%);
+  }
+
+  .chip[data-interactive="true"][data-selected="true"]:hover {
+    --chip-fill: rgb(var(--accent-rgb) / 0.52);
+  }
+
+  .chip[data-selected="true"] .count {
+    color: color-mix(in srgb, var(--text-1) 78%, var(--accent-strong));
+  }
+
+  .chip:focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+  }
+
+  :global(html[data-motion="reduced"]) .chip {
+    transition: color var(--dur-1) linear;
+  }
+
+  :global(html[data-motion="reduced"]) .chip::before,
+  :global(html[data-motion="reduced"]) .chip::after {
+    transition: none;
+  }
+
+  /* ---- accessibility modes ------------------------------------------------------------------ */
+
+  /* More contrast: the rim steps up to the label colour so the shape is a clear line. */
+  @media (prefers-contrast: more) {
+    .chip[data-tone="accent"],
+    .chip[data-status],
+    .chip[data-tier] {
+      --chip-edge: color-mix(in srgb, var(--chip-fg) 85%, transparent);
+    }
+
+    .chip[data-interactive="true"]:hover {
+      --chip-edge: var(--text-1);
+    }
+  }
+
+  /*
+   * Forced colours: system colours only. The label is CanvasText on Canvas everywhere. The selected
+   * state is a thicker Highlight rim, not Highlight under HighlightText: the browser paints a Canvas
+   * backplate behind text that sits over a pseudo-element's fill, which turned HighlightText
+   * (black) into black on black.
+   */
+  @media (forced-colors: active) {
+    .chip::before {
+      background: CanvasText;
+    }
+
+    .chip::after {
+      background: Canvas;
+    }
+
+    .chip {
+      color: CanvasText;
+    }
+
+    .chip[data-selected="true"] {
+      --bw: 2px;
+    }
+
+    .chip[data-selected="true"]::before {
+      background: Highlight;
+    }
+  }
+}

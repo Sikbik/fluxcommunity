@@ -1,0 +1,266 @@
+/* The kit gallery is a review tool: dense, labelled, in the site's own voice. */
+@layer ui {
+  .kit {
+    position: relative;
+    z-index: var(--z-page);
+    min-block-size: 100svh;
+    padding-block-end: 8rem;
+  }
+
+  .bar {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background: linear-gradient(180deg, rgb(4 6 10 / 0.9), rgb(4 6 10 / 0.7));
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+    border-block-end: 1px solid var(--line-2);
+  }
+
+  .barInner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    min-block-size: 56px;
+    padding-block: 6px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-1);
+    font: 700 0.9375rem / 1 var(--font-display);
+  }
+
+  .brand small {
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    margin: 0 auto 0 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .jump a {
+    color: var(--text-3);
+    font: 500 var(--fs-xs) / 2 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .jump a:hover {
+    color: var(--text-1);
+  }
+
+  .toggles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 18px;
+  }
+
+  .group {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    border-block-end: 1px solid var(--line-1);
+  }
+
+  .groupHead {
+    display: grid;
+    gap: 8px;
+    margin-block-end: 28px;
+  }
+
+  .groupTitle {
+    font: var(--type-h2);
+    letter-spacing: var(--tracking-h2);
+    color: var(--text-1);
+  }
+
+  .groupLead {
+    color: var(--text-2);
+    max-inline-size: 64ch;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 300px)), 1fr));
+    align-items: start;
+  }
+
+  .spec {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  .specLabel {
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .specNote {
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .col {
+    display: grid;
+    gap: 12px;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 8px;
+  }
+
+  .swatch {
+    display: grid;
+    gap: 6px;
+    font: 500 0.625rem / 1.3 var(--font-mono);
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+
+  .chip {
+    block-size: 44px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+  }
+
+  .scale {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    border-radius: var(--r-sm);
+    overflow: hidden;
+    border: 1px solid var(--line-2);
+  }
+
+  .scale span {
+    display: grid;
+    place-items: end start;
+    block-size: 54px;
+    padding: 4px;
+    font: 500 0.5625rem / 1 var(--font-mono);
+    color: rgb(0 0 0 / 0.65);
+  }
+
+  .scale span[data-dark="true"] {
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .demoBox {
+    display: grid;
+    place-items: center;
+    min-block-size: 140px;
+    padding: 20px;
+    background: rgb(8 10 15 / 0.4);
+    border: 1px dashed var(--line-2);
+    border-radius: var(--r-sm);
+  }
+
+  .stack {
+    display: grid;
+    gap: 8px;
+  }
+
+  .motionBar {
+    position: relative;
+    block-size: 36px;
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-xs);
+    overflow: hidden;
+  }
+
+  .motionDot {
+    position: absolute;
+    inset-block: 6px;
+    inset-inline-start: 6px;
+    inline-size: 24px;
+    background: var(--accent);
+    clip-path: var(--hex-clip);
+    transition-property: translate;
+    transition-timing-function: var(--tt, linear);
+    transition-duration: var(--td, 700ms);
+  }
+
+  .motionBar[data-go="true"] .motionDot {
+    translate: calc(var(--span, 300px) - 36px) 0;
+  }
+
+  .glyphGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: 8px;
+  }
+
+  .glyph {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 16px 6px 10px;
+    color: var(--text-1);
+    background: rgb(8 10 15 / 0.45);
+    border: 1px solid var(--line-1);
+    border-radius: var(--r-sm);
+    transition:
+      border-color var(--dur-1) var(--ease-out),
+      color var(--dur-1) var(--ease-out);
+  }
+
+  .glyph:hover {
+    color: var(--accent-strong);
+    border-color: var(--accent-line);
+  }
+
+  .glyph span {
+    color: var(--text-3);
+    font: 500 0.625rem / 1.2 var(--font-mono);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .stageBox {
+    position: relative;
+    block-size: 300px;
+    overflow: hidden;
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    background: #000;
+  }
+
+  .artBox {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-block-size: 200px;
+    border-radius: var(--r-sm);
+    overflow: hidden;
+  }
+
+  .tall {
+    min-block-size: 220px;
+  }
+}

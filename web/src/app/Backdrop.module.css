@@ -1,0 +1,34 @@
+@layer ui {
+  /* Above the stage (z -1), below the page (z 1). Fades out once WebGL is rendering. */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-backdrop);
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 900ms var(--ease-out);
+  }
+
+  .backdrop[data-hidden="true"] {
+    opacity: 0;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-grain);
+    background-image: var(--grain-image);
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+  }
+
+  :global(html[data-glass="lite"]) .grain {
+    display: none;
+  }
+
+  @media (forced-colors: active), print {
+    .grain {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,34 @@
+@layer ui {
+  .placeholder {
+    position: relative;
+    min-block-size: 78svh;
+    padding-block: var(--section-y);
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block-end: 28px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .index {
+    color: var(--accent-text);
+  }
+
+  .lines {
+    display: grid;
+    gap: 14px;
+    max-inline-size: 640px;
+  }
+
+  .failed {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+  }
+}

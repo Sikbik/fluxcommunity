@@ -1,0 +1,23 @@
+@layer ui {
+  .fresh {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .parts {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  .age {
+    color: var(--text-2);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .hint {
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+}

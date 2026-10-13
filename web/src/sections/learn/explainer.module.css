@@ -1,0 +1,501 @@
+@layer section {
+  /* ---- the panel ------------------------------------------------------------------------------- */
+
+  .panel {
+    --thumb-w: 18px;
+    --thumb-h: 20px;
+  }
+
+  /* ---- the steps ------------------------------------------------------------------------------- */
+
+  .rail {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "badge title"
+      "badge summary";
+    column-gap: var(--space-5);
+    row-gap: var(--space-2);
+    align-items: start;
+    inline-size: 100%;
+    min-block-size: 44px;
+    padding: var(--space-5) var(--space-5) var(--space-6) var(--space-4);
+    border: 0;
+    border-block-start: 2px solid var(--line-2);
+    background: transparent;
+    color: var(--text-3);
+    text-align: start;
+    cursor: pointer;
+    transition:
+      color var(--dur-2) var(--ease-out),
+      border-color var(--dur-2) var(--ease-out),
+      background-color var(--dur-2) var(--ease-out);
+  }
+
+  .step::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to bottom, rgb(var(--accent-rgb) / 0.14), transparent 70%);
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .step:hover {
+    border-block-start-color: var(--line-blue);
+    color: var(--text-2);
+  }
+
+  .step:hover::before {
+    opacity: 0.55;
+  }
+
+  .step[aria-current="step"] {
+    border-block-start-color: var(--accent);
+    color: var(--text-2);
+  }
+
+  .step[aria-current="step"]::before {
+    opacity: 1;
+  }
+
+  .badge {
+    grid-area: badge;
+    inline-size: 34px;
+    block-size: 38px;
+    overflow: visible;
+  }
+
+  .badge path {
+    fill: transparent;
+    stroke: var(--line-3);
+    stroke-width: 1.4;
+    stroke-linejoin: miter;
+    transition:
+      fill var(--dur-2) var(--ease-out),
+      stroke var(--dur-2) var(--ease-out);
+  }
+
+  .badge text {
+    fill: var(--text-2);
+    font: 500 0.75rem / 1 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .badge[data-on] path {
+    fill: var(--accent-solid);
+    stroke: var(--accent-strong);
+  }
+
+  .badge[data-on] text {
+    fill: var(--on-accent);
+  }
+
+  .title {
+    grid-area: title;
+    align-self: center;
+    font: var(--type-h4);
+    font-size: 1.1875rem;
+    letter-spacing: var(--tracking-heading);
+    color: inherit;
+  }
+
+  .step[aria-current="step"] .title {
+    color: var(--text-1);
+  }
+
+  .summary {
+    grid-area: summary;
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+    color: inherit;
+    text-wrap: pretty;
+  }
+
+  /* On a phone the three steps are a row of short tabs and one sentence below says what is current. */
+  .activeNote {
+    display: none;
+    margin-block-start: var(--space-4);
+    max-inline-size: none;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+
+  /* ---- the screen ------------------------------------------------------------------------------ */
+
+  .screen {
+    --c: 18px;
+    --cm: 5px;
+    --bw: 1px;
+    position: relative;
+    isolation: isolate;
+    margin-block-start: var(--space-6);
+    container-type: inline-size;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--accent-rgb) / 0.55),
+      rgb(var(--accent-rgb) / 0.16) 42%,
+      rgb(var(--hot-rgb) / 0.22) 100%
+    );
+    clip-path: var(--clip-outer);
+  }
+
+  /* 16:9, but never taller than the viewport leaves room for (the rest of the explainer and the header are about
+     20rem), and never squatter than 30rem, so a laptop screen shows all of it at once. */
+  .frame {
+    position: relative;
+    inline-size: 100%;
+    block-size: min(56.25cqw, max(calc(100svh - 20rem), 30rem));
+    background:
+      radial-gradient(90% 80% at 24% 30%, rgb(var(--accent-rgb) / 0.12), transparent 62%), var(--ink-0);
+    clip-path: var(--clip-inner);
+  }
+
+  /* The brand's hexagon lattice, faint, strongest in the corners the map does not use. */
+  .frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgb(var(--accent-rgb) / 0.5);
+    -webkit-mask-image:
+      var(--pattern-hex-mask), radial-gradient(70% 90% at 0% 100%, #000 0, transparent 70%),
+      radial-gradient(60% 80% at 100% 0%, #000 0, transparent 70%);
+    mask-image:
+      var(--pattern-hex-mask), radial-gradient(70% 90% at 0% 100%, #000 0, transparent 70%),
+      radial-gradient(60% 80% at 100% 0%, #000 0, transparent 70%);
+    -webkit-mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%,
+      100% 100%;
+    mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%,
+      100% 100%;
+    -webkit-mask-composite: source-in, source-over;
+    mask-composite: intersect, add;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  @container (max-width: 639.98px) {
+    .frame {
+      block-size: auto;
+      aspect-ratio: 100 / 128;
+    }
+  }
+
+  .canvas {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  /* ---- the controls ------------------------------------------------------------------------------ */
+
+  .controls {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(9.5rem, auto);
+    align-items: center;
+    gap: var(--space-5) var(--space-7);
+    margin-block-start: var(--space-5);
+  }
+
+  .play {
+    min-inline-size: 7.25rem;
+  }
+
+  .toolLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+  }
+
+  .status {
+    max-inline-size: none;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-align: end;
+    text-transform: uppercase;
+  }
+
+  .scrub {
+    --p: 0;
+    position: relative;
+    container-type: inline-size;
+    block-size: 44px;
+    min-inline-size: 0;
+  }
+
+  .track {
+    position: absolute;
+    inset-inline: calc(var(--thumb-w) / 2);
+    inset-block-start: 50%;
+    block-size: 4px;
+    translate: 0 -50%;
+    background: var(--line-2);
+    pointer-events: none;
+  }
+
+  .trackFill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: left center;
+    transform: scaleX(var(--p));
+  }
+
+  .tick {
+    position: absolute;
+    inset-block: -5px;
+    inline-size: 2px;
+    margin-inline-start: -1px;
+    background: var(--line-3);
+  }
+
+  /* The real control: transparent, full size, native keyboard and pointer behaviour. */
+  .range {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .range::-webkit-slider-runnable-track {
+    block-size: 44px;
+    background: transparent;
+  }
+
+  .range::-moz-range-track {
+    block-size: 44px;
+    background: transparent;
+  }
+
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    inline-size: var(--thumb-w);
+    block-size: 44px;
+    background: transparent;
+    border: 0;
+  }
+
+  .range::-moz-range-thumb {
+    inline-size: var(--thumb-w);
+    block-size: 44px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .range:focus {
+    outline: none;
+  }
+
+  /* The visible thumb: a hexagon, drawn apart from the input so its glow is not clipped. */
+  .thumbGlow {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0;
+    inline-size: var(--thumb-w);
+    block-size: var(--thumb-h);
+    margin-block-start: calc(var(--thumb-h) / -2);
+    translate: calc((100cqw - var(--thumb-w)) * var(--p)) 0;
+    filter: drop-shadow(0 0 5px rgb(var(--accent-hot-rgb) / 0.75));
+    pointer-events: none;
+  }
+
+  .thumb {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    background: var(--text-1);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    transition: scale var(--dur-1) var(--ease-snap);
+  }
+
+  :global(html[data-motion="reduced"]) .thumb {
+    transition: none;
+  }
+
+  .range:hover + .thumbGlow .thumb {
+    scale: 1.12;
+  }
+
+  /* A hex ring behind the thumb: the visible focus state. */
+  .thumbGlow::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    background: var(--accent-text);
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    opacity: 0;
+    transition: opacity var(--dur-1) var(--ease-out);
+  }
+
+  .range:focus-visible + .thumbGlow::before {
+    opacity: 1;
+  }
+
+  .range:focus-visible + .thumbGlow .thumb {
+    background: var(--text-1);
+  }
+
+  .note {
+    margin-block-start: var(--space-4);
+    max-inline-size: none;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+  }
+
+  /* ---- the still triptych (reduced motion) --------------------------------------------------------- */
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tile {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    align-content: start;
+  }
+
+  .tile .screen {
+    margin-block-start: 0;
+  }
+
+  .tiles + .note {
+    margin-block-start: var(--space-7);
+  }
+
+  .tileHead {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    max-inline-size: none;
+  }
+
+  .tileTitle {
+    font: var(--type-h4);
+    font-size: 1.1875rem;
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+  }
+
+  .tileText {
+    max-inline-size: 46ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+
+  .tileBadge {
+    flex: none;
+  }
+
+  /* ---- smaller screens ----------------------------------------------------------------------------- */
+
+  @media (max-width: 1099.98px) {
+    .tiles {
+      grid-template-columns: minmax(0, 1fr);
+      max-inline-size: 34rem;
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 719.98px) {
+    .rail {
+      gap: var(--space-3);
+    }
+
+    .step {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "badge"
+        "title";
+      row-gap: var(--space-3);
+      padding: var(--space-4) var(--space-3) var(--space-5);
+    }
+
+    .badge {
+      inline-size: 28px;
+      block-size: 31px;
+    }
+
+    .title {
+      font-size: 1rem;
+    }
+
+    /* Kept for assistive tech, shown once below instead. */
+    .summary {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .activeNote {
+      display: block;
+    }
+
+    .controls {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        "play scrub"
+        "status status";
+      gap: var(--space-3) var(--space-5);
+    }
+
+    .play {
+      grid-area: play;
+      min-inline-size: 0;
+    }
+
+    .scrub {
+      grid-area: scrub;
+    }
+
+    .status {
+      grid-area: status;
+      text-align: start;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .step,
+  :global(html[data-motion="reduced"]) .step::before,
+  :global(html[data-motion="reduced"]) .badge path {
+    transition: none;
+  }
+}

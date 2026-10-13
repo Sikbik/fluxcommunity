@@ -1,0 +1,319 @@
+/*
+ * Play: the feature panel (the tunnel behind, the controller floating in front, one call to
+ * action), the three value props, and (wall.module.css) the kinetic wall.
+ *
+ * Art placement uses the same custom property API as the gateway tiles (`--art-*`, read by
+ * `useArtFit`), set per layer through the layer's own class.
+ */
+@layer section {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--grid-gap);
+    align-items: stretch;
+  }
+
+  .featureCell {
+    min-inline-size: 0;
+  }
+
+  /* ---- the feature panel --------------------------------------------------------------------- */
+
+  .feature {
+    --pad: clamp(1.25rem, 5cqw, 2.25rem);
+    /* A definite height: the art zones are percentages of it. */
+    block-size: clamp(24rem, 33vw, 31rem);
+    color: var(--text-2);
+  }
+
+  .featureContent {
+    block-size: 100%;
+  }
+
+  /* The tunnel covers the panel and bleeds off its edges; its vanishing point sits right of centre. */
+  .tunnel {
+    --art-mode: cover;
+    --art-bleed: 1;
+    --art-fill: 1;
+    --art-ax: 0.6;
+    --art-ay: 0.5;
+  }
+
+  /* The controller floats in front, lower right, on twice the drift. */
+  .controller {
+    --art-l: 0.5;
+    --art-t: 0.34;
+    --art-fill: 0.8;
+    --art-ax: 0.56;
+    --art-ay: 0.56;
+    --art-depth: 2.4;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: var(--bw, 1px);
+    z-index: 1;
+    clip-path: var(--clip-inner);
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgb(8 10 15 / 0.78) 0%,
+      rgb(8 10 15 / 0.5) 34%,
+      rgb(8 10 15 / 0.1) 58%,
+      transparent 72%
+    );
+  }
+
+  .copy {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-8);
+    block-size: 100%;
+    max-inline-size: min(100%, 25rem);
+    padding: var(--pad);
+  }
+
+  .kind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-inline-size: none;
+    color: var(--accent-text);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    /* The art's hard edges can pass behind the label; a dark halo keeps it clean. */
+    text-shadow:
+      0 0 0.5em rgb(8 10 15 / 0.95),
+      0 0 1.1em rgb(8 10 15 / 0.85);
+  }
+
+  .kindLabel {
+    color: var(--text-3);
+  }
+
+  .pitch {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .tagline {
+    max-inline-size: 16ch;
+    color: var(--text-1);
+    font: 600 clamp(1.5rem, 4.4cqw, 2.4rem) / 1.1 var(--font-display);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5) var(--space-7);
+  }
+
+  .host {
+    color: var(--text-3);
+    font: 500 var(--fs-xs) / 1.2 var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  /* The launch warp: the panel comes toward the viewer for a moment, as the gateway tiles do. */
+  .feature[data-launch="true"] {
+    animation: launch 260ms var(--ease-out);
+  }
+
+  @keyframes launch {
+    0% {
+      scale: 1;
+    }
+    38% {
+      scale: 1.03;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .feature[data-launch="true"] {
+    animation: none;
+  }
+
+  /* ---- value props -------------------------------------------------------------------------------- */
+
+  .props {
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .propCell,
+  .propReveal {
+    min-inline-size: 0;
+    min-block-size: 0;
+    block-size: 100%;
+  }
+
+  .prop {
+    block-size: 100%;
+  }
+
+  .propContent {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-7);
+    block-size: 100%;
+  }
+
+  .icon {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 46px;
+    block-size: 52px;
+    color: var(--accent-text);
+  }
+
+  .icon::before,
+  .icon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: var(--hex-clip);
+  }
+
+  .icon::before {
+    background: rgb(var(--accent-rgb) / 0.55);
+  }
+
+  .icon::after {
+    inset: 1px;
+    background: rgb(8 10 15 / 0.9);
+  }
+
+  .icon > svg {
+    position: relative;
+    z-index: 1;
+  }
+
+  .propText {
+    display: grid;
+    gap: 4px;
+    min-inline-size: 0;
+  }
+
+  /* An outline numeral: pure rhythm, hidden from assistive tech. */
+  .numeral {
+    position: absolute;
+    inset-block-end: 0.85rem;
+    inset-inline-end: 1.5rem;
+    color: transparent;
+    font: 500 clamp(2.25rem, 7cqw, 3.5rem) / 1 var(--font-mono);
+    letter-spacing: -0.05em;
+    -webkit-text-stroke: 1px rgb(var(--accent-rgb) / 0.4);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Narrow tiles (three across on a tablet, or large text) have no room for the numeral. */
+  @container (max-width: 18rem) {
+    .numeral {
+      display: none;
+    }
+  }
+
+  .propTitle {
+    color: var(--text-1);
+    font: 600 1.125rem / 1.2 var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  .propBody {
+    max-inline-size: 36ch;
+    color: var(--text-2);
+    font: 400 var(--fs-md) / 1.45 var(--font-sans);
+    text-wrap: pretty;
+  }
+
+  /* ---- tablet and phone ------------------------------------------------------------------------- */
+
+  @media (max-width: 1099.98px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .feature {
+      block-size: clamp(22rem, 46vw, 28rem);
+    }
+
+    .props {
+      grid-template-rows: none;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .propContent {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-6);
+    }
+  }
+
+  @media (max-width: 719.98px) {
+    /* Art on top, the pitch below it. */
+    .feature {
+      block-size: clamp(26rem, 122vw, 31rem);
+    }
+
+    .tunnel {
+      --art-mode: contain;
+      --art-bleed: 0;
+      --art-b: 0.46;
+      --art-fill: 1.04;
+      --art-ax: 0.5;
+      --art-ay: 0.5;
+    }
+
+    .controller {
+      --art-l: 0.3;
+      --art-t: 0.12;
+      --art-b: 0.44;
+      --art-fill: 0.7;
+      --art-ax: 0.62;
+      --art-ay: 0.5;
+    }
+
+    /* The pitch sits below the art, and the kind label above it keeps a quiet shade of its own. */
+    .scrim {
+      background:
+        linear-gradient(0deg, rgb(8 10 15 / 0.8) 0%, rgb(8 10 15 / 0.5) 34%, transparent 58%),
+        linear-gradient(180deg, rgb(8 10 15 / 0.62) 0%, transparent 20%);
+    }
+
+    .copy {
+      max-inline-size: none;
+    }
+
+    .props {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .propContent {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .scrim {
+      background: rgb(8 10 15 / 0.72);
+    }
+  }
+}

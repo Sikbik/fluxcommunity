@@ -1,0 +1,50 @@
+@layer ui {
+  .page {
+    position: relative;
+    z-index: var(--z-page);
+    min-block-size: 100svh;
+  }
+
+  .main {
+    display: block;
+    outline: none;
+  }
+
+  /* Wrapper for the header and skip link: no box of its own. */
+  .chrome {
+    display: contents;
+  }
+
+  /*
+   * Ambient mode: the page chrome fades out (visibility flips after the fade so nothing
+   * stays tabbable) and the lattice has the screen to itself.
+   */
+  .page,
+  .chrome > :global(header) {
+    transition:
+      opacity var(--dur-4) var(--ease-out),
+      visibility 0s linear 0s;
+  }
+
+  :global(html[data-ambient="true"]) .page,
+  :global(html[data-ambient="true"]) .chrome > :global(header) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--dur-4) var(--ease-out),
+      visibility 0s linear var(--dur-4);
+  }
+
+  :global(html[data-motion="reduced"]) .page,
+  :global(html[data-motion="reduced"]) .chrome > :global(header) {
+    transition: none;
+  }
+
+  /* A little breathing room under the last section for the browser chrome. */
+  .main::after {
+    content: "";
+    display: block;
+    block-size: var(--safe-bottom);
+  }
+}

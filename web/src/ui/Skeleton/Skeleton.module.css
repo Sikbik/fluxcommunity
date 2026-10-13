@@ -1,0 +1,36 @@
+@layer ui {
+  .skeleton {
+    position: relative;
+    display: block;
+    inline-size: var(--sk-w, 100%);
+    block-size: var(--sk-h, 1em);
+    overflow: hidden;
+    background: rgb(var(--accent-rgb) / 0.08);
+    border-radius: var(--r-xs);
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgb(var(--accent-hot-rgb) / 0.16) 50%,
+      transparent 70%
+    );
+    translate: -100% 0;
+    animation: sweep 1.8s var(--ease-in-out) infinite;
+  }
+
+  @keyframes sweep {
+    to {
+      translate: 100% 0;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .skeleton::after {
+    animation: none;
+    display: none;
+  }
+}
