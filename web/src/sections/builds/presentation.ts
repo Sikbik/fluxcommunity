@@ -23,7 +23,7 @@ export const CATEGORY_GLYPH: Readonly<Record<AppCategory, GlyphName>> = {
  */
 export const LQIP: Readonly<Record<string, string>> = {
   academy:
-    'data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAACQAQCdASoQAAoAA8BgJY1efRgAiwAA/vA+x4l6u35zFZJu6WXSpm1GXSM3Uie7yRK69JYA',
+    'data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAABwAQCdASoQAAoAA8BgJZzuAACegAD+8r41/amVFBL3RCTprx0lJ4jGwrAAAA==',
   atlas:
     'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA8BgJZwAAvqvoIAAAP73qLbUH1qs8qdPYU7Gei97urZ3wCBAAAA=',
   claimcalc:
