@@ -313,3 +313,35 @@ export const PREVIEWS: Record<string, { src: string; width: number; height: numb
     height: 600,
   },
 };
+
+/**
+ * 16x10 WebP data URLs of every preview (about 80 bytes each), shown soft under the real image while it
+ * loads. Generated from the same files as PREVIEWS, so a recaptured preview never keeps the old page's
+ * placeholder.
+ */
+export const PREVIEW_LQIP: Record<string, string> = {
+  academy:
+    'data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAABwAQCdASoQAAoAA8BgJZzuAACegAD+8r41/amVFBL3RCTprx0lJ4jGwrAAAA==',
+  atlas:
+    'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA8BgJZwAAvqvoIAAAP73qLbUH1qs8qdPYU7Gei97urZ3wCBAAAA=',
+  claimcalc:
+    'data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAAAwAQCdASoQAAoAA8BgJYwAA3AA/vEOSvfAJ7+ZUZ3bJ2GAAAA=',
+  datavex:
+    'data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACQAQCdASoQAAoAA8BgJQAATPj7rAAA/vXRE88OfQPWhkiSgXZB/S92GGy1Fx56r991+Vk+an44Hgc55SAAAA==',
+  'flux-tools-hub':
+    'data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAABwAQCdASoQAAoAA8BgJYwCdAIHgAD+8VbJMozS9lZLse4B44AAAA==',
+  'flux-view':
+    'data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADwAQCdASoQAAoAA8BgJZwAAxbLYGpO7wAA/vaknJx89mMgjfVM4/ulHM+RTbpTzO7s4Il4AAA=',
+  fluxhub:
+    'data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAACwAQCdASoQAAoAA8BgJZwAAvgknVLAAP72jdFaACv8DbPH393BFi98AAA=',
+  fluxtracker:
+    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAoAA8BgJQBOgB6Vg1MAAP7s4V/YE4+4NIFBbnSWDzJ4RNLhgAAA',
+  goldietech:
+    'data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAQCdASoQAAoAA8BgJZwAAubTZgEIUAD+9hfYOGk2cN6q+VVbTuDjFAA=',
+  hostmynode:
+    'data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAoAA8BgJYwCdAEObhN+4AD+9EFAr3fC45h2/2D7JpFgobBjSD6VXIrUGumdgAA=',
+  nodeorbit:
+    'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA8BgJQAAXIclyLYAAP73gI1eHUyYRkm/0+Lnls8eMOg9snfrAAA=',
+  noxide:
+    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABQAQCdASoQAAoAA8BgJZwABAAAAP7xDlUI3+Koh0Lx7gwaJzkCYzSFcOVhAAAA',
+};

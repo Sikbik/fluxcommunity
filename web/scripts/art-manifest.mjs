@@ -4,6 +4,10 @@
 //   assets-src/art-manifest.json      written by optimize-art.mjs (one entry per generated piece)
 //   web/public/previews/*.webp        scanned here, so a partial capture run still yields a full list
 //
+// Outputs, all derived from the files above: ART, PREVIEWS and PREVIEW_LQIP (the tiny blurred
+// placeholder of every preview, regenerated each run so a recaptured preview can never keep the old
+// page's placeholder).
+//
 // Both optimize-art.mjs and capture-previews.mjs call writeArtManifest(), so the file is always
 // consistent with what is on disk. Never edit art.ts by hand.
 import { execFileSync } from 'node:child_process';
@@ -34,6 +38,19 @@ const GATEWAY_ART = {
 
 const q = (s) => `'${String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 
+/** Biome's line width for web/, so the generated file passes `biome check` untouched. */
+const LINE_WIDTH = 110;
+
+/** A 16x10 WebP (about 80 bytes) as a data URL, shown soft under a preview while the real one loads. */
+function lqipFor(file) {
+  const webp = execFileSync(
+    'magick',
+    [file, '-resize', '16x10!', '-quality', '35', '-define', 'webp:method=6', 'webp:-'],
+    { maxBuffer: 1024 * 1024 },
+  );
+  return `data:image/webp;base64,${webp.toString('base64')}`;
+}
+
 function readArt() {
   if (!existsSync(manifestJson)) return [];
   return JSON.parse(readFileSync(manifestJson, 'utf8')).art ?? [];
@@ -52,7 +69,7 @@ function readPreviews() {
       .trim()
       .split(' ')
       .map(Number);
-    out.push({ id, src: `/previews/${f}`, width: w, height: h });
+    out.push({ id, src: `/previews/${f}`, width: w, height: h, lqip: lqipFor(join(previewsDir, f)) });
   }
   return out;
 }
@@ -153,11 +170,28 @@ export function writeArtManifest() {
   }
   lines.push('};', '');
 
+  lines.push(
+    '/**',
+    ' * 16x10 WebP data URLs of every preview (about 80 bytes each), shown soft under the real image while it',
+    " * loads. Generated from the same files as PREVIEWS, so a recaptured preview never keeps the old page's",
+    ' * placeholder.',
+    ' */',
+    'export const PREVIEW_LQIP: Record<string, string> = {',
+  );
+  for (const p of previews) {
+    const key = /^[a-z]+$/.test(p.id) ? p.id : q(p.id);
+    const oneLine = `  ${key}: ${q(p.lqip)},`;
+    // Biome moves a value that does not fit onto its own line; match it so the file needs no reformat.
+    if (oneLine.length <= LINE_WIDTH) lines.push(oneLine);
+    else lines.push(`  ${key}:`, `    ${q(p.lqip)},`);
+  }
+  lines.push('};', '');
+
   writeFileSync(artTs, lines.join('\n'));
-  return { art: art.length, previews: previews.length };
+  return { art: art.length, previews: previews.length, placeholders: previews.length };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const r = writeArtManifest();
-  console.log(`wrote ${artTs} (${r.art} art, ${r.previews} previews)`);
+  console.log(`wrote ${artTs} (${r.art} art, ${r.previews} previews, ${r.placeholders} placeholders)`);
 }
