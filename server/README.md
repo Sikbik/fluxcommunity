@@ -298,7 +298,18 @@ come only from `shared/catalog.ts`, never from a request.
   that changes rather than loosening `script-src`.
 - No CORS headers unless `CORS_ORIGINS` is set (an allow-list, or `*`).
 - Rate limit: token bucket per client address, burst 150, 30 requests/s sustained (`RATE_LIMIT_*`).
-  `/healthz` is exempt. The address is the socket peer unless `TRUST_PROXY` is set.
+  `/healthz` is exempt. Every request spends a token, static files included, so a page load is about 110
+  of them.
+- Client address: on Flux a visitor reaches the container through a Flux domain manager (FDM) balancer, so
+  the socket peer is the balancer and the visitor is only in `X-Forwarded-For`. `TRUST_PROXY` says who may
+  be believed. The default (`fdm`) trusts the header from the 16 FDM app balancers in
+  `src/http/trust.ts` and from nobody else, and takes the right-most entry that is not itself a trusted
+  proxy, so a client cannot choose its own address by sending the header; a request that reaches the node
+  directly is attributed to its socket peer. A missing or malformed header also falls back to the peer.
+  `false` trusts nobody; `1` to `9` trusts every peer and counts hops from the right; a list of addresses
+  and CIDR blocks (with `fdm` standing for the balancers) trusts only those peers. The same address keys
+  the per-address stream cap (`SSE_MAX_PER_IP`). Without this, all visitors behind one balancer share one
+  bucket and a handful of first-time visitors start getting 429 for static files.
 - Timeouts: 10 s for headers, 15 s for a whole request, 65 s keep-alive; 8 KB header limit; URLs over
   2,048 characters get 414.
 - Graceful shutdown on SIGTERM and SIGINT: stop accepting, end streams, stop loops, exit.

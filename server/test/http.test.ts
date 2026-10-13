@@ -6,6 +6,7 @@ import { clientIp } from '../src/http/client-ip.ts';
 import { negotiateEncoding } from '../src/http/compress.ts';
 import { buildMeta, etagMatches } from '../src/http/respond.ts';
 import { buildCsp } from '../src/http/security.ts';
+import { TRUST_NONE, trustHops } from '../src/http/trust.ts';
 import { makeWebDist, request, startFixtureServer, type TestServer } from './helpers.ts';
 
 describe('API over HTTP (fixtures runtime)', () => {
@@ -272,11 +273,85 @@ describe('helpers', () => {
   it('honours X-Forwarded-For only for the configured number of trusted hops', () => {
     const req = (xff: string | undefined, remote = '10.0.0.9') =>
       ({ headers: xff ? { 'x-forwarded-for': xff } : {}, socket: { remoteAddress: remote } }) as never;
-    assert.equal(clientIp(req('1.2.3.4'), 0), '10.0.0.9', 'ignored without TRUST_PROXY');
-    assert.equal(clientIp(req('6.6.6.6, 1.2.3.4'), 1), '1.2.3.4', 'rightmost entry is the trusted proxy hop');
-    assert.equal(clientIp(req('1.2.3.4, 7.7.7.7'), 2), '1.2.3.4');
-    assert.equal(clientIp(req('not-an-ip'), 1), '10.0.0.9');
-    assert.equal(clientIp(req(undefined), 1), '10.0.0.9');
-    assert.equal(clientIp(req(undefined, '::ffff:192.0.2.1'), 0), '192.0.2.1');
+    assert.equal(clientIp(req('1.2.3.4'), TRUST_NONE), '10.0.0.9', 'ignored without TRUST_PROXY');
+    assert.equal(
+      clientIp(req('6.6.6.6, 1.2.3.4'), trustHops(1)),
+      '1.2.3.4',
+      'rightmost entry is the trusted proxy hop',
+    );
+    assert.equal(clientIp(req('1.2.3.4, 7.7.7.7'), trustHops(2)), '1.2.3.4');
+    assert.equal(clientIp(req('not-an-ip'), trustHops(1)), '10.0.0.9');
+    assert.equal(clientIp(req(undefined), trustHops(1)), '10.0.0.9');
+    assert.equal(clientIp(req(undefined, '::ffff:192.0.2.1'), TRUST_NONE), '192.0.2.1');
+  });
+});
+
+describe('visitor addresses behind the Flux domain manager over HTTP', () => {
+  const headers = (xff: string) => ({ 'x-forwarded-for': xff });
+
+  it('gives each visitor their own bucket when the peer is a trusted proxy', async () => {
+    // The test client connects from 127.0.0.1, standing in for an FDM balancer.
+    const s = await startFixtureServer({
+      TRUST_PROXY: '127.0.0.1',
+      RATE_LIMIT_BURST: '3',
+      RATE_LIMIT_RPS: '1',
+      WEB_DIST: '/nonexistent',
+    });
+    try {
+      for (let i = 0; i < 3; i++) {
+        assert.equal(
+          (await request(s.port, API_PATHS.blocks, { headers: headers('198.51.100.1') })).status,
+          200,
+        );
+      }
+      assert.equal(
+        (await request(s.port, API_PATHS.blocks, { headers: headers('198.51.100.1') })).status,
+        429,
+        'the first visitor spent their own burst',
+      );
+      assert.equal(
+        (await request(s.port, API_PATHS.blocks, { headers: headers('198.51.100.2') })).status,
+        200,
+        'a second visitor behind the same proxy is not affected',
+      );
+    } finally {
+      await s.stop();
+    }
+  });
+
+  it('ignores X-Forwarded-For from a peer that is not a known balancer, so it cannot be spoofed', async () => {
+    // The default trusts only the FDM balancers; 127.0.0.1 is not one, so every request is the same client
+    // however many addresses it claims.
+    const s = await startFixtureServer({
+      RATE_LIMIT_BURST: '3',
+      RATE_LIMIT_RPS: '1',
+      WEB_DIST: '/nonexistent',
+    });
+    try {
+      const codes: number[] = [];
+      for (let i = 0; i < 5; i++) {
+        codes.push(
+          (await request(s.port, API_PATHS.blocks, { headers: headers(`203.0.113.${i + 1}`) })).status,
+        );
+      }
+      assert.deepEqual(codes, [200, 200, 200, 429, 429]);
+    } finally {
+      await s.stop();
+    }
+  });
+
+  it('believes X-Forwarded-Proto for HSTS only from a trusted proxy', async () => {
+    const https = { 'x-forwarded-proto': 'https' };
+    const trusted = await startFixtureServer({ TRUST_PROXY: '127.0.0.1', WEB_DIST: '/nonexistent' });
+    const unknown = await startFixtureServer({ WEB_DIST: '/nonexistent' });
+    try {
+      const a = await request(trusted.port, '/api/v1/info', { headers: https });
+      assert.match(String(a.headers['strict-transport-security']), /max-age=/);
+      const b = await request(unknown.port, '/api/v1/info', { headers: https });
+      assert.equal(b.headers['strict-transport-security'], undefined);
+    } finally {
+      await trusted.stop();
+      await unknown.stop();
+    }
   });
 });

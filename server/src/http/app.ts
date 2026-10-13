@@ -284,7 +284,7 @@ export function createHandler(deps: AppDeps): (req: IncomingMessage, res: Server
           return sendText(req, res, 200, 'ok\n');
         }
 
-        const ip = clientIp(req, config.trustProxyHops);
+        const ip = clientIp(req, config.trustProxy);
         const taken = limiter.take(ip);
         if (!taken.ok) {
           return sendError(req, res, 429, 'rate_limited', 'Too many requests, slow down', {

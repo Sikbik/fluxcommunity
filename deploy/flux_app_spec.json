@@ -3,7 +3,7 @@
   "name": "community",
   "description": "Flux Community portal: live network telemetry, official gateways, community apps with health checks, node hosts, games and guides.",
   "owner": "YOUR_ZELID_HERE",
-  "instances": 3,
+  "instances": 2,
   "staticip": false,
   "enterprise": "",
   "contacts": [],
@@ -18,19 +18,12 @@
       "ports": [42069],
       "containerPorts": [42069],
       "domains": [""],
-      "environmentParameters": [
-        "NODE_ENV=production",
-        "PORT=42069",
-        "HOST=0.0.0.0",
-        "WEB_DIST=/app/web",
-        "LOG_LEVEL=info",
-        "TRUST_PROXY=1"
-      ],
+      "environmentParameters": [],
       "commands": [],
       "containerData": "/tmp",
-      "cpu": 0.5,
-      "ram": 512,
-      "hdd": 2,
+      "cpu": 0.1,
+      "ram": 100,
+      "hdd": 1,
       "repoauth": ""
     }
   ]

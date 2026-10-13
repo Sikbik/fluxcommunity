@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Config } from '../config.ts';
+import { viaTrustedProxy } from './client-ip.ts';
 
 /**
  * Content Security Policy from docs/ARCHITECTURE.md section 9.
@@ -36,9 +37,7 @@ export interface SecurityHeaders {
   readonly csp: string;
 }
 
-export function createSecurityHeaders(
-  config: Pick<Config, 'cspWorkerBlob' | 'trustProxyHops'>,
-): SecurityHeaders {
+export function createSecurityHeaders(config: Pick<Config, 'cspWorkerBlob' | 'trustProxy'>): SecurityHeaders {
   const csp = buildCsp({ workerBlob: config.cspWorkerBlob });
   return {
     csp,
@@ -51,7 +50,7 @@ export function createSecurityHeaders(
       res.setHeader('X-Frame-Options', 'SAMEORIGIN');
       // HSTS only when the proxy we trust says the visitor used TLS; never on plain HTTP.
       if (
-        config.trustProxyHops > 0 &&
+        viaTrustedProxy(req, config.trustProxy) &&
         String(req.headers['x-forwarded-proto'] ?? '')
           .split(',')[0]
           ?.trim() === 'https'
