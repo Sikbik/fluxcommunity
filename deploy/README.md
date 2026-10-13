@@ -5,8 +5,9 @@ live stream on port 42069. `deploy/flux_app_spec.json` is a Flux app specificati
 
 ## Deploy
 
-1. Make sure the image exists. GitHub Actions publishes `littlestache/community:latest` and
-   `littlestache/community:sha-<short>` on every push to `main` (see `.github/workflows/ci.yml`).
+1. Make sure the image exists. Publishing is deliberate: run the CI workflow by hand from `main` with
+   `publish` ticked (`gh workflow run ci.yml --ref main -f publish=true`) and it pushes
+   `littlestache/community:latest` and `littlestache/community:sha-<short>` (see `.github/workflows/ci.yml`).
 2. Copy `flux_app_spec.json` and replace `"owner": "YOUR_ZELID_HERE"` with your own ZelID. The placeholder is
    deliberate: the real ID is supplied at deploy time and never committed.
 3. In FluxCloud (cloud.runonflux.com) choose Register New App, import the JSON, review the price for the

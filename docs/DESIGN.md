@@ -17,15 +17,16 @@ Generated frames are **look targets, not shippable assets**. Never trace or ship
 
 Other places to look (read only, do not copy code verbatim; reimplement):
 
-- `/home/stache/Projects/Flux_Atlas/docs/design/tokens.css`, `design-direction.md`, `motion-language.md`:
-  the sibling product's tokens, type, motion and glyph rules. We share DNA, not layouts.
-- `/home/stache/Projects/Flux_Atlas/web/src/globe/engine/` (three.js engine: governor, post, shaders) and
-  `.../ambient/director.ts`: how the owner builds a quality governor and an ambient mode.
-- `/home/stache/Projects/stachetech/src/` (`screensaver.tsx`, `blackHoleScene.ts`, `wallpaper.tsx`,
-  `bootScreen.tsx`, `commandPalette.tsx`, `portals.tsx`, `achievements.tsx`): raw WebGL scenes with a 2D
-  fallback, an idle-triggered screensaver, a boot sequence, a command palette, portal transitions.
-- Brand book: `/home/stache/Downloads/media-logos-master/Flux_Brand_Book.pdf` (read pages with the PDF
-  reader when you need a rule). Brand logos are already curated in `web/public/brand/`.
+- Flux Atlas (the owner's other repository): `docs/design/tokens.css`, `design-direction.md` and
+  `motion-language.md` hold the sibling product's tokens, type, motion and glyph rules. We share DNA, not
+  layouts.
+- Flux Atlas `web/src/globe/engine/` (three.js engine: governor, post, shaders) and `ambient/director.ts`:
+  how the owner builds a quality governor and an ambient mode.
+- The owner's personal site (`src/`: a screensaver, a black-hole WebGL scene, a wallpaper, a boot screen, a
+  command palette, portal transitions and achievements): raw WebGL scenes with a 2D fallback, an
+  idle-triggered screensaver, a boot sequence, a command palette, portal transitions.
+- The Flux brand book (`Flux_Brand_Book.pdf` in the official media kit; read pages with a PDF reader when
+  you need a rule). Brand logos are already curated in `web/public/brand/`.
 
 ---
 

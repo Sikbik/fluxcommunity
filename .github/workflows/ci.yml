@@ -1,14 +1,22 @@
 name: CI
 
-# Pull requests: web build, typecheck, lint and tests; server typecheck, lint and tests; a Docker build with
-# a smoke test of the container (no push).
-# Pushes to main: the same, then push littlestache/community:latest and :sha-<short> to Docker Hub.
+# Pull requests and pushes to main: web build, typecheck, lint and tests; server typecheck, lint and tests;
+# a Docker build with a smoke test of the container. Nothing is pushed, so a merge never changes what Flux
+# nodes pull.
+# Publishing is deliberate: run this workflow by hand from main with "publish" ticked (Actions, CI, Run
+# workflow, or `gh workflow run ci.yml --ref main -f publish=true`) to push littlestache/community:latest
+# and :sha-<short> to Docker Hub.
 
 on:
   pull_request:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Push the image to Docker Hub (only honoured on main)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -73,7 +81,7 @@ jobs:
       - name: Smoke test the container
         run: |
           docker run -d --name community -p 42069:42069 -e FIXTURES=1 community:ci
-          for i in $(seq 1 20); do
+          for _ in $(seq 1 20); do
             if curl -fsS http://127.0.0.1:42069/healthz; then break; fi
             sleep 1
           done
@@ -88,14 +96,14 @@ jobs:
         run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
       - name: Log in to Docker Hub
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push image (main only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Push image (manual run from main only)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           context: .
