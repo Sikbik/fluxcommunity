@@ -65,8 +65,6 @@ export type NodeLifecycle = 'live' | 'new' | 'retiring' | 'retired';
 export interface NodeLook {
   tone: NodeTone;
   mark: NodeMark;
-  /** Radius multiplier: builds the Flux team spotlighted are larger. */
-  size: number;
   lifecycle: NodeLifecycle;
   /** "Live", "Degraded", "Offline right now", "Not checked yet", "You are here". */
   word: string;
@@ -101,7 +99,6 @@ export function lookOf(entry: AppEntry, nowMs: number): NodeLook {
   return {
     tone: view.kind === 'self' ? 'self' : copy.tone,
     mark,
-    size: entry.app.spotlight || entry.app.self ? 1 : 0.8,
     lifecycle: entry.lifecycle.state,
     word: copy.word,
     detail: copy.detail,

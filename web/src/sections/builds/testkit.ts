@@ -1,8 +1,8 @@
 /**
  * Test fixtures for the builds section. The real catalog changes (apps come and go, a category
  * disappears), so behaviour is tested against a small synthetic catalog that has every shape the real
- * one can take: a spotlighted team order, a retiring app with its successor, a builder with several
- * builds, an unattributed build, the site itself. Facts about the real catalog are tested as
+ * one can take: a catalog order, a retiring app with its successor, a builder with several builds,
+ * an unattributed build, the site itself. Facts about the real catalog are tested as
  * invariants (a recount, unique ids, every key resolves), never as hard-coded lists.
  *
  * Imported only by tests; nothing in the app bundle reaches it.
@@ -22,7 +22,6 @@ export function makeApp(over: Partial<CommunityApp> & Pick<CommunityApp, 'id'>):
     builder: null,
     url: `https://${over.id}.example.app`,
     host: `${over.id}.example.app`,
-    spotlight: false,
     lifecycle: 'live',
     ...over,
   };
@@ -41,7 +40,6 @@ export const RETIRING = makeApp({
   name: 'Old Ledger',
   category: 'rewards',
   builder: 'Acme Labs',
-  spotlight: true,
   lifecycle: 'retiring',
   retiresOn: RETIRES_ON,
   replacedBy: 'orbit-pay',
@@ -53,7 +51,6 @@ export const SUCCESSOR = makeApp({
   tagline: 'Payouts, and when they land.',
   category: 'rewards',
   builder: 'Acme Labs',
-  spotlight: true,
   lifecycle: 'new',
   replaces: 'old-ledger',
 });
@@ -74,7 +71,7 @@ export const CATEGORIES_SYNTH: readonly CategoryInfo[] = [
   { id: 'education', label: 'Learn', blurb: 'Learn to deploy.' },
 ];
 
-/** The synthetic catalog: spotlighted builds in the team's order, then the rest. */
+/** The synthetic catalog, in catalog order. */
 export const SYNTH: readonly CommunityApp[] = [
   SUCCESSOR,
   RETIRING,
@@ -86,7 +83,6 @@ export const SYNTH: readonly CommunityApp[] = [
     category: 'nodes',
     builder: 'Beta Works',
     host: 'watch.example.app',
-    spotlight: true,
   }),
   makeApp({
     id: 'grid-view',
@@ -95,7 +91,6 @@ export const SYNTH: readonly CommunityApp[] = [
     description: 'A single page for the whole network.',
     category: 'network',
     builder: 'Acme Labs',
-    spotlight: true,
   }),
   makeApp({
     id: 'north-star',
@@ -105,7 +100,6 @@ export const SYNTH: readonly CommunityApp[] = [
     category: 'onboarding',
     builder: 'Cora',
     probe: false,
-    spotlight: true,
     self: true,
   }),
   makeApp({

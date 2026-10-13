@@ -24,7 +24,7 @@ export interface SelectProps<T extends string> {
  * friendly picker, dressed to match.
  *
  *   <Select label="Sort" value={sort} onValueChange={setSort}
- *     options={[{ value: 'spotlight', label: 'Spotlight' }, { value: 'az', label: 'A to Z' }]} />
+ *     options={[{ value: 'default', label: 'Default' }, { value: 'az', label: 'A to Z' }]} />
  */
 export function Select<T extends string>({
   value,

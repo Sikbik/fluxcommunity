@@ -411,7 +411,6 @@ export default function Constellation({
   }, [looks]);
   const hasBuilderArcs = useMemo(() => graph.edges.some((e) => e.kind === 'builder'), [graph]);
   const hasHandover = useMemo(() => graph.edges.some((e) => e.kind === 'handover'), [graph]);
-  const hasSizes = useMemo(() => new Set([...looks.values()].map((l) => l.size)).size > 1, [looks]);
   const hasNew = useMemo(() => [...looks.values()].some((l) => l.lifecycle === 'new'), [looks]);
   const hasRetiring = useMemo(() => [...looks.values()].some((l) => l.lifecycle === 'retiring'), [looks]);
 
@@ -558,7 +557,6 @@ export default function Constellation({
               Retiring
             </li>
           ) : null}
-          {hasSizes ? <li className={styles.size}>Larger: spotlighted by the Flux team</li> : null}
         </ul>
         <p className={styles.hint} data-touched={touched ? 'true' : undefined}>
           {hint}

@@ -228,7 +228,6 @@ describe('HealthProber', () => {
     builder: null,
     url: `https://${id}.test`,
     host: `${id}.test`,
-    spotlight: false,
     lifecycle: 'live',
     ...extra,
   });

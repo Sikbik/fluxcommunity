@@ -45,7 +45,7 @@ export interface Caption {
   byline: string | null;
   /** The tagline or blurb. */
   line: string;
-  /** Spotlight, retiring or successor note from the copy deck. */
+  /** Retiring or successor note from the copy deck. */
   note: string | null;
   art: CaptionArt | null;
 }
@@ -87,8 +87,6 @@ export function buildPlaylist(source: PlaylistSource = CATALOG): Caption[] {
     } else if (app.lifecycle === 'new' && app.replaces) {
       const before = allApps.find((a) => a.id === app.replaces);
       note = before?.retiresOn ? COPY.successor(before.name, formatDateShort(before.retiresOn)) : 'New';
-    } else if (app.spotlight) {
-      note = COPY.spotlight;
     }
     out.push({
       id: `app:${app.id}`,

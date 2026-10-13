@@ -14,13 +14,17 @@ live stream on port 42069. `deploy/flux_app_spec.json` is a Flux app specificati
    resources and expiry, sign and pay. An app named `community` is already registered on the network, so it
    can only be changed with Update App by the ZelID that owns it; another owner has to pick a different `name`
    (names are 3 to 63 characters, letters, digits and inner hyphens, and cannot start with `flux` or `zel`).
-4. Keep `latest` in `repotag`. The app follows it: nothing else is needed to ship a release.
+4. Keep `latest` in `repotag`. The app follows it: nothing else is needed to ship a release (a `sha-` tag would
+   freeze the app on that build).
 
 ## Releases and updates
 
-A release is publishing an image (step 1). Flux then updates the app on its own: the instances pick up the
-new `latest` without anyone running Update App, signing or paying. They do not switch at the same moment,
-so for a while after a release two builds are live. The app is built to cope with that:
+A release is publishing an image (step 1). Flux then updates the app on its own, with nobody running Update
+App, signing or paying: every node runs FluxOS's image update service, which compares the digest of each
+installed app's image tag with the registry every six hours and soft-redeploys the app when they differ
+(`ZelBack/src/services/imageUpdateService.js` in RunOnFlux/flux, `imageUpdateCheckIntervalMs`). So each
+instance picks up a release within about six hours of the push, at its own time, and for a while after a
+release two builds are live. The app is built to cope with that:
 
 - FDM pins a browser to one instance with an `FDMSERVERID` cookie, and the files under `/assets/` carry a
   content hash, so a page and its scripts come from the same build.

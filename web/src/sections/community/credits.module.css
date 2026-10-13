@@ -77,11 +77,6 @@
     color: rgb(var(--accent-rgb) / 0.55);
   }
 
-  .spotlight {
-    display: flex;
-    justify-content: center;
-  }
-
   /*
    * No travel: the names wrap as a list. The marquee's run is as wide as its content, so the list is
    * given the width of the strip (less the run's trailing gap) to wrap at.

@@ -315,8 +315,7 @@ export function DataKit() {
           </Spec>
           <Spec label="SplitReveal: by line">
             <SplitReveal as="p" by="line" className="t-lead">
-              Apps and tools from Flux community members, spotlighted by the Flux team. Every status is
-              checked live.
+              Apps and tools from Flux community members. Every status is checked live.
             </SplitReveal>
           </Spec>
           <Spec

@@ -36,8 +36,8 @@ export function creditKey(handle: string): string {
 
 /**
  * Builders and operators named in the catalog, deduplicated. Order is first appearance: app builders
- * in catalog order (the spotlighted ones lead), then node host operators. Unattributed entries
- * (`builder: null`) and blank handles are skipped.
+ * in catalog order, then node host operators. Unattributed entries (`builder: null`) and blank handles
+ * are skipped.
  */
 export function collectCredits(apps: readonly CommunityApp[], hosts: readonly NodeHost[]): Credit[] {
   const byKey = new Map<string, Credit>();

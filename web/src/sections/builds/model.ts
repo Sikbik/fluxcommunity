@@ -16,18 +16,18 @@ import {
   scoreDoc,
 } from './search';
 
-export type SortKey = 'spotlight' | 'az' | 'status';
+export type SortKey = 'default' | 'az' | 'status';
 export type CategoryFilter = 'all' | AppCategory;
 
 export const SORT_OPTIONS: ReadonlyArray<{ value: SortKey; label: string }> = [
-  { value: 'spotlight', label: 'Spotlight' },
+  { value: 'default', label: 'Default' },
   { value: 'az', label: 'A to Z' },
   { value: 'status', label: 'Status' },
 ];
 
 export interface AppEntry {
   app: CommunityApp;
-  /** Position in the catalog (the Flux team's order). */
+  /** Position in the catalog. */
   order: number;
   lifecycle: LifecycleView;
   health: HealthView;
@@ -46,7 +46,7 @@ export interface FilterState {
   sort: SortKey;
 }
 
-export const DEFAULT_FILTERS: FilterState = { query: '', category: 'all', builder: null, sort: 'spotlight' };
+export const DEFAULT_FILTERS: FilterState = { query: '', category: 'all', builder: null, sort: 'default' };
 
 const CATEGORY_LABEL: Readonly<Record<string, string>> = Object.fromEntries(
   CATEGORIES.map((c) => [c.id, c.label]),
@@ -138,7 +138,6 @@ export const IS_VALUES = [
   'new',
   'retiring',
   'retired',
-  'spotlight',
   'live',
   'up',
   'degraded',
@@ -155,9 +154,6 @@ function matchesIs(entry: AppEntry, value: string): boolean {
       return entry.lifecycle.state === 'retiring';
     case 'retired':
       return entry.lifecycle.state === 'retired';
-    case 'spotlight':
-    case 'spotlighted':
-      return entry.app.spotlight;
     case 'live':
     case 'up':
       return entry.health.kind === 'up';
@@ -208,18 +204,18 @@ export interface Results {
   relevance: boolean;
 }
 
-function spotlightGroup(e: AppEntry): number {
-  if (e.lifecycle.state === 'retired') return 3;
-  if (e.lifecycle.promoted) return 0;
-  return e.app.spotlight ? 1 : 2;
+/** The default order's groups: a promoted (new) build first, then the rest, retired builds last. */
+function defaultGroup(e: AppEntry): number {
+  if (e.lifecycle.state === 'retired') return 2;
+  return e.lifecycle.promoted ? 0 : 1;
 }
 
 function compareName(a: AppEntry, b: AppEntry): number {
   return a.app.name.localeCompare(b.app.name, 'en', { sensitivity: 'base', numeric: true });
 }
 
-function compareSpotlight(a: AppEntry, b: AppEntry): number {
-  return spotlightGroup(a) - spotlightGroup(b) || a.order - b.order;
+function compareDefault(a: AppEntry, b: AppEntry): number {
+  return defaultGroup(a) - defaultGroup(b) || a.order - b.order;
 }
 
 /** Entries that satisfy every filter except the category (the basis for the category counts). */
@@ -251,7 +247,7 @@ export function filterAndSort(entries: readonly AppEntry[], state: FilterState):
   if (state.category !== 'all') list = list.filter((e) => e.app.category === state.category);
 
   const scores = base.scores;
-  const relevance = scores !== null && state.sort === 'spotlight';
+  const relevance = scores !== null && state.sort === 'default';
   const sorted = [...list];
   if (state.sort === 'az') {
     sorted.sort((a, b) => compareName(a, b) || a.order - b.order);
@@ -261,17 +257,17 @@ export function filterAndSort(entries: readonly AppEntry[], state: FilterState):
         (a.lifecycle.state === 'retired' ? 1 : 0) - (b.lifecycle.state === 'retired' ? 1 : 0) ||
         statusRank(a.health) - statusRank(b.health) ||
         (a.health.latencyMs ?? Number.POSITIVE_INFINITY) - (b.health.latencyMs ?? Number.POSITIVE_INFINITY) ||
-        compareSpotlight(a, b),
+        compareDefault(a, b),
     );
   } else if (relevance && scores) {
     sorted.sort(
       (a, b) =>
         (scores.get(b.app.id) ?? 0) - (scores.get(a.app.id) ?? 0) ||
-        spotlightGroup(a) - spotlightGroup(b) ||
+        defaultGroup(a) - defaultGroup(b) ||
         a.order - b.order,
     );
   } else {
-    sorted.sort(compareSpotlight);
+    sorted.sort(compareDefault);
   }
   return { entries: sorted, parsed: base.parsed, scores, relevance };
 }
@@ -300,7 +296,6 @@ export function isFiltered(state: FilterState): boolean {
 export interface BuilderProfile {
   handle: string;
   apps: AppEntry[];
-  spotlighted: number;
   categories: AppCategory[];
 }
 
@@ -312,7 +307,6 @@ export function builderProfile(entries: readonly AppEntry[], handle: string): Bu
   return {
     handle,
     apps,
-    spotlighted: apps.filter((e) => e.app.spotlight).length,
     categories,
   };
 }
@@ -339,8 +333,8 @@ export function sharedBuilders(entries: readonly AppEntry[]): ReadonlySet<string
 }
 
 /**
- * Apps related to `id`: the same builder first, then the same category, spotlighted first, retired
- * last, never the app itself.
+ * Apps related to `id`: the same builder first, then the same category, retired last, never the app
+ * itself.
  */
 export function relatedEntries(entries: readonly AppEntry[], id: string, limit = 3): AppEntry[] {
   const me = entries.find((e) => e.app.id === id);
@@ -352,7 +346,6 @@ export function relatedEntries(entries: readonly AppEntry[], id: string, limit =
     if (me.app.builder && e.app.builder === me.app.builder) score += 4;
     if (e.app.category === me.app.category) score += 3;
     if (score === 0) continue;
-    if (e.app.spotlight) score += 1;
     if (e.lifecycle.state === 'retired') score -= 5;
     if (e.app.self) score -= 1;
     scored.push({ entry: e, score });

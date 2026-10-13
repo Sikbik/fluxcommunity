@@ -169,10 +169,7 @@ export function BuilderCard({ profile, onClear }: { profile: BuilderProfile; onC
         <div className={styles.cardText}>
           <p className={styles.cardLabel}>Built by</p>
           <h3 className={styles.cardName}>{profile.handle}</h3>
-          <p className={styles.cardMeta}>
-            {`${n} ${n === 1 ? 'build' : 'builds'} on this portal`}
-            {profile.spotlighted > 0 ? `, ${profile.spotlighted} spotlighted by the Flux team` : ''}
-          </p>
+          <p className={styles.cardMeta}>{`${n} ${n === 1 ? 'build' : 'builds'} on this portal`}</p>
         </div>
         {/* biome-ignore lint/a11y/noRedundantRoles: an explicit list role keeps list semantics in Safari when list-style is none */}
         <ul className={styles.cardApps} role="list" aria-label="Their builds">
