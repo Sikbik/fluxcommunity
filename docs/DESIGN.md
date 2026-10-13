@@ -306,7 +306,7 @@ pauses off-screen and under reduced motion):
 2. **Place:** the network picks independent nodes in different regions; cells light on a mini map.
 3. **Run:** instances come online; one node drops; traffic reroutes along a new path; "still up".
 
-Beside it, resource links: Docs, Deployment Academy, Run a FluxNode, Flux API docs, Blog, YouTube,
+Beside it, resource links: Docs, Academy, Run a FluxNode, Flux API docs, Blog, YouTube,
 GitHub. Concept only: no prices or SLAs.
 
 ### 5.8 Community and footer

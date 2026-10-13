@@ -207,11 +207,12 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
   // ---- More from the ecosystem -------------------------------------------
   {
     id: 'academy',
-    name: 'Flux Deployment Academy',
+    name: 'Flux Academy',
     tagline: 'Learn to deploy on Flux.',
-    description: "Master the art of deploying on Flux's decentralized cloud network.",
+    description:
+      'Interactive lessons, labs and live network data for deploying applications on Flux, the decentralized cloud.',
     category: 'education',
-    builder: null,
+    builder: 'Little Stache',
     url: 'https://academy.app.runonflux.io',
     host: 'academy.app.runonflux.io',
     spotlight: false,
