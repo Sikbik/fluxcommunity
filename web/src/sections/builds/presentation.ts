@@ -1,10 +1,11 @@
 /**
  * Presentation extras for the builds section, keyed by catalog id. The catalog keeps the facts; this
- * keeps how they look: the category glyphs, the placeholders under a preview while it loads, and which
- * generated art stands in for an app whose preview could not be captured.
+ * keeps how they look: the category glyphs, which generated art stands in for an app whose preview
+ * could not be captured, and where a preview is cropped. The placeholder shown under a preview while it
+ * loads is not kept here: it is generated with the preview itself (PREVIEW_LQIP in content/art.ts).
  */
 import type { AppCategory } from '@shared/catalog';
-import { type ArtId, PREVIEWS } from '@/content/art';
+import { type ArtId, PREVIEW_LQIP, PREVIEWS } from '@/content/art';
 import type { GlyphName } from '@/ui/Glyph/glyphs';
 
 /** App categories are glyph names too (ui/Glyph/glyphs.ts, group "App categories"). */
@@ -14,28 +15,6 @@ export const CATEGORY_GLYPH: Readonly<Record<AppCategory, GlyphName>> = {
   rewards: 'rewards',
   onboarding: 'onboarding',
   education: 'education',
-};
-
-/**
- * 16x10 WebP thumbnails of each captured preview (about 80 bytes each), shown soft under the real
- * image while it loads. Regenerate with ImageMagick:
- *   magick <id>.webp -resize 16x10! -quality 35 -define webp:method=6 out.webp
- */
-export const LQIP: Readonly<Record<string, string>> = {
-  academy:
-    'data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAABwAQCdASoQAAoAA8BgJZzuAACegAD+8r41/amVFBL3RCTprx0lJ4jGwrAAAA==',
-  atlas:
-    'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA8BgJZwAAvqvoIAAAP73qLbUH1qs8qdPYU7Gei97urZ3wCBAAAA=',
-  claimcalc:
-    'data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAAAwAQCdASoQAAoAA8BgJYwAA3AA/vEOSvfAJ7+ZUZ3bJ2GAAAA=',
-  'flux-tools-hub':
-    'data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAABwAQCdASoQAAoAA8BgJYwCdAIHgAD+8VbJMozS9lZLse4B44AAAA==',
-  'flux-view':
-    'data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADwAQCdASoQAAoAA8BgJZwAAxbLYGpO7wAA/vaknJx89mMgjfVM4/ulHM+RTbpTzO7s4Il4AAA=',
-  fluxtracker:
-    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAoAA8BgJQBOgB6Vg1MAAP7s4V/YE4+4NIFBbnSWDzJ4RNLhgAAA',
-  noxide:
-    'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABQAQCdASoQAAoAA8BgJZwABAAAAP7xDlUI3+Koh0Lx7gwaJzkCYzSFcOVhAAAA',
 };
 
 /** Previews of sparse pages look best anchored to the top of the frame. */
@@ -77,7 +56,7 @@ export function previewOf(id: string): PreviewImage | null {
     src: p.src,
     width: p.width,
     height: p.height,
-    lqip: LQIP[id] ?? null,
+    lqip: PREVIEW_LQIP[id] ?? null,
     position: POSITION[id] ?? 'center top',
   };
 }

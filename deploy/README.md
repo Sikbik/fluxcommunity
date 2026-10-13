@@ -14,21 +14,39 @@ live stream on port 42069. `deploy/flux_app_spec.json` is a Flux app specificati
    resources and expiry, sign and pay. An app named `community` is already registered on the network, so it
    can only be changed with Update App by the ZelID that owns it; another owner has to pick a different `name`
    (names are 3 to 63 characters, letters, digits and inner hyphens, and cannot start with `flux` or `zel`).
-4. Pin a tag instead of `latest` in `repotag` (for example `littlestache/community:sha-1a2b3c4`) when you
-   want a deploy to be reproducible; Flux nodes cache `latest` and will not always re-pull it.
+4. Keep `latest` in `repotag`. The app follows it: nothing else is needed to ship a release.
 
-Updating: edit the spec (new `repotag`, env, resources) and use Update App in FluxCloud. Specs of version 8
-are encrypted only when the `enterprise` field is used; this one is plain.
+## Releases and updates
+
+A release is publishing an image (step 1). Flux then updates the app on its own: the instances pick up the
+new `latest` without anyone running Update App, signing or paying. They do not switch at the same moment,
+so for a while after a release two builds are live. The app is built to cope with that:
+
+- FDM pins a browser to one instance with an `FDMSERVERID` cookie, and the files under `/assets/` carry a
+  content hash, so a page and its scripts come from the same build.
+- A tab left open across a switch can show "This section did not load" for a section it had not fetched yet;
+  its Reload button fixes it.
+- Every instance keeps its own caches and probers, so nothing has to be migrated or coordinated.
+
+Use Update App only when the spec itself changes: resources, instances, environment, expiry. What runs is the
+registered spec, not this file, so read it back from
+`https://api.runonflux.io/apps/appspecifications/community` before changing anything. Specs of version 8 are
+encrypted only when the `enterprise` field is used; this one is plain.
+
+The one thing that is not hands-off is the subscription. The app is registered for `expire` blocks counted
+from its last registration or update (88,000 blocks, about 30 days, at 30 s per block), and Flux removes it
+when they run out. Extend it in FluxCloud before then.
 
 ## What the spec asks for
 
 | Field | Value | Why |
 | --- | --- | --- |
-| `instances` | 3 | Redundancy. FluxOS accepts 1 to 100 for a version 8 spec (3 was the minimum before version 8). Every instance runs its own caches, block watcher and health prober; the design tolerates that. |
-| `cpu` / `ram` / `hdd` | 0.5 / 512 MB / 2 GB | The server is mostly idle; Resident memory settles around 100 to 150 MB, including a 32 MB compression cache cap. |
+| `instances` | 2 | Redundancy. FluxOS accepts 1 to 100 for a version 8 spec (3 was the minimum before version 8). Every instance runs its own caches, block watcher and health prober; the design tolerates that. |
+| `cpu` / `ram` / `hdd` | 0.1 / 100 MB / 1 GB | The server is mostly idle. Replaying 60 first-time visitors in 20 seconds against a container held to exactly this (`docker run --cpus 0.1 --memory 100m`) gave no errors and no restarts, with memory peaking near 60 MiB (a 32 MB compression cache is the largest part) and CPU about one tenth of a core. |
 | `ports` / `containerPorts` | 42069 | The port the existing deployment already maps. |
 | `containerData` | `/tmp` | The server writes nothing to disk; Flux requires a path. |
-| `expire` | 88000 blocks | About 30 days at 30 s blocks. Raise it (up to 1,056,000) to pay for longer. |
+| `environmentParameters` | `[]` | Nothing to set. The image carries its own defaults (`NODE_ENV`, `PORT`, `HOST`, `WEB_DIST`, `LOG_LEVEL`), and Flux balancers are trusted for visitor addresses without being told to (see `TRUST_PROXY` below). |
+| `expire` | 88000 blocks | About 30 days at 30 s blocks. Raise it (up to 1,056,000) to pay for longer. Nothing renews it automatically. |
 | `repoauth` | `""` | Required string on every version 8 component. Empty because the image is public; a value is only accepted on enterprise apps. |
 | `nodes` | `[]` | Required array on every version 8 spec. Empty means any node may run the app; pinning to nodes is an enterprise feature. |
 
@@ -39,7 +57,7 @@ the live specs returned by `https://api.runonflux.io/apps/globalappsspecificatio
 
 ## Environment variables
 
-All optional. Defaults are shown; the spec sets the ones marked with an asterisk.
+All optional, and the spec sets none of them. Defaults are shown; the image bakes in the ones marked with an asterisk.
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
@@ -47,7 +65,7 @@ All optional. Defaults are shown; the spec sets the ones marked with an asterisk
 | `HOST` * | `0.0.0.0` | Listen address. |
 | `WEB_DIST` * | `/app/web` in the image, `../web/dist` in the repo | Directory of the built web app. Missing directory means API-only mode (pages return 503, the API still works). |
 | `LOG_LEVEL` * | `info` | `debug`, `info`, `warn`, `error` or `silent`. JSON lines on stdout. |
-| `TRUST_PROXY` * | off | Number of trusted reverse-proxy hops (`1` or `true`, up to `9`). Only then is `X-Forwarded-For` used, taking the entry that many hops from the right. Set it behind FDM, otherwise every visitor shares the proxy's address for rate limiting. Never set it when the port is exposed directly. |
+| `TRUST_PROXY` | `fdm` | Who may name the visitor in `X-Forwarded-For`. The default trusts only the Flux domain manager balancers that front `*.app.runonflux.io`, which is right on Flux with nothing to configure; a request that reaches the node directly is attributed to its own socket address whatever headers it carries. `false` trusts nobody (every visitor behind a proxy then shares that proxy's rate-limit bucket). `1` to `9` (or `true`, which is `1`) trusts every peer and reads that many hops from the right of the header: for a reverse proxy you run yourself, never for a port that is reachable directly. A comma-separated list of addresses and CIDR blocks (for example `10.0.0.0/8,fdm`) trusts only those peers; `fdm` stands for the balancers. |
 | `CORS_ORIGINS` | none | Comma separated origins allowed to call the API from a browser (`https://example.com`), or `*`. Unset sends no CORS headers. |
 | `FIXTURES` | off | `1` runs fully offline with simulated data labelled `fallback` and a simulated block every 30 s. Dev and CI only. |
 | `CSP_WORKER_BLOB` | off | Adds `worker-src 'self' blob:` to the CSP. Only needed if the web app ever starts blob workers. |

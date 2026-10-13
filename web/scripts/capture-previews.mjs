@@ -16,7 +16,8 @@
 // pages and looks. A page that answers 4xx or 5xx, times out, or renders blank produces nothing; the UI
 // then falls back to generated art. A previous good capture is kept unless --prune is given.
 //
-// The list of produced previews is written to web/src/content/art.ts (PREVIEWS) on every run.
+// The list of previews and their blurred loading placeholders (PREVIEW_LQIP) are written to
+// web/src/content/art.ts on every run, for every preview on disk, so nothing else needs regenerating by hand.
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -273,6 +274,8 @@ for (const r of results) {
   );
 }
 const m = writeArtManifest();
-console.log(`\nart.ts updated: ${m.previews} preview(s) listed`);
+console.log(
+  `\nart.ts updated: ${m.previews} preview(s) listed, ${m.placeholders} placeholder(s) regenerated`,
+);
 console.log(`failed: ${results.filter((r) => !r.ok).length}, ok: ${results.filter((r) => r.ok).length}`);
 console.log(`repo: ${resolve(repoRoot)}`);

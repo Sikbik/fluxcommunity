@@ -13,6 +13,7 @@ import { ConfigError, loadConfig } from '../src/config.ts';
 import { ManualClock } from '../src/core/clock.ts';
 import { createLogger } from '../src/core/log.ts';
 import { RateLimiter } from '../src/http/ratelimit.ts';
+import { TRUST_FDM, TRUST_NONE, trustHops } from '../src/http/trust.ts';
 
 describe('config', () => {
   it('has safe defaults', () => {
@@ -21,7 +22,7 @@ describe('config', () => {
     assert.equal(c.host, '0.0.0.0');
     assert.equal(c.logLevel, 'info');
     assert.equal(c.fixtures, false);
-    assert.equal(c.trustProxyHops, 0);
+    assert.equal(c.trustProxy, TRUST_FDM, 'with no TRUST_PROXY the Flux balancers are trusted, nobody else');
     assert.deepEqual(c.corsOrigins, []);
     assert.equal(c.upstream.fluxApi[0], 'https://api.runonflux.io');
     assert.equal(c.upstream.stats, 'https://stats.runonflux.io');
@@ -45,14 +46,30 @@ describe('config', () => {
     });
     assert.equal(c.port, 8080);
     assert.equal(c.logLevel, 'debug');
-    assert.equal(c.trustProxyHops, 2);
+    assert.deepEqual(c.trustProxy, trustHops(2));
     assert.deepEqual(c.corsOrigins, ['https://a.example', 'https://b.example:8443']);
     assert.equal(c.fixtures, true);
     assert.deepEqual(c.upstream.fluxApi, ['https://one.test', 'https://two.test']);
     assert.equal(c.webDist, '/app/web');
     assert.equal(c.intervals.healthMs, 30_000);
     assert.equal(loadConfig({ CORS_ORIGINS: '*' }).corsOrigins, '*');
-    assert.equal(loadConfig({ TRUST_PROXY: 'true' }).trustProxyHops, 1);
+    assert.deepEqual(loadConfig({ TRUST_PROXY: 'true' }).trustProxy, trustHops(1));
+  });
+
+  it('reads TRUST_PROXY as fdm, off, a hop count, or a list of peers', () => {
+    assert.equal(loadConfig({ TRUST_PROXY: 'fdm' }).trustProxy, TRUST_FDM);
+    for (const off of ['0', 'false', 'no', 'off', 'none', 'FALSE']) {
+      assert.equal(loadConfig({ TRUST_PROXY: off }).trustProxy, TRUST_NONE, off);
+    }
+    const mine = loadConfig({ TRUST_PROXY: '10.0.0.0/8, 192.0.2.7, 2001:db8::/32' }).trustProxy;
+    assert.equal(mine.kind, 'peers');
+    if (mine.kind === 'peers') assert.equal(mine.nets.length, 3);
+    const both = loadConfig({ TRUST_PROXY: 'fdm,172.17.0.1' }).trustProxy;
+    const fdm = TRUST_FDM.kind === 'peers' ? TRUST_FDM.nets.length : -1;
+    assert.equal(both.kind === 'peers' ? both.nets.length : -2, fdm + 1, 'fdm stands for every balancer');
+    for (const bad of ['10.0.0.0/33', '300.1.1.1', 'localhost', ',', '1.2.3.4/8/9', '10']) {
+      assert.throws(() => loadConfig({ TRUST_PROXY: bad }), ConfigError, bad);
+    }
   });
 
   it('reports every problem at once', () => {

@@ -85,9 +85,11 @@ To remove an app, delete its entry in `shared/catalog.ts` and its file in `web/p
 CI (`.github/workflows/ci.yml`) typechecks, lints, tests and builds on every pull request and push to
 `main`, and smoke tests the container. Publishing is deliberate: run the workflow by hand from `main` with
 `publish` ticked (`gh workflow run ci.yml --ref main -f publish=true`) to push
-`littlestache/community:latest` and `:sha-<short>` to Docker Hub. The Flux app
+`littlestache/community:latest` and `:sha-<short>` to Docker Hub. The registered Flux app follows `latest`,
+so a published image reaches the network by itself and a release needs no Update App. The app
 specification is `deploy/flux_app_spec.json`; the owner field is a placeholder you replace at deploy time.
-See [deploy/README.md](deploy/README.md) for the steps, resources and environment variables.
+See [deploy/README.md](deploy/README.md) for the steps, resources and environment variables, and for the one
+thing that is not automatic: the subscription runs out unless it is extended.
 
 ## Documentation
 

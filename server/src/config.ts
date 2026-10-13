@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import type { LogLevel } from './core/log.ts';
+import { parseTrustProxy, TRUST_FDM, type TrustProxy } from './http/trust.ts';
 
 export class ConfigError extends Error {
   readonly problems: string[];
@@ -16,8 +17,8 @@ export interface Config {
   /** Absolute path of the built web bundle (may not exist: the server then runs API only). */
   webDist: string;
   logLevel: LogLevel;
-  /** Number of trusted reverse-proxy hops whose X-Forwarded-For entries are honoured. 0 = none. */
-  trustProxyHops: number;
+  /** Which peers may name the visitor in X-Forwarded-For. Default: the Flux (FDM) app balancers only. */
+  trustProxy: TrustProxy;
   /** Allowed CORS origins, or '*'. Empty = no CORS headers at all. */
   corsOrigins: string[] | '*';
   /** Offline mode with deterministic simulated data. Dev and CI only. */
@@ -136,12 +137,14 @@ export function loadConfig(env: Env = process.env): Config {
   if ((LOG_LEVELS as readonly string[]).includes(levelRaw)) logLevel = levelRaw as LogLevel;
   else r.problems.push(`LOG_LEVEL must be one of ${LOG_LEVELS.join(', ')} (got "${levelRaw}")`);
 
-  let trustProxyHops = 0;
-  const tp = r.str('TRUST_PROXY', '').toLowerCase();
-  if (tp === '' || tp === '0' || tp === 'false' || tp === 'no' || tp === 'off') trustProxyHops = 0;
-  else if (tp === 'true' || tp === 'yes' || tp === 'on') trustProxyHops = 1;
-  else if (/^[1-9]$/.test(tp)) trustProxyHops = Number(tp);
-  else r.problems.push(`TRUST_PROXY must be false, true, or a hop count 1-9 (got "${tp}")`);
+  const trustRaw = r.str('TRUST_PROXY', '');
+  const trusted = parseTrustProxy(trustRaw);
+  if (trusted === null) {
+    r.problems.push(
+      `TRUST_PROXY must be fdm, false, true, a hop count 1-9, or a list of addresses and CIDR blocks (got "${trustRaw}")`,
+    );
+  }
+  const trustProxy: TrustProxy = trusted ?? TRUST_FDM;
 
   let corsOrigins: string[] | '*' = [];
   const corsRaw = r.str('CORS_ORIGINS', '');
@@ -169,7 +172,7 @@ export function loadConfig(env: Env = process.env): Config {
     host,
     webDist,
     logLevel,
-    trustProxyHops,
+    trustProxy,
     corsOrigins,
     fixtures: r.bool('FIXTURES', false),
     cspWorkerBlob: r.bool('CSP_WORKER_BLOB', false),
