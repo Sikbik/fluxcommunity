@@ -1,0 +1,224 @@
+@layer section {
+  /* ---- header status ------------------------------------------------------------------ */
+
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+
+  .filterChip {
+    --chip-fill: color-mix(in srgb, var(--accent-solid) 30%, var(--ink-0));
+    --chip-edge: var(--accent-line);
+  }
+
+  /* The handle and its close mark stay on one line, whatever the chip's own wrapping does. */
+  .chipInner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .line {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-2);
+    font: 500 var(--fs-sm) / 1.4 var(--font-mono);
+    letter-spacing: 0.01em;
+  }
+
+  .bullet {
+    color: var(--status-ok);
+  }
+
+  .note {
+    max-inline-size: 54ch;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+  }
+
+  /* ---- result bar ---------------------------------------------------------------------- */
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    min-block-size: 36px;
+  }
+
+  .count {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 2px;
+    color: var(--text-2);
+    font: 500 var(--fs-sm) / 1.4 var(--font-mono);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .num {
+    color: var(--text-1);
+    font-weight: 600;
+  }
+
+  .of {
+    color: var(--text-3);
+  }
+
+  .rank {
+    margin-inline-start: 12px;
+    color: var(--text-3);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .active {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ---- a builder's credit card ---------------------------------------------------------- */
+
+  .card {
+    margin-block-end: var(--grid-gap);
+  }
+
+  .cardRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 22px;
+  }
+
+  .mono {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 54px;
+    block-size: 60px;
+    color: #fff;
+    font: 700 var(--fs-md) / 1 var(--font-display);
+    letter-spacing: 0.02em;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--accent-hot-rgb) / 0.55),
+      rgb(var(--accent-deep-rgb) / 0.75)
+    );
+    clip-path: var(--hex-clip);
+  }
+
+  .cardText {
+    flex: 1 1 14rem;
+    min-inline-size: 0;
+  }
+
+  .cardLabel {
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .cardName {
+    color: var(--text-1);
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    overflow-wrap: anywhere;
+  }
+
+  .cardMeta {
+    margin-block-start: 2px;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+  }
+
+  .cardApps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .cardApp {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-block-size: 32px;
+    padding-inline: 10px;
+    color: var(--text-1);
+    font: 500 var(--fs-sm) / 1 var(--font-display);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    transition:
+      border-color var(--dur-1) var(--ease-out),
+      background-color var(--dur-1) var(--ease-out);
+  }
+
+  .cardApp:hover {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+
+  .cardApp :global(svg) {
+    color: var(--accent-text);
+  }
+
+  /* ---- no results ----------------------------------------------------------------------- */
+
+  .empty {
+    margin-block-start: 4px;
+  }
+
+  .emptyBody {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px 26px;
+  }
+
+  .emptyEmblem {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 64px;
+    block-size: 72px;
+    color: var(--accent-text);
+    background: var(--accent-soft);
+    clip-path: var(--hex-clip);
+  }
+
+  .emptyBody > div:nth-child(2) {
+    flex: 1 1 18rem;
+    min-inline-size: 0;
+  }
+
+  .emptyTitle {
+    color: var(--text-1);
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .emptyText {
+    margin-block-start: 6px;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+  }
+
+  .emptyActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

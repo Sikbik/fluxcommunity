@@ -1,0 +1,24 @@
+{
+  "name": "flux-community-server",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Flux Community portal: the API and static server (zero runtime dependencies).",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch --watch-path=./src --watch-path=../shared src/main.ts",
+    "start": "node src/main.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "biome check . ../shared ../scripts ../deploy",
+    "format": "biome format --write . ../shared ../scripts ../deploy",
+    "test": "node --test \"test/**/*.test.ts\""
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  }
+}

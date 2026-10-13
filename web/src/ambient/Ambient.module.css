@@ -1,0 +1,644 @@
+/*
+ * Ambient mode: the HUD and the caption tour over the lattice (DESIGN 7).
+ *
+ * Everything here is light and static: gradients, text and two small images. The motion is
+ * opacity and translate on a few elements, started by CSS, so the stage keeps the frame budget.
+ * No backdrop-filter anywhere (the picture behind is a live canvas), no filter, no will-change.
+ *
+ *   top left     lockup                          top right   wake hint and connection
+ *   bottom left  clock, date, block, status      bottom right the caption tour (a build at a time)
+ *
+ * Under reduced motion (data-calm) there is no travel, no drift, no progress sweep: captions
+ * change by opacity only and the whole HUD is a little dimmer.
+ */
+@layer section {
+  .root {
+    --pad: clamp(20px, 4.4vw, 92px);
+    --dim: 1;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-ambient);
+    display: block;
+    overflow: hidden;
+    color: var(--text-1);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-in-out);
+    outline: none;
+  }
+
+  .root[data-state="open"] {
+    opacity: 1;
+    /* Let the page fade and the stage reach its cinematic preset before the HUD arrives. */
+    transition: opacity var(--dur-5) var(--ease-out) 420ms;
+  }
+
+  .root[data-state="exit"] {
+    transition-duration: 260ms;
+    transition-delay: 0ms;
+  }
+
+  .root[data-calm="true"] {
+    --dim: 0.78;
+  }
+
+  .root[data-calm="true"][data-state="open"] {
+    transition: opacity var(--dur-4) linear 300ms;
+  }
+
+  /* No cursor over a screensaver: it comes back the moment the pointer moves and wakes it. */
+  :global(html[data-ambient="true"]) {
+    cursor: none;
+  }
+
+  /* ---- legibility scrims: the tunnel is bright, the type sits on a soft floor ------------ */
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.46) 20%, rgb(0 0 0 / 0) 46%),
+      linear-gradient(to bottom, rgb(0 0 0 / 0.5) 0%, rgb(0 0 0 / 0) 20%),
+      radial-gradient(125% 105% at 50% 42%, rgb(0 0 0 / 0) 58%, rgb(0 0 0 / 0.46) 100%);
+  }
+
+  /* ---- the HUD: drifts a few pixels each minute so nothing burns in ----------------------- */
+
+  .hud {
+    position: absolute;
+    inset: 0;
+    translate: var(--dx, 0px) var(--dy, 0px);
+    transition: translate 6s var(--ease-in-out);
+  }
+
+  .root[data-calm="true"] .hud {
+    translate: 0 0;
+    transition: none;
+  }
+
+  .corner {
+    position: absolute;
+    display: grid;
+    gap: 10px;
+    opacity: var(--dim);
+    text-shadow:
+      0 1px 22px rgb(0 0 0 / 0.7),
+      0 0 2px rgb(0 0 0 / 0.55);
+  }
+
+  .topLeft {
+    inset-block-start: var(--pad);
+    inset-inline-start: var(--pad);
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: start;
+    gap: 12px;
+  }
+
+  .topRight {
+    inset-block-start: var(--pad);
+    inset-inline-end: var(--pad);
+    justify-items: end;
+    text-align: end;
+  }
+
+  .bottomLeft {
+    inset-block-end: var(--pad);
+    inset-inline-start: var(--pad);
+    gap: 6px;
+  }
+
+  .word {
+    color: var(--text-1);
+    font: 600 var(--fs-md) / 1 var(--font-display);
+    letter-spacing: -0.005em;
+  }
+
+  .word span {
+    font-weight: 300;
+  }
+
+  .hint {
+    margin: 0;
+    color: var(--text-3);
+    font: 400 var(--fs-sm) / 1.3 var(--font-sans);
+    letter-spacing: 0.02em;
+  }
+
+  .conn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--text-2);
+    font: 500 var(--fs-xs) / 1 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .connNote {
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  /* ---- clock ------------------------------------------------------------------------------------- */
+
+  .time {
+    display: flex;
+    align-items: stretch;
+    gap: 0.16em;
+    margin: 0 0 0 -0.04em;
+    color: var(--text-1);
+    font: 300 clamp(4.25rem, 9.6vw, 11.5rem) / 0.88 var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.05em;
+  }
+
+  .digits {
+    display: block;
+  }
+
+  /* AM or PM over the seconds, like a complication on a watch face. */
+  .small {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-block: 0.1em 0.04em;
+    letter-spacing: 0;
+  }
+
+  .secs {
+    color: var(--text-3);
+    font-size: 0.27em;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .period {
+    color: var(--text-2);
+    font-size: 0.2em;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .date {
+    margin: 0;
+    color: var(--text-2);
+    font: 400 clamp(1rem, 1.5vw, 1.625rem) / 1.2 var(--font-sans);
+    letter-spacing: 0.005em;
+  }
+
+  .chain {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 14px;
+    margin: 14px 0 2px;
+    color: var(--text-2);
+    font: 400 clamp(0.8125rem, 1vw, 1.0625rem) / 1.3 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chainLabel {
+    color: var(--text-3);
+    font-size: 0.78em;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .height {
+    position: relative;
+    color: var(--text-1);
+    font-weight: 500;
+  }
+
+  /* The Beat: each real block lights a soft bloom behind the number and a hairline under the row. */
+  .flare {
+    position: absolute;
+    inset: -14px -26px;
+    background: radial-gradient(60% 90% at 28% 50%, rgb(var(--accent-hot-rgb) / 0.55), transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sweep {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -8px;
+    block-size: 1px;
+    background: linear-gradient(90deg, #fff, var(--accent-strong) 40%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+  }
+
+  .chain[data-beat="a"] .flare {
+    animation: flare-a 1500ms var(--ease-out) both;
+  }
+  .chain[data-beat="b"] .flare {
+    animation: flare-b 1500ms var(--ease-out) both;
+  }
+  .chain[data-beat="a"] .sweep {
+    animation: sweep-a 1500ms var(--ease-out) both;
+  }
+  .chain[data-beat="b"] .sweep {
+    animation: sweep-b 1500ms var(--ease-out) both;
+  }
+
+  @keyframes flare-a {
+    0% {
+      opacity: 0;
+    }
+    14% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes flare-b {
+    0% {
+      opacity: 0;
+    }
+    14% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sweep-a {
+    0% {
+      opacity: 0.95;
+      transform: scaleX(0);
+    }
+    70% {
+      opacity: 0.7;
+      transform: scaleX(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scaleX(1);
+    }
+  }
+  @keyframes sweep-b {
+    0% {
+      opacity: 0.95;
+      transform: scaleX(0);
+    }
+    70% {
+      opacity: 0.7;
+      transform: scaleX(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scaleX(1);
+    }
+  }
+
+  .root[data-calm="true"] .chain[data-beat] .sweep {
+    animation: none;
+  }
+
+  /* ---- the tour ------------------------------------------------------------------------------------ */
+
+  .tour {
+    position: absolute;
+    inset: 0;
+    opacity: var(--dim);
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /*
+   * The outgoing caption clears quickly and the next one starts after it (a short gap, not a
+   * long overlap of two sets of type). The enter delay is also the base of the text stagger below.
+   */
+  .layer[data-role="enter"] {
+    --enter-delay: 340ms;
+    animation: cap-in 1500ms var(--ease-out) var(--enter-delay) both;
+  }
+
+  .layer[data-role="leave"] {
+    animation: cap-out 520ms var(--ease-out) both;
+  }
+
+  .root[data-calm="true"] .layer[data-role="enter"] {
+    animation: cap-fade-in 1500ms linear var(--enter-delay) both;
+  }
+
+  .root[data-calm="true"] .layer[data-role="leave"] {
+    animation: cap-fade-out 520ms linear both;
+  }
+
+  @keyframes cap-in {
+    from {
+      opacity: 0;
+      translate: 0 18px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes cap-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+    to {
+      opacity: 0;
+      translate: 0 -14px;
+    }
+  }
+
+  @keyframes cap-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes cap-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* The build itself, as a ghost of light above its caption: never a box (edges melt away). */
+  .art {
+    position: relative;
+    justify-self: end;
+    inline-size: min(30vw, 520px);
+    aspect-ratio: 16 / 10;
+    margin-block-end: 6px;
+    opacity: 0.62;
+    mix-blend-mode: screen;
+    -webkit-mask-image: radial-gradient(
+      ellipse 66% 68% at 50% 50%,
+      #000 40%,
+      rgb(0 0 0 / 0.5) 62%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(ellipse 66% 68% at 50% 50%, #000 40%, rgb(0 0 0 / 0.5) 62%, transparent 100%);
+  }
+
+  .art[data-blend="screen"] {
+    inline-size: min(26vw, 46vh, 480px);
+    aspect-ratio: 1;
+    opacity: 0.9;
+  }
+
+  .art[data-light="true"] {
+    opacity: 0.26;
+  }
+
+  /*
+   * Without WebGL the static symbol sits in this same right half, and a soft-edged dark preview
+   * over it reads as a smudge. A captured page becomes a crisp framed card there instead.
+   */
+  :global(body:has([data-stage-fallback])) .art:not([data-blend="screen"]) {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0.92;
+    background: #05070d;
+    border: 1px solid var(--line-3, rgb(255 255 255 / 0.18));
+    box-shadow: 0 16px 56px rgb(0 0 0 / 0.6);
+  }
+
+  :global(body:has([data-stage-fallback])) .art[data-light="true"] {
+    opacity: 0.4;
+  }
+
+  .art img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: top;
+    animation: art-drift 9500ms var(--ease-out) both;
+  }
+
+  .art[data-blend="screen"] img {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  @keyframes art-drift {
+    from {
+      scale: 1.07;
+      translate: -2% 1.5%;
+    }
+    to {
+      scale: 1;
+      translate: 0 0;
+    }
+  }
+
+  .root[data-calm="true"] .art img {
+    animation: none;
+  }
+
+  .cap {
+    position: absolute;
+    inset-block-end: var(--pad);
+    inset-inline-end: var(--pad);
+    display: grid;
+    gap: 12px;
+    inline-size: min(42vw, 700px);
+    text-shadow:
+      0 1px 26px rgb(0 0 0 / 0.75),
+      0 0 3px rgb(0 0 0 / 0.55);
+  }
+
+  .cap > * {
+    margin: 0;
+  }
+
+  .layer[data-role="enter"] .cap > * {
+    animation: rise 1300ms var(--ease-out) both;
+    animation-delay: calc(var(--enter-delay, 0ms) + var(--i, 0) * 90ms);
+  }
+
+  .root[data-calm="true"] .layer .cap > * {
+    animation: none;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent-strong);
+    font: 500 var(--fs-xs) / 1 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    inline-size: 9px;
+    block-size: 10px;
+    background: var(--accent-strong);
+    clip-path: var(--hex-clip);
+  }
+
+  .of {
+    color: var(--text-3);
+    letter-spacing: 0.1em;
+  }
+
+  .name {
+    color: var(--text-1);
+    font: 300 clamp(2.5rem, 5.3vw, 6.25rem) / 0.98 var(--font-display);
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .name b {
+    font-weight: 700;
+  }
+
+  .name[data-single="true"] {
+    font-weight: 600;
+  }
+
+  .by {
+    color: var(--accent-strong);
+    font: italic 400 clamp(1.125rem, 1.75vw, 2.125rem) / 1.2 var(--font-accent);
+  }
+
+  .line {
+    max-inline-size: 40ch;
+    color: var(--text-2);
+    font: 400 clamp(1rem, 1.3vw, 1.5rem) / 1.45 var(--font-sans);
+    text-wrap: pretty;
+  }
+
+  .note {
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.3 var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+
+  /* The progress hairline: it fills over the 8 seconds the caption holds. */
+  .progress {
+    position: relative;
+    block-size: 1px;
+    margin-block-start: 8px;
+    background: var(--line-2);
+  }
+
+  .progress::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--accent-strong), #fff);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .layer[data-role="enter"] .progress::after {
+    animation: fill var(--cap-ms, 8000ms) linear both;
+  }
+
+  .layer[data-role="leave"] .progress::after {
+    transform: scaleX(1);
+  }
+
+  .root[data-calm="true"] .progress::after {
+    animation: none;
+    transform: scaleX(1);
+    opacity: 0.3;
+  }
+
+  @keyframes fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ---- phones and portrait screens --------------------------------------------------------------------- */
+
+  @media (max-width: 760px), (max-aspect-ratio: 1 / 1) {
+    .root {
+      --pad: clamp(18px, 6vw, 40px);
+    }
+
+    .topRight {
+      max-inline-size: 46vw;
+    }
+
+    .bottomLeft {
+      inset-block-start: calc(var(--pad) + 52px);
+      inset-block-end: auto;
+    }
+
+    .time {
+      font-size: clamp(3.75rem, 20vw, 7rem);
+    }
+
+    .cap {
+      inset-inline: var(--pad);
+      inline-size: auto;
+      gap: 10px;
+    }
+
+    .name {
+      font-size: clamp(2.125rem, 10.5vw, 4rem);
+    }
+
+    .line {
+      font-size: 1rem;
+    }
+
+    .art {
+      display: none;
+    }
+
+    .scrim {
+      background:
+        linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, rgb(0 0 0 / 0.5) 30%, rgb(0 0 0 / 0) 58%),
+        linear-gradient(to bottom, rgb(0 0 0 / 0.62) 0%, rgb(0 0 0 / 0.2) 30%, rgb(0 0 0 / 0) 44%),
+        radial-gradient(125% 105% at 50% 46%, rgb(0 0 0 / 0) 58%, rgb(0 0 0 / 0.46) 100%);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .root {
+      background: Canvas;
+    }
+
+    .scrim,
+    .art,
+    .flare,
+    .sweep {
+      display: none;
+    }
+  }
+}

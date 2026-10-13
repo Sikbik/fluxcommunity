@@ -1,0 +1,77 @@
+# Deploying Flux Community on Flux
+
+The portal is one container (`littlestache/community:latest`) that serves the web app, the JSON API and the
+live stream on port 42069. `deploy/flux_app_spec.json` is a Flux app specification (version 8) for it.
+
+## Deploy
+
+1. Make sure the image exists. GitHub Actions publishes `littlestache/community:latest` and
+   `littlestache/community:sha-<short>` on every push to `main` (see `.github/workflows/ci.yml`).
+2. Copy `flux_app_spec.json` and replace `"owner": "YOUR_ZELID_HERE"` with your own ZelID. The placeholder is
+   deliberate: the real ID is supplied at deploy time and never committed.
+3. In FluxCloud (cloud.runonflux.com) choose Register New App, import the JSON, review the price for the
+   resources and expiry, sign and pay. An app named `community` is already registered on the network, so it
+   can only be changed with Update App by the ZelID that owns it; another owner has to pick a different `name`
+   (names are 3 to 63 characters, letters, digits and inner hyphens, and cannot start with `flux` or `zel`).
+4. Pin a tag instead of `latest` in `repotag` (for example `littlestache/community:sha-1a2b3c4`) when you
+   want a deploy to be reproducible; Flux nodes cache `latest` and will not always re-pull it.
+
+Updating: edit the spec (new `repotag`, env, resources) and use Update App in FluxCloud. Specs of version 8
+are encrypted only when the `enterprise` field is used; this one is plain.
+
+## What the spec asks for
+
+| Field | Value | Why |
+| --- | --- | --- |
+| `instances` | 3 | Redundancy. FluxOS accepts 1 to 100 for a version 8 spec (3 was the minimum before version 8). Every instance runs its own caches, block watcher and health prober; the design tolerates that. |
+| `cpu` / `ram` / `hdd` | 0.5 / 512 MB / 2 GB | The server is mostly idle; Resident memory settles around 100 to 150 MB, including a 32 MB compression cache cap. |
+| `ports` / `containerPorts` | 42069 | The port the existing deployment already maps. |
+| `containerData` | `/tmp` | The server writes nothing to disk; Flux requires a path. |
+| `expire` | 88000 blocks | About 30 days at 30 s blocks. Raise it (up to 1,056,000) to pay for longer. |
+| `repoauth` | `""` | Required string on every version 8 component. Empty because the image is public; a value is only accepted on enterprise apps. |
+| `nodes` | `[]` | Required array on every version 8 spec. Empty means any node may run the app; pinning to nodes is an enterprise feature. |
+
+There is deliberately no `tiered` field. FluxOS rejects it in a version 8 component ("Unsupported parameter for
+v8 app specifications"); it only exists in versions 1 to 7, where it selected per-tier resources. The field list
+above was checked against `ZelBack/src/services/appRequirements/appValidator.js` in RunOnFlux/flux and against
+the live specs returned by `https://api.runonflux.io/apps/globalappsspecifications`.
+
+## Environment variables
+
+All optional. Defaults are shown; the spec sets the ones marked with an asterisk.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `PORT` * | `42069` | Listen port. |
+| `HOST` * | `0.0.0.0` | Listen address. |
+| `WEB_DIST` * | `/app/web` in the image, `../web/dist` in the repo | Directory of the built web app. Missing directory means API-only mode (pages return 503, the API still works). |
+| `LOG_LEVEL` * | `info` | `debug`, `info`, `warn`, `error` or `silent`. JSON lines on stdout. |
+| `TRUST_PROXY` * | off | Number of trusted reverse-proxy hops (`1` or `true`, up to `9`). Only then is `X-Forwarded-For` used, taking the entry that many hops from the right. Set it behind FDM, otherwise every visitor shares the proxy's address for rate limiting. Never set it when the port is exposed directly. |
+| `CORS_ORIGINS` | none | Comma separated origins allowed to call the API from a browser (`https://example.com`), or `*`. Unset sends no CORS headers. |
+| `FIXTURES` | off | `1` runs fully offline with simulated data labelled `fallback` and a simulated block every 30 s. Dev and CI only. |
+| `CSP_WORKER_BLOB` | off | Adds `worker-src 'self' blob:` to the CSP. Only needed if the web app ever starts blob workers. |
+| `FLUX_API_URLS` | `https://api.runonflux.io` | Comma separated daemon API bases, tried in order. |
+| `FLUX_STATS_URL` | `https://stats.runonflux.io` | Stats service base. |
+| `COINGECKO_URL` | `https://api.coingecko.com` | Price API base. |
+| `UPSTREAM_TIMEOUT_MS` | `10000` | Per upstream call timeout. |
+| `BLOCK_POLL_FAST_MS` / `BLOCK_POLL_SLOW_MS` | `1000` / `3000` | Block detection poll gap when a block is due / just arrived. |
+| `NETWORK_REFRESH_MS` | `10000` | Node count refresh. |
+| `FLEET_REFRESH_MS` | `300000` | Capacity, versions and geography (one stats request). |
+| `PRICE_REFRESH_MS` | `60000` | FLUX price. |
+| `APPS_RUNNING_REFRESH_MS` / `APPS_REGISTERED_REFRESH_MS` | `600000` / `1800000` | App counts (large downloads, see server/README.md). |
+| `HEALTH_INTERVAL_MS` | `90000` | Community app probe round. |
+| `HEALTH_CONCURRENCY` | `4` | Parallel probes. |
+| `HEALTH_TIMEOUT_MS` | `8000` | Probe timeout. |
+| `RATE_LIMIT_BURST` / `RATE_LIMIT_RPS` | `150` / `30` | Per client token bucket. `/healthz` is exempt. |
+| `SSE_MAX_CLIENTS` / `SSE_MAX_PER_IP` | `2000` / `8` | Stream connection caps. |
+
+The full list with descriptions is in `server/.env.example`; behaviour is documented in `server/README.md`.
+
+## Operations
+
+- Health: `GET /healthz` returns `ok`. The image has a Docker `HEALTHCHECK` on it.
+- Info: `GET /api/v1/info` shows uptime, mode and the status of each upstream.
+- Logs: structured JSON on stdout, one object per line. Health state changes and circuit breaker trips are
+  logged at `info`/`warn`; `/healthz` and static assets are only logged at `debug`.
+- Shutdown: SIGTERM stops listening, ends streams (browsers reconnect on their own) and exits within seconds.
+- Runs as the unprivileged `node` user (uid 1000). The container filesystem can be read-only.

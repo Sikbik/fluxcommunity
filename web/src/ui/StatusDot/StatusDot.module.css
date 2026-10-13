@@ -1,0 +1,11 @@
+@layer ui {
+  .dot {
+    display: inline-flex;
+    color: var(--status);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--status) 55%, transparent));
+  }
+
+  .dot[data-status="off"] {
+    filter: none;
+  }
+}

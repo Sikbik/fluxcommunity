@@ -1,0 +1,4 @@
+# Originals from the image model, about 1 MB each. Regenerate with web/scripts/generate-art.mjs.
+# Everything else here is small and tracked: PROMPTS.md, art-spec.mjs, art-manifest.json and
+# og-backdrop.webp (the build input for web/scripts/build-og.mjs).
+raw/

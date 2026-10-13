@@ -1,0 +1,78 @@
+@layer ui {
+  .list {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-block-end: 1px solid var(--line-2);
+    isolation: isolate;
+  }
+
+  .list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-block-size: 44px;
+    padding: 0 16px;
+    color: var(--text-3);
+    font: 600 var(--fs-md) / 1 var(--font-display);
+    white-space: nowrap;
+    transition: color var(--dur-1) var(--ease-out);
+  }
+
+  .tab:hover {
+    color: var(--text-1);
+  }
+
+  .tab[aria-selected="true"] {
+    color: var(--text-1);
+  }
+
+  .tab:focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: -2px;
+  }
+
+  .count {
+    color: var(--text-3);
+    font: 500 var(--fs-2xs) / 1 var(--font-mono);
+  }
+
+  /* The line that slides under the selected tab. */
+  .line {
+    position: absolute;
+    inset-block-end: -1px;
+    inset-inline-start: 0;
+    block-size: 2px;
+    inline-size: var(--tw, 0px);
+    translate: var(--tx, 0px) 0;
+    background: linear-gradient(90deg, var(--accent-strong), var(--accent));
+    box-shadow: 0 0 12px rgb(var(--accent-rgb) / 0.8);
+    opacity: 0;
+    transition:
+      translate var(--dur-3) var(--ease-out),
+      inline-size var(--dur-3) var(--ease-out),
+      opacity var(--dur-1) linear;
+  }
+
+  .line[data-ready="true"] {
+    opacity: 1;
+  }
+
+  :global(html[data-motion="reduced"]) .line {
+    transition: opacity var(--dur-1) linear;
+  }
+
+  @media (forced-colors: active) {
+    .line {
+      background: Highlight;
+    }
+  }
+}

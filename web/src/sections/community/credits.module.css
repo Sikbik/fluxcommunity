@@ -1,0 +1,120 @@
+@layer section {
+  .root {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    inline-size: 100%;
+  }
+
+  .reveal {
+    inline-size: 100%;
+  }
+
+  .strip {
+    display: flex;
+    align-items: stretch;
+    min-block-size: 64px;
+  }
+
+  .label {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-inline: clamp(14px, 2vw, 24px);
+    border-inline-end: 1px solid var(--line-2);
+    color: var(--text-2);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .label :first-child {
+    color: var(--accent);
+  }
+
+  .ticker {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0;
+    min-inline-size: 0;
+    padding-inline: clamp(8px, 1.4vw, 16px);
+    /* Gives the reduced motion list a definite width to wrap at (100cqi). */
+    container-type: inline-size;
+  }
+
+  .list {
+    display: flex;
+    align-items: center;
+    gap: var(--marquee-gap, 34px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .name {
+    color: var(--text-1);
+    font: var(--fw-medium) 1rem / 1.2 var(--font-display);
+    letter-spacing: -0.005em;
+  }
+
+  .works {
+    color: var(--text-3);
+    font: var(--fw-regular) var(--fs-xs) / 1.2 var(--font-mono);
+  }
+
+  .sep {
+    align-self: center;
+    margin-inline-start: calc(var(--marquee-gap, 34px) / 2 - 4px);
+    color: rgb(var(--accent-rgb) / 0.55);
+  }
+
+  .spotlight {
+    display: flex;
+    justify-content: center;
+  }
+
+  /*
+   * No travel: the names wrap as a list. The marquee's run is as wide as its content, so the list is
+   * given the width of the strip (less the run's trailing gap) to wrap at.
+   */
+  :global(html[data-motion="reduced"]) .ticker {
+    padding-block: clamp(14px, 1.6vw, 20px);
+  }
+
+  :global(html[data-motion="reduced"]) .list {
+    inline-size: calc(100cqi - var(--marquee-gap, 34px));
+    flex-wrap: wrap;
+    column-gap: clamp(22px, 3vw, 40px);
+    row-gap: 14px;
+  }
+
+  /* Wrapped, the names are separated by space alone; a trailing hex at every line end would be noise. */
+  :global(html[data-motion="reduced"]) .sep {
+    display: none;
+  }
+
+  @media (max-width: 719px) {
+    .strip {
+      flex-direction: column;
+    }
+
+    .label {
+      padding-block: 12px;
+      border-inline-end: 0;
+      border-block-end: 1px solid var(--line-2);
+    }
+
+    .ticker {
+      padding-block: 14px;
+    }
+  }
+}

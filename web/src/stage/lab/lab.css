@@ -1,0 +1,257 @@
+:root {
+  color-scheme: dark;
+  --ink: #e8efff;
+  --ink-2: #a9b8d8;
+  --ink-3: #6f7fa3;
+  --line: rgba(120, 160, 255, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+}
+
+.lab-page {
+  position: relative;
+  z-index: 1;
+}
+
+.lab-section {
+  min-height: 100vh;
+  padding: 96px clamp(20px, 6vw, 96px) 64px;
+  display: grid;
+  align-content: start;
+  gap: 28px;
+}
+
+.lab-eyebrow {
+  font:
+    11px / 1 ui-monospace,
+    Menlo,
+    monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.lab-section h1,
+.lab-section h2 {
+  margin: 0;
+  font-family: "Montserrat", system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 300;
+  line-height: 0.98;
+}
+
+.lab-section h1 {
+  font-size: clamp(2.75rem, 8vw, 6.4rem);
+  max-width: 11ch;
+}
+
+.lab-section h2 {
+  font-size: clamp(1.9rem, 4.2vw, 3.6rem);
+  max-width: 18ch;
+}
+
+.lab-section h1 b,
+.lab-section h2 b {
+  font-weight: 700;
+}
+
+.lab-section p {
+  margin: 0;
+  max-width: 56ch;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.lab-hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  align-content: center;
+}
+
+.lab-hero .lab-copy {
+  display: grid;
+  gap: 24px;
+}
+
+.lab-anchor {
+  justify-self: end;
+  width: min(520px, 100%);
+  aspect-ratio: 1;
+  outline: 1px dashed rgba(120, 160, 255, 0);
+}
+
+body[data-anchor-outline="1"] .lab-anchor {
+  outline-color: rgba(120, 160, 255, 0.5);
+}
+
+.lab-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.lab-card {
+  position: relative;
+  padding: 18px 18px 22px;
+  background: rgba(2, 6, 18, 0.62);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px) saturate(1.3);
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  transition: border-color 0.2s;
+}
+
+.lab-card:hover {
+  border-color: rgba(140, 180, 255, 0.55);
+}
+
+.lab-card h3 {
+  margin: 0;
+  font:
+    600 15px / 1.3 "Montserrat",
+    system-ui,
+    sans-serif;
+}
+
+.lab-card p {
+  font-size: 13.5px;
+}
+
+.lab-cta {
+  display: inline-flex;
+  gap: 12px;
+}
+
+.lab-cta a,
+.lab-cta button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(43, 97, 209, 0.28);
+  color: #fff;
+  font:
+    600 13px / 1 "Montserrat",
+    system-ui,
+    sans-serif;
+  padding: 14px 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ---- the control panel ---- */
+.lab-panel {
+  position: fixed;
+  z-index: 10;
+  top: 10px;
+  right: 10px;
+  width: 262px;
+  max-height: calc(100vh - 20px);
+  overflow: auto;
+  padding: 10px 12px 12px;
+  background: rgba(4, 10, 28, 0.86);
+  border: 1px solid var(--line);
+  font:
+    11.5px / 1.4 ui-monospace,
+    Menlo,
+    monospace;
+  color: var(--ink-2);
+  backdrop-filter: blur(10px);
+}
+
+.lab-panel[data-collapsed="true"] > :not(summary):not(header) {
+  display: none;
+}
+
+.lab-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-panel fieldset {
+  border: 0;
+  margin: 0 0 10px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.lab-panel legend {
+  padding: 0;
+  margin-bottom: 4px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10px;
+}
+
+.lab-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lab-panel button,
+.lab-panel select {
+  appearance: none;
+  background: rgba(43, 97, 209, 0.18);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font: inherit;
+  padding: 4px 7px;
+  cursor: pointer;
+}
+
+.lab-panel button[aria-pressed="true"] {
+  background: rgba(79, 134, 255, 0.55);
+  border-color: rgba(160, 200, 255, 0.8);
+}
+
+.lab-panel input[type="range"] {
+  width: 100%;
+}
+
+.lab-panel label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lab-readout {
+  color: var(--ink-3);
+  white-space: pre;
+}
+
+@media (max-width: 720px) {
+  .lab-hero {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .lab-anchor {
+    justify-self: center;
+    width: min(300px, 80vw);
+    order: -1;
+  }
+
+  .lab-panel {
+    width: 210px;
+    font-size: 10.5px;
+  }
+}
+
+.lab-clean .lab-copy,
+.lab-clean .lab-cards {
+  visibility: hidden;
+}

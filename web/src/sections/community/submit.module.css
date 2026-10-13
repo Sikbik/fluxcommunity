@@ -1,0 +1,85 @@
+@layer section {
+  .band {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    inline-size: 100%;
+  }
+
+  .reveal {
+    min-inline-size: 0;
+  }
+
+  .content {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent-text);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .title {
+    color: var(--text-1);
+    font: var(--fw-light) clamp(1.625rem, 1.15rem + 1.7vw, 2.5rem) / 1.08 var(--font-display);
+    letter-spacing: var(--tracking-h2);
+    text-wrap: balance;
+  }
+
+  .title b {
+    font-weight: var(--fw-bold);
+    font-style: normal;
+  }
+
+  .body {
+    max-inline-size: 52ch;
+    color: var(--text-2);
+    font: var(--type-body);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5) var(--space-6);
+    margin-block-start: var(--space-3);
+  }
+
+  /*
+   * Where the stage parks the 3D symbol. A plain empty box: it must stay free of controls, because
+   * presses that start on a link or button are never taken as gestures on the symbol.
+   */
+  .anchor {
+    justify-self: center;
+    inline-size: min(100%, 340px);
+    aspect-ratio: 1;
+  }
+
+  /* On a phone the actions are full width, one under the other: easy to hit, nothing ragged. */
+  @media (max-width: 559px) {
+    .actions {
+      display: grid;
+      justify-items: stretch;
+      inline-size: 100%;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .band {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .anchor {
+      order: -1;
+      inline-size: min(64%, 250px);
+    }
+  }
+}

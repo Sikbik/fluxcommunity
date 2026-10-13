@@ -1,0 +1,848 @@
+/*
+ * The command deck. A glass slab on the palette layer: a mono prompt, grouped results, a hint bar,
+ * and (on a key) a preview card that hangs to its right. Surfaces come from the design system; this
+ * file only lays them out. No filter, opacity or clip-path ever sits on an ancestor of the blurred
+ * glass: the stack rises with scale and translate, and the fade is on the deck Panel's own layers
+ * (the last rules of this file), the way Dialog does it, so the blur is there from the first frame.
+ */
+@layer section {
+  .root {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    /* One exact column: content (a long terminal row) must never make the deck wider than the page. */
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    align-items: start;
+    /* Where the deck's top edge sits: a little below the header on desktop, close to the top on a phone. */
+    --deck-top: max(clamp(16px, 11vh, 132px), calc(var(--safe-top) + 12px));
+    padding: 16px;
+    padding-block-start: var(--deck-top);
+    pointer-events: auto;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.58);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .root[data-state="open"] .scrim {
+    opacity: 1;
+  }
+
+  :global(html[data-glass="lite"]) .scrim {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgb(0 0 0 / 0.74);
+  }
+
+  /* The dialog element: the deck and, beside it, the preview card. */
+  .stack {
+    --deck-w: 640px;
+    position: relative;
+    inline-size: min(var(--deck-w), 100%);
+    max-block-size: 100%;
+    scale: 0.968;
+    translate: 0 12px;
+    transition:
+      scale var(--dur-3) var(--ease-out),
+      translate var(--dur-3) var(--ease-out);
+  }
+
+  .root[data-state="open"] .stack {
+    scale: 1;
+    translate: 0 0;
+  }
+
+  .root[data-state="exit"] .stack {
+    transition-timing-function: var(--ease-in);
+    pointer-events: none;
+  }
+
+  .stack:focus {
+    outline: none;
+  }
+
+  .deck {
+    inline-size: 100%;
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    /* --vvh is the visible height (set from visualViewport): the on-screen keyboard shrinks it. */
+    max-block-size: min(72dvh, 640px, calc(var(--vvh, 100dvh) - var(--deck-top) - 16px));
+    min-block-size: 0;
+  }
+
+  /* ---- prompt row ------------------------------------------------------------------- */
+
+  .head {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px 10px 20px;
+    min-block-size: 64px;
+    border-block-end: 1px solid var(--line-2);
+  }
+
+  /* The focus beam of the field: a hairline under the prompt that lights while typing. */
+  .head::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -1px;
+    block-size: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent-strong) 18%,
+      #fff 50%,
+      var(--accent-strong) 82%,
+      transparent
+    );
+    opacity: 0;
+    transform: scaleX(0.4);
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      transform var(--dur-4) var(--ease-out);
+  }
+
+  .head:focus-within::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .promptGlyph {
+    flex: none;
+    color: var(--accent-text);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  .promptChar {
+    flex: none;
+    inline-size: 20px;
+    color: var(--accent-strong);
+    font: 600 1.25rem / 1 var(--font-mono);
+    text-align: center;
+  }
+
+  .input {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 6px 0;
+    color: var(--text-1);
+    font: 500 1.0625rem / 1.3 var(--font-mono);
+    letter-spacing: 0.01em;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+    caret-color: var(--accent-strong);
+  }
+
+  .input::placeholder {
+    color: var(--text-3);
+  }
+
+  .headTools {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mode {
+    flex: none;
+  }
+
+  .escHint {
+    display: none;
+  }
+
+  /* ---- results -------------------------------------------------------------------------- */
+
+  .list {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    padding: 4px 8px 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-4) transparent;
+  }
+
+  .groupHead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px 6px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    background: linear-gradient(180deg, rgb(8 10 15 / 0.96) 60%, rgb(8 10 15 / 0));
+    pointer-events: none;
+  }
+
+  .groupHead::before {
+    content: "";
+    inline-size: 7px;
+    block-size: 8px;
+    background: var(--accent);
+    clip-path: var(--hex-clip);
+    opacity: 0.8;
+  }
+
+  .groupCount {
+    margin-inline-start: auto;
+    color: var(--text-4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row {
+    --c: 9px;
+    --cm: 3px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-block-size: 56px;
+    padding: 8px 12px 8px 10px;
+    scroll-margin-block: 38px 10px;
+    color: var(--text-2);
+    cursor: pointer;
+    clip-path: var(--clip-outer);
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--dur-1) var(--ease-out);
+  }
+
+  .row[data-active="true"] {
+    color: var(--text-1);
+    background: linear-gradient(
+      90deg,
+      rgb(var(--accent-rgb) / 0.24),
+      rgb(var(--accent-rgb) / 0.09) 62%,
+      rgb(var(--accent-rgb) / 0.03)
+    );
+  }
+
+  /* The selection bar and a hot top hairline: the active row is never colour alone. */
+  .row[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    inset-block: 9px;
+    inset-inline-start: 0;
+    inline-size: 2px;
+    background: #fff;
+    box-shadow: 0 0 10px rgb(var(--accent-hot-rgb) / 0.9);
+  }
+
+  .tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 38px;
+    block-size: 42px;
+    color: var(--accent-text);
+    font: 500 0.75rem / 1 var(--font-mono);
+    letter-spacing: 0.04em;
+    isolation: isolate;
+  }
+
+  .tile::before,
+  .tile::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    clip-path: var(--hex-clip);
+  }
+
+  .tile::before {
+    inset: 0;
+    background: rgb(var(--accent-rgb) / 0.5);
+  }
+
+  .tile::after {
+    inset: 1px;
+    background: var(--ink-1);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+
+  .row[data-active="true"] .tile {
+    color: var(--text-1);
+  }
+
+  .row[data-active="true"] .tile::before {
+    background: var(--accent-strong);
+  }
+
+  .row[data-active="true"] .tile::after {
+    background: rgb(var(--accent-rgb) / 0.34);
+  }
+
+  .tile[data-swatch]::after {
+    background: var(--swatch);
+    inset: 3px;
+  }
+
+  .tile[data-swatch]::before {
+    background: rgb(255 255 255 / 0.5);
+  }
+
+  .text {
+    display: grid;
+    gap: 2px;
+    min-inline-size: 0;
+  }
+
+  .title {
+    overflow: hidden;
+    color: var(--text-1);
+    font: 500 0.9375rem / 1.25 var(--font-display);
+    letter-spacing: -0.005em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sub {
+    overflow: hidden;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .row[data-active="true"] .sub {
+    color: var(--text-2);
+  }
+
+  /* Matched characters: brighter and heavier, with a hairline under them. */
+  .hit {
+    color: var(--accent-strong);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgb(var(--accent-rgb) / 0.55);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .row[data-active="true"] .hit {
+    color: #fff;
+  }
+
+  .trail {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-inline-size: 0;
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1 var(--font-mono);
+  }
+
+  .meta {
+    max-inline-size: 24ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tag {
+    flex: none;
+    padding: 4px 6px;
+    color: var(--text-2);
+    font: 500 0.625rem / 1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: var(--ink-2);
+    border: 1px solid var(--line-2);
+  }
+
+  .tag[data-tone="warn"] {
+    color: var(--status-warn);
+    border-color: rgb(255 154 61 / 0.4);
+    background: var(--status-warn-soft);
+  }
+
+  .tag[data-tone="ok"] {
+    color: var(--status-ok);
+    border-color: rgb(63 220 149 / 0.4);
+    background: var(--status-ok-soft);
+  }
+
+  .tag[data-tone="accent"] {
+    color: var(--accent-strong);
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+  }
+
+  .enter {
+    flex: none;
+    color: var(--text-3);
+    opacity: 0;
+    transition: opacity var(--dur-1) var(--ease-out);
+  }
+
+  .row[data-active="true"] .enter {
+    opacity: 1;
+    color: var(--text-1);
+  }
+
+  .external {
+    flex: none;
+    color: var(--text-4);
+  }
+
+  .row[data-active="true"] .external {
+    color: var(--accent-strong);
+  }
+
+  /* ---- empty ------------------------------------------------------------------------------- */
+
+  .empty {
+    display: grid;
+    gap: 6px;
+    padding: 28px 20px 16px;
+    text-align: center;
+  }
+
+  .emptyTitle {
+    color: var(--text-1);
+    font: var(--type-h4);
+  }
+
+  .emptyText {
+    margin-inline: auto;
+    color: var(--text-3);
+    font-size: var(--fs-md);
+  }
+
+  /* ---- terminal ------------------------------------------------------------------------------ */
+
+  .term {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 14px;
+    align-content: start;
+    min-block-size: min(248px, 100%);
+    padding: 18px 20px 20px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-4) transparent;
+  }
+
+  .termTop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    justify-content: space-between;
+  }
+
+  .termTitle {
+    color: var(--text-1);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  .termRows {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .termRow {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 10.5rem) minmax(0, 1fr);
+    gap: 4px 16px;
+    align-items: baseline;
+    padding: 9px 0;
+    border-block-end: 1px solid var(--line-1);
+  }
+
+  .termLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-3);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .termValue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    margin: 0;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .termValue[data-missing="true"] {
+    color: var(--text-4);
+  }
+
+  .termValue[data-tone="ok"] {
+    color: var(--status-ok);
+  }
+
+  .termValue[data-tone="warn"] {
+    color: var(--status-warn);
+  }
+
+  .termValue[data-tone="crit"] {
+    color: var(--status-crit);
+  }
+
+  .termValue[data-tone="cumulus"] {
+    color: var(--tier-cumulus);
+  }
+
+  .termValue[data-tone="nimbus"] {
+    color: var(--tier-nimbus);
+  }
+
+  .termValue[data-tone="stratus"] {
+    color: var(--tier-stratus);
+  }
+
+  .termNote {
+    color: var(--text-3);
+    font-size: 0.75rem;
+  }
+
+  .termFoot {
+    margin: 0;
+    color: var(--text-3);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .termFoot[data-tone="warn"] {
+    color: var(--status-warn);
+  }
+
+  /* ---- hint bar --------------------------------------------------------------------------------- */
+
+  .foot {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    padding: 10px 16px 11px 20px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: 0.06em;
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .hintKeys {
+    display: inline-flex;
+    gap: 3px;
+  }
+
+  .count {
+    margin-inline-start: auto;
+    color: var(--text-4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- preview card ---------------------------------------------------------------------------------- */
+
+  .preview {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: calc(100% + 14px);
+    inline-size: min(344px, calc((100vw - var(--deck-w)) / 2 - 22px));
+    opacity: 0;
+    translate: -10px 0;
+    pointer-events: none;
+    transition:
+      opacity var(--dur-3) var(--ease-out),
+      translate var(--dur-3) var(--ease-out);
+  }
+
+  .preview[data-open="true"] {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* The stack no longer fades as a whole, so an open preview card leaves with the deck. */
+  .root[data-state="exit"] .preview {
+    opacity: 0;
+  }
+
+  .previewBody {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .shot {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid var(--line-2);
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .shot img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .shot[data-blend="screen"] img {
+    object-fit: contain;
+    object-position: center;
+    mix-blend-mode: screen;
+  }
+
+  .shot[data-light="true"] img {
+    opacity: 0.72;
+  }
+
+  .shotGlyph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+
+  .pvTitle {
+    color: var(--text-1);
+    font: var(--type-h4);
+  }
+
+  .pvBy {
+    color: var(--accent-text);
+    font: italic 400 0.9375rem / 1.3 var(--font-accent);
+  }
+
+  .pvText {
+    margin: 0;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+  }
+
+  .pvFacts {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-block-start: 10px;
+    border-block-start: 1px solid var(--line-1);
+    font: 400 var(--fs-xs) / 1.4 var(--font-mono);
+  }
+
+  .pvFact {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .pvFact dt {
+    color: var(--text-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pvFact dd {
+    margin: 0;
+    color: var(--text-1);
+    overflow-wrap: anywhere;
+  }
+
+  .pvKeys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: 0.06em;
+  }
+
+  /* ---- smaller screens ----------------------------------------------------------------------------------- */
+
+  /* No room beside the deck: the preview lies over the lower half of the list. */
+  @media (max-width: 1180px) {
+    .preview {
+      inset-block-start: auto;
+      inset-block-end: 54px;
+      inset-inline: 10px;
+      inline-size: auto;
+      translate: 0 10px;
+    }
+
+    .preview[data-open="true"] {
+      translate: 0 0;
+    }
+
+    .previewBody {
+      grid-template-columns: minmax(0, 168px) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .shot {
+      grid-row: 1 / span 3;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .root {
+      --deck-top: max(56px, calc(var(--safe-top) + 12px));
+      padding-inline: 10px;
+    }
+
+    .head {
+      padding-inline-start: 16px;
+      min-block-size: 60px;
+    }
+
+    .foot {
+      display: none;
+    }
+
+    .meta,
+    .chord {
+      display: none;
+    }
+
+    /* Label over value: a phone has no room for two columns of mono text. */
+    .termRow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2px;
+    }
+
+    .preview {
+      display: none;
+    }
+
+    .inner {
+      max-block-size: calc(var(--vvh, 100dvh) - var(--deck-top) - 12px);
+    }
+
+    .list {
+      padding-block-end: max(10px, var(--safe-bottom));
+    }
+  }
+
+  @media (pointer: coarse) {
+    .enter,
+    .chord {
+      display: none;
+    }
+  }
+
+  @media (min-width: 721px) {
+    .escHint {
+      display: inline-flex;
+    }
+  }
+
+  /* ---- states ------------------------------------------------------------------------------------------------ */
+
+  :global(html[data-motion="reduced"]) .stack {
+    scale: 1;
+    translate: 0 0;
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .scrim,
+  :global(html[data-motion="reduced"]) .preview {
+    transition: opacity var(--dur-3) linear;
+  }
+
+  :global(html[data-motion="reduced"]) .preview {
+    translate: 0 0;
+  }
+
+  :global(html[data-motion="reduced"]) .head::after {
+    transform: none;
+    transition: opacity var(--dur-2) linear;
+  }
+
+  @media (forced-colors: active) {
+    .row[data-active="true"] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .tile::before,
+    .tile::after {
+      background: Canvas;
+      border: 1px solid CanvasText;
+    }
+  }
+}
+
+/*
+ * The fade. The deck is a glass Panel, and an opacity below 1 on any ancestor of its blurred fill
+ * (the stack, the Panel root) blanks the blur until the animation ends and then pops it. So nothing
+ * above the layers fades: every layer of the Panel and its content rises from 0 to the opacity it
+ * already has (a keyframe with only `from` ends at the element's own value), and leaves the same
+ * way. These rules are in the ui layer on purpose, with Dialog's: Panel's beat animations on its
+ * halo, edge and ticks live there too, and on specificity they win once a block has landed, so the
+ * deck still pulses on the beat; the exit rule (three classes) outranks them.
+ */
+@layer ui {
+  .deck > * {
+    animation: layer-in var(--dur-3) var(--ease-out) backwards;
+  }
+
+  .root[data-state="exit"] .deck > * {
+    animation: layer-out var(--dur-3) var(--ease-in) forwards;
+  }
+
+  @keyframes layer-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes layer-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .deck > * {
+    animation-timing-function: linear;
+  }
+}

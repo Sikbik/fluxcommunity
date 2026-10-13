@@ -1,0 +1,168 @@
+@layer section {
+  .tile {
+    block-size: 100%;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    block-size: 100%;
+  }
+
+  .top {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .readout {
+    display: grid;
+    gap: var(--space-7);
+    min-inline-size: 0;
+  }
+
+  .stat {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .stat dt {
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .stat dd {
+    margin: 0;
+  }
+
+  .big {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    color: var(--text-1);
+    font: 300 var(--fs-stat) / 1 var(--font-display);
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .unit {
+    color: var(--text-3);
+    font: 500 var(--fs-md) / 1 var(--font-mono);
+    letter-spacing: 0;
+  }
+
+  .small {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3) var(--space-5);
+    color: var(--text-1);
+    font: 500 var(--fs-md) / 1.2 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .delta {
+    color: var(--text-3);
+    font-size: var(--fs-xs);
+  }
+
+  /* ---- history ----------------------------------------------------------------------------------- */
+
+  .history {
+    composes: beat from global;
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: auto;
+    padding-block-start: var(--space-6);
+    border-block-start: 1px solid var(--line-2);
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(255 255 255 / calc(0.14 + var(--flash) * 0.3)) 0 1px,
+      transparent 1px 12px
+    );
+    background-size: 100% 4px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+  }
+
+  .historyHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  .historyTitle {
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .spark {
+    min-block-size: 76px;
+    padding-block: var(--space-4) 0;
+  }
+
+  /* The plot has a narrow gutter on the left where the 30 s target is labelled, like a chart axis. */
+  .plot {
+    position: relative;
+    padding-inline-start: 2.25rem;
+  }
+
+  .axis {
+    position: absolute;
+    inset-inline-start: 0;
+    translate: 0 -50%;
+    color: var(--text-3);
+    font: 500 0.625rem / 1 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .noHistory {
+    display: grid;
+    place-items: center;
+    block-size: 76px;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    border: 1px dashed var(--line-2);
+  }
+
+  .range {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-6);
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.4 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .range b {
+    color: var(--text-1);
+    font-weight: 500;
+  }
+
+  /* ---- narrow tile: the dial sits above its readout -------------------------------------------------- */
+
+  @container (max-width: 25rem) {
+    .top {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      gap: var(--space-6);
+    }
+
+    .readout {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      inline-size: 100%;
+    }
+  }
+}

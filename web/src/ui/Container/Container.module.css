@@ -1,0 +1,20 @@
+@layer ui {
+  .container {
+    --cw: var(--container);
+    inline-size: min(100% - 2 * var(--gutter), var(--cw));
+    margin-inline: auto;
+  }
+
+  .container[data-size="wide"] {
+    --cw: var(--container-wide);
+  }
+
+  .container[data-size="narrow"] {
+    --cw: var(--container-narrow);
+  }
+
+  .container[data-size="full"] {
+    inline-size: 100%;
+    padding-inline: var(--gutter);
+  }
+}

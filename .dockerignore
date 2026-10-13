@@ -1,14 +1,21 @@
-node_modules
-dist
+# Keep the build context small: everything the image needs is server/src, server/package.json, shared/
+# and web/ (sources, package files and public/). Everything else stays out.
+**/node_modules
+**/dist
 .git
-.gitignore
-README.md
+.github
 .env
-.env.local
-.env.development
-.env.production
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.DS_Store
-*.md
+.env.*
+**/*.log
+**/*.md
+docs
+deploy
+scripts
+test-results
+.shots
+assets-src
+server/test
+server/scripts
+server/.env.example
+web/test-results
+web/.shots

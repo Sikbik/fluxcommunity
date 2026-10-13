@@ -1,0 +1,608 @@
+/*
+ * Panel: the glass slab (ref-ui-material). Layers, bottom to top:
+ *   edge     the 1px gradient border, hot on one cut corner
+ *   fill     the glass: ink-0 at ~62%, backdrop blur, inner top highlight
+ *   pattern  the faint hex lattice, masked to fade from one corner
+ *   grain    fine noise
+ *   spot     the cursor spotlight (and the edge catches the pointer too)
+ *   marks    corner crosshairs and tick rulers (flare on the Beat)
+ *   content  the children
+ * The root carries no clip, filter or opacity of its own, so the fill's backdrop blur
+ * always sees the lattice behind the page.
+ */
+@layer ui {
+  .panel {
+    --c: var(--chamfer);
+    --cm: var(--chamfer-micro);
+    --bw: 1px;
+    --hx: 100%;
+    --hy: 0%;
+    --hx2: 0%;
+    --hy2: 100%;
+    --pat-x: 100%;
+    --pat-y: 100%;
+    position: relative;
+    display: block;
+    min-inline-size: 0;
+    isolation: isolate;
+    color: var(--text-2);
+    text-align: start;
+    scale: var(--press, 1);
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      scale var(--dur-1) var(--ease-snap),
+      translate var(--dur-2) var(--ease-out);
+  }
+
+  .panel[data-size="sm"] {
+    --c: var(--chamfer-sm);
+    --cm: 3px;
+  }
+
+  .panel[data-size="lg"] {
+    --c: var(--chamfer-lg);
+    --cm: 6px;
+  }
+
+  .panel[data-hot="tl"] {
+    --hx: 0%;
+    --hy: 0%;
+    --hx2: 100%;
+    --hy2: 100%;
+  }
+
+  .panel[data-hot="br"] {
+    --hx: 100%;
+    --hy: 100%;
+    --hx2: 0%;
+    --hy2: 0%;
+  }
+
+  .panel[data-hot="bl"] {
+    --hx: 0%;
+    --hy: 100%;
+    --hx2: 100%;
+    --hy2: 0%;
+  }
+
+  .panel[data-pattern="tl"] {
+    --pat-x: 0%;
+    --pat-y: 0%;
+  }
+
+  .panel[data-pattern="tr"] {
+    --pat-x: 100%;
+    --pat-y: 0%;
+  }
+
+  .panel[data-pattern="bl"] {
+    --pat-x: 0%;
+    --pat-y: 100%;
+  }
+
+  .panel[data-container] {
+    container-type: inline-size;
+  }
+
+  /* ---- layers ------------------------------------------------------------------------ */
+
+  .halo,
+  .edge,
+  .fill,
+  .pattern,
+  .grain,
+  .spot,
+  .marks {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+  }
+
+  /*
+   * The bloom around the slab. The shape is drawn opaque and cast as a drop-shadow, then
+   * clip-path (which runs after filter) removes the shape's own interior and keeps a band
+   * around it, so what is left is a glow that follows the cuts and never tints the glass.
+   * The box is the panel's own: a filter's ink overflow adds no scrollable overflow, so a
+   * panel at the edge of a scroller never produces a scrollbar.
+   */
+  .halo {
+    --h: 44px;
+    inset: 0;
+    z-index: -1;
+    filter: drop-shadow(0 0 2px rgb(var(--accent-hot-rgb) / 0.4))
+      drop-shadow(0 0 14px rgb(var(--accent-deep-rgb) / 0.62));
+    clip-path: polygon(
+      evenodd,
+      calc(-1 * var(--h)) 50%,
+      calc(-1 * var(--h)) calc(-1 * var(--h)),
+      calc(100% + var(--h)) calc(-1 * var(--h)),
+      calc(100% + var(--h)) calc(100% + var(--h)),
+      calc(-1 * var(--h)) calc(100% + var(--h)),
+      calc(-1 * var(--h)) 50%,
+      0 50%,
+      0 var(--cm),
+      var(--cm) 0,
+      calc(100% - var(--c)) 0,
+      100% var(--c),
+      100% calc(100% - var(--cm)),
+      calc(100% - var(--cm)) 100%,
+      var(--c) 100%,
+      0 calc(100% - var(--c)),
+      0 50%
+    );
+    opacity: 0.62;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .halo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: var(--clip-outer);
+    background: #000;
+  }
+
+  .panel[data-halo="false"] .halo,
+  :global(html[data-glass="lite"]) .halo {
+    display: none;
+  }
+
+  .edge {
+    --k: calc(0.586 * var(--bw));
+    inset: 0;
+    /* The outline, then the inset outline (evenodd), joined by a zero-width slit: a 1px ring. */
+    clip-path: polygon(
+      evenodd,
+      0 var(--cm),
+      var(--cm) 0,
+      calc(100% - var(--c)) 0,
+      100% var(--c),
+      100% calc(100% - var(--cm)),
+      calc(100% - var(--cm)) 100%,
+      var(--c) 100%,
+      0 calc(100% - var(--c)),
+      0 var(--cm),
+      var(--bw) calc(var(--bw) + var(--cm) - var(--k)),
+      calc(var(--bw) + var(--cm) - var(--k)) var(--bw),
+      calc(100% - var(--bw) - var(--c) + var(--k)) var(--bw),
+      calc(100% - var(--bw)) calc(var(--bw) + var(--c) - var(--k)),
+      calc(100% - var(--bw)) calc(100% - var(--bw) - var(--cm) + var(--k)),
+      calc(100% - var(--bw) - var(--cm) + var(--k)) calc(100% - var(--bw)),
+      calc(var(--bw) + var(--c) - var(--k)) calc(100% - var(--bw)),
+      var(--bw) calc(100% - var(--bw) - var(--c) + var(--k)),
+      var(--bw) calc(var(--bw) + var(--cm) - var(--k))
+    );
+    z-index: 0;
+    background:
+      radial-gradient(
+        64px 64px at var(--hx) var(--hy),
+        #fff,
+        rgb(var(--accent-hot-rgb) / 0.85) 34%,
+        transparent 100%
+      ),
+      radial-gradient(52px 52px at var(--hx2) var(--hy2), rgb(var(--accent-hot-rgb) / 0.6), transparent 100%),
+      linear-gradient(
+        165deg,
+        rgb(var(--accent-rgb) / 0.95),
+        rgb(var(--accent-rgb) / 0.5) 45%,
+        rgb(var(--accent-rgb) / 0.78)
+      );
+    opacity: 0.85;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+
+  /* The edge catches the pointer: a hot hairline under the cursor. */
+  .edge::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      170px 170px at var(--px, 50%) var(--py, 0%),
+      #fff,
+      rgb(var(--accent-hot-rgb) / 0.5) 40%,
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .fill {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    z-index: 1;
+    background:
+      radial-gradient(120% 95% at var(--hx) var(--hy), rgb(var(--accent-rgb) / 0.16), transparent 62%),
+      linear-gradient(180deg, rgb(var(--accent-rgb) / 0.05), transparent 40%), var(--glass-bg);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+    box-shadow: var(--inset-hi);
+  }
+
+  .pattern {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    z-index: 2;
+    background: rgb(var(--accent-rgb) / 0.42);
+    -webkit-mask-image:
+      var(--pattern-hex-mask), radial-gradient(circle at var(--pat-x) var(--pat-y), #000 0, transparent 72%);
+    mask-image:
+      var(--pattern-hex-mask), radial-gradient(circle at var(--pat-x) var(--pat-y), #000 0, transparent 72%);
+    -webkit-mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    mask-size:
+      var(--pattern-hex-w) var(--pattern-hex-h),
+      100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    opacity: 0.9;
+  }
+
+  .grain {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    z-index: 3;
+    background-image: var(--grain-image);
+    opacity: var(--grain-opacity);
+  }
+
+  .spot {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    z-index: 4;
+    background:
+      radial-gradient(
+        120px 120px at var(--px, 50%) var(--py, 30%),
+        rgb(var(--accent-hot-rgb) / 0.28),
+        transparent 100%
+      ),
+      radial-gradient(
+        300px 300px at var(--px, 50%) var(--py, 30%),
+        rgb(var(--accent-rgb) / 0.2),
+        rgb(var(--accent-rgb) / 0.07) 45%,
+        transparent 100%
+      );
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  /* Corner crosshairs (eight gradient strokes) and edge tick rulers. */
+  .marks {
+    inset: 0;
+    z-index: 5;
+    --mk: 8px;
+    --ms: 7px;
+    /* The tick colour is drawn at its brightest and dimmed with the layer's opacity (0.2 / 0.85), so
+       the Beat can brighten it on the compositor (see "The Beat" below). */
+    --mc: rgb(255 255 255 / 0.85);
+    opacity: 0.2353;
+    background-image:
+      linear-gradient(var(--mc), var(--mc)), linear-gradient(var(--mc), var(--mc)),
+      linear-gradient(var(--mc), var(--mc)), linear-gradient(var(--mc), var(--mc)),
+      linear-gradient(var(--mc), var(--mc)), linear-gradient(var(--mc), var(--mc)),
+      linear-gradient(var(--mc), var(--mc)), linear-gradient(var(--mc), var(--mc)),
+      repeating-linear-gradient(90deg, var(--mc) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(90deg, var(--mc) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(0deg, var(--mc) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(0deg, var(--mc) 0 1px, transparent 1px 5px);
+    background-repeat: no-repeat;
+    background-size:
+      var(--ms) 1px,
+      1px var(--ms),
+      var(--ms) 1px,
+      1px var(--ms),
+      var(--ms) 1px,
+      1px var(--ms),
+      var(--ms) 1px,
+      1px var(--ms),
+      36px 4px,
+      36px 4px,
+      4px 36px,
+      4px 36px;
+    background-position:
+      left var(--mk) top calc(var(--mk) + 3px),
+      left calc(var(--mk) + 3px) top var(--mk),
+      right var(--mk) top calc(var(--mk) + 3px),
+      right calc(var(--mk) + 3px) top var(--mk),
+      left var(--mk) bottom calc(var(--mk) + 3px),
+      left calc(var(--mk) + 3px) bottom var(--mk),
+      right var(--mk) bottom calc(var(--mk) + 3px),
+      right calc(var(--mk) + 3px) bottom var(--mk),
+      left 26% top 6px,
+      right 22% bottom 6px,
+      left 6px top 34%,
+      right 6px bottom 40%;
+  }
+
+  .content {
+    position: relative;
+    z-index: 6;
+    min-inline-size: 0;
+    padding: var(--pad, 0);
+  }
+
+  .panel[data-pad="sm"] {
+    --pad: var(--space-6);
+  }
+
+  .panel[data-pad="md"] {
+    --pad: clamp(1rem, 0.8rem + 0.7vw, 1.5rem);
+  }
+
+  .panel[data-pad="lg"] {
+    --pad: clamp(1.25rem, 1rem + 1.2vw, 2.25rem);
+  }
+
+  .panel[data-clip="true"] > .content {
+    clip-path: var(--clip-outer);
+  }
+
+  /* ---- variants ------------------------------------------------------------------------ */
+
+  .panel[data-variant="slab"] .fill {
+    background:
+      radial-gradient(120% 95% at var(--hx) var(--hy), rgb(var(--accent-rgb) / 0.12), transparent 62%),
+      var(--glass-bg-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .panel[data-variant="ghost"] .fill {
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .panel[data-variant="ghost"] .grain {
+    display: none;
+  }
+
+  .panel[data-ticks="false"] .marks {
+    display: none;
+  }
+
+  .panel[data-pattern="none"] .pattern {
+    display: none;
+  }
+
+  /*
+   * Blend mode (<Panel blendArt>): no stacking context of the panel's own, so `mix-blend-mode` art in
+   * the content blends with everything painted earlier in the page's stacking context (the panel's
+   * own glass, then the stage). Every layer is z-index auto: positioned boxes paint in tree order,
+   * which is already the order above (halo, edge, fill, pattern, grain, spot, marks, content).
+   * Anything that would make a stacking context is off: isolation, the press scale, the tilt and
+   * the content clip.
+   */
+  .panel[data-blend="true"] .halo,
+  .panel[data-blend="true"] .edge,
+  .panel[data-blend="true"] .fill,
+  .panel[data-blend="true"] .pattern,
+  .panel[data-blend="true"] .grain,
+  .panel[data-blend="true"] .spot,
+  .panel[data-blend="true"] .marks,
+  .panel[data-blend="true"] .content {
+    z-index: auto;
+  }
+
+  .panel[data-blend="true"][data-clip="true"] > .content {
+    clip-path: none;
+  }
+
+  /*
+   * The Beat. html[data-beat] flips a/b on every real block (base.css). The three layers that
+   * brighten on a block each restart their own opacity animation from the bright value and settle
+   * to whatever their resting opacity is: a keyframe with only `from` ends at the element's computed
+   * opacity, so a hovered or focused panel, already at full, simply does not pulse. Opacity runs on
+   * the compositor: nothing restyles the page per frame. (These used to read the global inherited
+   * --flash, which restyled every element in the document on every frame of the beat.)
+   * 1400ms and --ease-out match the html animation in base.css.
+   */
+  :global(html[data-beat="a"]) .halo,
+  :global(html[data-beat="a"]) .edge {
+    animation: beat-a 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="b"]) .halo,
+  :global(html[data-beat="b"]) .edge {
+    animation: beat-b 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="a"]) .marks {
+    animation: marks-beat-a 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="b"]) .marks {
+    animation: marks-beat-b 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-motion="reduced"]) .halo,
+  :global(html[data-motion="reduced"]) .edge,
+  :global(html[data-motion="reduced"]) .marks {
+    animation: none;
+  }
+
+  @keyframes beat-a {
+    from {
+      opacity: 1;
+    }
+  }
+
+  @keyframes beat-b {
+    from {
+      opacity: 1;
+    }
+  }
+
+  /* The ticks peak at an alpha of 0.65 (0.2 + 0.45): 0.65 / 0.85 of their drawn colour. */
+  @keyframes marks-beat-a {
+    from {
+      opacity: 0.7647;
+    }
+  }
+
+  @keyframes marks-beat-b {
+    from {
+      opacity: 0.7647;
+    }
+  }
+
+  /* Hovered, they rest at 0.45 and peak at 0.85, the drawn colour itself. */
+  @keyframes marks-hover-beat-a {
+    from {
+      opacity: 1;
+    }
+  }
+
+  @keyframes marks-hover-beat-b {
+    from {
+      opacity: 1;
+    }
+  }
+
+  /* ---- interaction --------------------------------------------------------------------- */
+
+  .panel[data-interactive="true"] {
+    translate: 0 0;
+  }
+
+  .panel[data-clickable="true"] {
+    cursor: pointer;
+  }
+
+  /* useTilt writes the inline transform (and will-change) while the pointer is over the panel. */
+  .panel[data-tilt="true"] {
+    transform-origin: 50% 50%;
+  }
+
+  /* Hover is set by usePointerGlow as data-hover on the root. */
+  .panel[data-interactive="true"][data-hover="true"] .spot {
+    opacity: 1;
+  }
+
+  .panel[data-interactive="true"][data-hover="true"] .edge {
+    opacity: 1;
+  }
+
+  .panel[data-interactive="true"][data-hover="true"] .halo {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgb(var(--accent-deep-rgb) / 0.6));
+  }
+
+  .panel[data-interactive="true"][data-hover="true"] .edge::after {
+    opacity: 0.95;
+  }
+
+  .panel[data-interactive="true"][data-hover="true"] .marks {
+    opacity: 0.5294;
+  }
+
+  /* Hovered, the ticks rest at 0.45 and peak at 0.85: the drawn colour itself. */
+  :global(html[data-beat="a"]) .panel[data-interactive="true"][data-hover="true"] .marks {
+    animation-name: marks-hover-beat-a;
+  }
+
+  :global(html[data-beat="b"]) .panel[data-interactive="true"][data-hover="true"] .marks {
+    animation-name: marks-hover-beat-b;
+  }
+
+  .panel[data-interactive="true"]:active {
+    --press: 0.98;
+  }
+
+  /* Keyboard focus: a white-hot beam sweeps the chamfer. The edge thickens to 2px. */
+  .panel:focus-visible {
+    outline: none;
+    --bw: 2px;
+  }
+
+  .panel:focus-visible .edge {
+    opacity: 1;
+    background: conic-gradient(
+      from var(--beam-angle),
+      #fff,
+      rgb(var(--accent-hot-rgb) / 0.95) 16%,
+      rgb(var(--accent-rgb) / 0.9) 50%,
+      rgb(var(--accent-hot-rgb) / 0.95) 84%,
+      #fff
+    );
+    animation: beam 2.4s linear infinite;
+  }
+
+  @keyframes beam {
+    to {
+      --beam-angle: 360deg;
+    }
+  }
+
+  /* Blend mode, the root: the panel itself is not a stacking context (see above). */
+  .panel[data-blend="true"] {
+    isolation: auto;
+    scale: none;
+    translate: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  :global(html[data-motion="reduced"]) .panel,
+  :global(html[data-motion="reduced"]) .spot,
+  :global(html[data-motion="reduced"]) .edge {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .panel:focus-visible .edge {
+    animation: none;
+    background: rgb(255 255 255 / 0.85);
+  }
+
+  :global(html[data-motion="reduced"]) .panel[data-tilt="true"] {
+    transform: none;
+  }
+
+  /* ---- accessibility modes ------------------------------------------------------------- */
+
+  @media (prefers-contrast: more) {
+    .pattern,
+    .grain,
+    .marks {
+      display: none;
+    }
+
+    .edge {
+      background: rgb(255 255 255 / 0.7);
+      opacity: 1;
+    }
+
+    .fill {
+      background: var(--glass-bg-solid);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .edge {
+      background: CanvasText;
+      opacity: 1;
+    }
+
+    .fill {
+      background: Canvas;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .pattern,
+    .grain,
+    .spot,
+    .marks {
+      display: none;
+    }
+
+    .panel:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 3px;
+    }
+  }
+}

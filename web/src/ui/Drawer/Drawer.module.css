@@ -1,0 +1,193 @@
+/*
+ * Drawer: a right-hand panel on desktop, a bottom sheet on phones. A modal surface:
+ * the page behind is inert, focus is trapped, Escape closes, focus returns on close.
+ */
+@layer ui {
+  .root {
+    position: fixed;
+    inset: 0;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.58);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  /*
+   * The surface slides; it never has an opacity of its own (opacity below 1 on an ancestor of a
+   * backdrop-filter element blanks the blur until the animation ends, then pops). Under reduced
+   * motion, where it does not slide, its layers and content fade instead (below).
+   */
+  .surface {
+    position: absolute;
+    display: block;
+    --side-x: 0px;
+    --side-y: 0px;
+    translate: var(--side-x) calc(var(--side-y) + var(--drag, 0px));
+    transition: translate var(--dur-3) var(--ease-out);
+  }
+
+  .root[data-side="right"] .surface {
+    inset-block: 12px;
+    inset-inline-end: 12px;
+    inline-size: min(var(--drawer-w, 560px), calc(100vw - 24px));
+    --side-x: calc(100% + 24px);
+  }
+
+  .root[data-side="bottom"] .surface {
+    inset-inline: 8px;
+    inset-block-end: max(var(--safe-bottom), 8px);
+    max-block-size: min(88dvh, 100% - 16px);
+    --side-y: calc(100% + 24px);
+  }
+
+  .root[data-state="open"] .scrim {
+    opacity: 1;
+  }
+
+  .root[data-state="open"] .surface {
+    --side-x: 0px;
+    --side-y: 0px;
+  }
+
+  .root[data-state="exit"] .scrim {
+    opacity: 0;
+    transition-timing-function: var(--ease-in);
+  }
+
+  :global(html[data-glass="lite"]) .scrim {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgb(0 0 0 / 0.7);
+  }
+
+  .root[data-state="exit"] .surface {
+    transition-timing-function: var(--ease-in);
+  }
+
+  .root[data-dragging="true"] .surface {
+    transition: none;
+  }
+
+  .root[data-side="right"][data-width="lg"] .surface {
+    --drawer-w: 720px;
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    max-block-size: inherit;
+    block-size: 100%;
+    min-block-size: 0;
+  }
+
+  .root[data-side="bottom"] .inner {
+    block-size: auto;
+    max-block-size: min(88dvh, 100svh - 16px);
+  }
+
+  .grabber {
+    display: none;
+    flex: none;
+    block-size: 24px;
+    place-items: center;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .grabber::before {
+    content: "";
+    inline-size: 40px;
+    block-size: 4px;
+    background: var(--line-3);
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+  }
+
+  .root[data-side="bottom"] .grabber {
+    display: grid;
+  }
+
+  .head {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px 20px 14px 24px;
+    border-block-end: 1px solid var(--line-1);
+  }
+
+  .titles {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .title {
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+    overflow-wrap: anywhere;
+  }
+
+  .desc {
+    margin-block-start: 4px;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+  }
+
+  .actions {
+    display: flex;
+    flex: none;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .body {
+    flex: 1;
+    min-block-size: 0;
+    padding: 20px 24px 28px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .foot {
+    flex: none;
+    padding: 14px 24px calc(14px + var(--safe-bottom));
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  :global(html[data-motion="reduced"]) .root[data-side] .surface {
+    --side-x: 0px;
+    --side-y: 0px;
+    transition: none;
+  }
+
+  /* The reduced twin of the slide: the surface's own layers and content fade in and out. */
+  :global(html[data-motion="reduced"]) .root[data-side] .surface > * {
+    animation: layer-in var(--dur-3) linear backwards;
+  }
+
+  :global(html[data-motion="reduced"]) .root[data-side][data-state="exit"] .surface > * {
+    animation: layer-out var(--dur-3) linear forwards;
+  }
+
+  @keyframes layer-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes layer-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .scrim {
+    transition: opacity var(--dur-3) linear;
+  }
+}

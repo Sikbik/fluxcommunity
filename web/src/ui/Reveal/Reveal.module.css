@@ -1,0 +1,56 @@
+/*
+ * Reveal: opacity 0 -> 1, translateY 24px -> 0, blur 8px -> 0, once, staggered.
+ * Under reduced motion the distance and blur tokens are 0, so it is an opacity fade.
+ */
+@layer ui {
+  .reveal {
+    opacity: 0;
+    translate: var(--rx, 0px) var(--ry, var(--reveal-y));
+    filter: blur(var(--reveal-blur));
+    transition:
+      opacity var(--dur-4) var(--ease-out) var(--rd, 0ms),
+      translate var(--dur-4) var(--ease-out) var(--rd, 0ms),
+      filter var(--dur-4) var(--ease-out) var(--rd, 0ms);
+  }
+
+  .reveal[data-blur="false"] {
+    filter: none;
+  }
+
+  .reveal[data-dir="down"] {
+    --ry: calc(var(--reveal-y) * -1);
+  }
+
+  .reveal[data-dir="left"] {
+    --rx: var(--reveal-y);
+    --ry: 0px;
+  }
+
+  .reveal[data-dir="right"] {
+    --rx: calc(var(--reveal-y) * -1);
+    --ry: 0px;
+  }
+
+  .reveal[data-dir="none"] {
+    --ry: 0px;
+  }
+
+  /*
+   * At rest every property is back to `none`/1, not to an identity value: `translate: 0 0` still
+   * makes a stacking context, and art with mix-blend-mode inside a revealed block would blend with
+   * that group instead of the page. (The rise is the same: `none` interpolates as zero.)
+   */
+  .reveal[data-shown="true"] {
+    opacity: 1;
+    translate: none;
+    filter: none;
+  }
+
+  @media print {
+    .reveal {
+      opacity: 1;
+      translate: none;
+      filter: none;
+    }
+  }
+}

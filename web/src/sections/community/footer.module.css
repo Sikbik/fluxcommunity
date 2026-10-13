@@ -1,0 +1,439 @@
+/*
+ * The footer: quiet, dense with honest detail, and the last place the lattice shows through. Reads
+ * top to bottom as: a ruler hairline, the brand and the official badge beside three link columns,
+ * the credit and data lines, the live status, back to top. An oversized, faint outline of the Flux
+ * symbol is the sign-off; it breathes with every real block (the Beat, as compositor opacity).
+ */
+@layer section {
+  .footer {
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(2.5rem, 1.75rem + 2.5vw, 4.5rem) 0;
+    color: var(--text-3);
+    /* The lattice fades to true black toward the bottom edge, so the last lines always have contrast. */
+    background: linear-gradient(
+      180deg,
+      transparent 0,
+      rgb(0 0 0 / 0.55) 110px,
+      rgb(0 0 0 / 0.84) 300px,
+      #000 100%
+    );
+    overflow: clip;
+  }
+
+  /*
+   * The last flare: a low, wide bloom of the accent under everything, a touch brighter on the Beat.
+   * It is drawn at its brightest (alpha 0.38) and held at 0.22 / 0.38 until a block lands, so the
+   * pulse is an opacity animation on the compositor. (It used to read --flash on the footer, which
+   * restyled every link and line under it, about 400 elements, on every frame of the beat.)
+   */
+  .footer::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: -1;
+    block-size: min(70%, 420px);
+    background: radial-gradient(55% 100% at 50% 100%, rgb(var(--accent-deep-rgb) / 0.38), transparent 72%);
+    opacity: 0.5789;
+    pointer-events: none;
+  }
+
+  :global(html[data-beat="a"]) .footer::after {
+    animation: bloom-a 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="b"]) .footer::after {
+    animation: bloom-b 1400ms var(--ease-out) backwards;
+  }
+
+  @keyframes bloom-a {
+    from {
+      opacity: 1;
+    }
+  }
+
+  @keyframes bloom-b {
+    from {
+      opacity: 1;
+    }
+  }
+
+  /* A ruler: a hot hairline with tick marks hanging under it, fading out toward both edges. */
+  .rule {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    block-size: 9px;
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgb(var(--accent-rgb) / 0.55) 18%,
+        rgb(var(--accent-hot-rgb) / 0.95) 50%,
+        rgb(var(--accent-rgb) / 0.55) 82%,
+        transparent
+      )
+      top / 100% 1px no-repeat,
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.22) 0 1px, transparent 1px 60px) top / 100% 9px
+      no-repeat,
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.14) 0 1px, transparent 1px 12px) top / 100% 4px
+      no-repeat;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    pointer-events: none;
+  }
+
+  /*
+   * The sign-off. The official white symbol at a ghost of its weight, large, centred under the bloom and
+   * cropped by the end of the page, so it reads as sinking into the lattice. It is not redrawn or
+   * recoloured: only its opacity changes, and it breathes a little with each real block.
+   */
+  .signoff {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    block-size: clamp(120px, 17vw, 270px);
+    margin-block-start: clamp(2.5rem, 2rem + 3vw, 5rem);
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .signoff svg {
+    flex: none;
+    inline-size: clamp(220px, 34vw, 500px);
+    block-size: auto;
+    max-inline-size: none;
+    opacity: 0.075;
+    /* Brightest where it meets the footer, fading as it sinks. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0, rgb(0 0 0 / 0.35) 100%);
+    mask-image: linear-gradient(180deg, #000 0, rgb(0 0 0 / 0.35) 100%);
+  }
+
+  /* On a block it lifts from 0.075 to 0.125 and settles back, on the compositor. */
+  :global(html[data-beat="a"]) .signoff svg {
+    animation: breathe-a 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="b"]) .signoff svg {
+    animation: breathe-b 1400ms var(--ease-out) backwards;
+  }
+
+  @keyframes breathe-a {
+    from {
+      opacity: 0.125;
+    }
+  }
+
+  @keyframes breathe-b {
+    from {
+      opacity: 0.125;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .footer::after,
+  :global(html[data-motion="reduced"]) .signoff svg {
+    animation: none;
+  }
+
+  /* ---- layout ------------------------------------------------------------------------------------ */
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    align-items: start;
+    gap: clamp(2.5rem, 5vw, 5rem);
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  /* ---- brand ---------------------------------------------------------------------------------------- */
+
+  .brand {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+  }
+
+  .lockup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wordmark {
+    color: var(--text-1);
+    font: var(--fw-light) 1.375rem / 1 var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  .wordmark b {
+    font-weight: var(--fw-bold);
+  }
+
+  .tagline {
+    max-inline-size: 34ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-relaxed);
+  }
+
+  .badge {
+    display: inline-block;
+    margin-block-start: var(--space-3);
+    line-height: 0;
+    transition: translate var(--dur-3) var(--ease-out);
+  }
+
+  .badge img {
+    inline-size: min(100%, 248px);
+    block-size: auto;
+    transition: filter var(--dur-3) var(--ease-out);
+  }
+
+  .badge:hover {
+    translate: 0 -2px;
+  }
+
+  .badge:hover img {
+    filter: drop-shadow(0 0 14px rgb(var(--accent-hot-rgb) / 0.4));
+  }
+
+  /* ---- link columns ------------------------------------------------------------------------------------ */
+
+  .colTitle {
+    margin-block-end: var(--space-5);
+    color: var(--text-2);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .links {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-block: 6px;
+    color: var(--text-3);
+    font: var(--fw-medium) var(--fs-md) / 1.3 var(--font-sans);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
+    transition:
+      color var(--dur-1) var(--ease-out),
+      background-size var(--dur-3) var(--ease-out);
+  }
+
+  .link:hover,
+  .link:focus-visible {
+    color: var(--text-1);
+    background-size: 100% 1px;
+  }
+
+  @media (pointer: coarse) {
+    .link {
+      min-block-size: var(--touch-min);
+    }
+  }
+
+  .out {
+    flex: none;
+    color: var(--accent-text);
+    opacity: 0;
+    translate: -3px 3px;
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      translate var(--dur-3) var(--ease-out);
+  }
+
+  .link:hover .out,
+  .link:focus-visible .out {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* ---- the bottom row ------------------------------------------------------------------------------------- */
+
+  .bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) auto auto;
+    align-items: end;
+    gap: var(--space-8) clamp(2rem, 4vw, 4rem);
+    margin-block-start: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    padding-block-start: var(--space-8);
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .fine {
+    display: grid;
+    gap: var(--space-3);
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-relaxed);
+  }
+
+  .fine p {
+    max-inline-size: 62ch;
+  }
+
+  .status {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  .metric {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    min-block-size: 26px;
+  }
+
+  .metricLabel {
+    flex: none;
+    inline-size: 11em;
+    white-space: nowrap;
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .metricValue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    margin: 0;
+    color: var(--text-2);
+  }
+
+  .height {
+    color: var(--text-1);
+    font: var(--fw-medium) 1rem / 1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .responding {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .topLabel {
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* ---- responsive -------------------------------------------------------------------------------------------- */
+
+  @media (max-width: 1099px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .bottom {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .fine {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 719px) {
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .col:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .col:last-child .links {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .bottom {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .top {
+      justify-content: space-between;
+    }
+
+    .metric {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .metricLabel {
+      inline-size: auto;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .link,
+  :global(html[data-motion="reduced"]) .out,
+  :global(html[data-motion="reduced"]) .badge {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .out {
+    translate: none;
+  }
+
+  @media (prefers-contrast: more) {
+    .signoff {
+      display: none;
+    }
+
+    .link,
+    .tagline,
+    .fine {
+      color: var(--text-2);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .footer {
+      background: Canvas;
+    }
+
+    .footer::after,
+    .signoff,
+    .rule {
+      display: none;
+    }
+
+    .link {
+      color: LinkText;
+    }
+  }
+}

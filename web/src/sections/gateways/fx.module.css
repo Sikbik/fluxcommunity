@@ -1,0 +1,712 @@
+/*
+ * Micro animations for the gateway tiles. Everything here is positioned in FRAME coordinates
+ * (percent of the art image), so it follows the art through drift, zoom and float.
+ *
+ * Coordinates were read off the shipped pieces (fractions of the 800 or 960 px frame):
+ *   cloud     stack centre (.43, .52); top row y .17 to .33, x .12 to .50
+ *   edge      die core (.50, .455); circuits radiate to the rhombus edges
+ *   ai        orb centre (.50, .50), core (.50, .52), radius about .30
+ *   games     pad spans x .11 to .90, y .16 to .80; loose tiles float above it
+ *   docs      page fan x .18 to .85, y .16 to .85
+ *   explorer  chain from the near cube (.27, .65) to the far end (.92, .18)
+ *   node      pillar x .38 to .62, y .18 to .75; rings at y .37, .53, .66; base (.50, .72)
+ *   site      horizon seam at y about .40, floor below
+ *   wallet    vault centre (.45, .45), key bow (.82, .47)
+ *
+ * Two speeds: idle (slow, sparse, staggered so at most one or two tiles are mid-motion) and
+ * active (the host is hovered or focused). Off screen they are paused by the section
+ * (`data-art-live="false"`), and under reduced motion they are removed.
+ */
+@layer section {
+  /* The art's own alpha is the mask: light only ever lands on the object's glow. */
+  .mask {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: var(--art-mask);
+    mask-image: var(--art-mask);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /* ---- pointer specular ---------------------------------------------------------------- */
+
+  .glint {
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+    background: radial-gradient(
+      circle calc(var(--fw, 400px) * 0.3) at calc(var(--px, 50%) - var(--fl, 0px))
+        calc(var(--py, 50%) - var(--ft, 0px)),
+      rgb(255 255 255 / 0.78),
+      rgb(var(--accent-hot-rgb) / 0.38) 36%,
+      transparent 100%
+    );
+  }
+
+  :global([data-art-host][data-hover="true"]) .glint {
+    opacity: 1;
+  }
+
+  /* ---- sheen: a band of light across the object ----------------------------------------- */
+
+  .band {
+    position: absolute;
+    inset: -30%;
+    background: linear-gradient(
+      var(--sheen-angle, 108deg),
+      transparent 40%,
+      rgb(255 255 255 / 0.85) 50%,
+      transparent 60%
+    );
+    translate: -75% 0;
+    opacity: 0;
+    animation: sheen calc(12s * var(--ss, 1)) var(--ease-in-out) var(--sd, 0s) infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .band,
+  :global([data-art-host]:focus-visible) .band {
+    animation: sheen-fast 2.6s var(--ease-in-out) 0s infinite;
+  }
+
+  @keyframes sheen {
+    0%,
+    62% {
+      translate: -75% 0;
+      opacity: 0;
+    }
+    66% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    92%,
+    100% {
+      translate: 75% 0;
+      opacity: 0;
+    }
+  }
+
+  @keyframes sheen-fast {
+    0% {
+      translate: -75% 0;
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    58% {
+      opacity: 1;
+    }
+    66%,
+    100% {
+      translate: 75% 0;
+      opacity: 0;
+    }
+  }
+
+  /* ---- cloud: echoes behind the stack, containers docking in front --------------------------- */
+
+  .echo {
+    position: absolute;
+    inset: 0;
+    background: var(--art-mask) center / 100% 100% no-repeat;
+    transform-origin: var(--ox, 50%) var(--oy, 50%);
+    opacity: 0;
+    translate: 0 0;
+    scale: 1;
+    transition:
+      opacity var(--dur-4) var(--ease-out),
+      translate var(--dur-5) var(--ease-out),
+      scale var(--dur-5) var(--ease-out);
+  }
+
+  :global([data-art-host][data-hover="true"]) .echo1,
+  :global([data-art-host]:focus-visible) .echo1 {
+    opacity: 0.34;
+    translate: -8% 3%;
+    scale: 0.93;
+  }
+
+  :global([data-art-host][data-hover="true"]) .echo2,
+  :global([data-art-host]:focus-visible) .echo2 {
+    opacity: 0.17;
+    translate: -16% 6%;
+    scale: 0.86;
+    transition-delay: 90ms;
+  }
+
+  .arrive {
+    position: absolute;
+    inset: 0;
+    background: var(--art-mask) center / 100% 100% no-repeat;
+    clip-path: inset(13% 11% 65% 9%);
+    opacity: 0;
+    animation: arrive 9s var(--ease-out) 2s infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .arrive,
+  :global([data-art-host]:focus-visible) .arrive {
+    animation: arrive-fast 3.4s var(--ease-out) 0s infinite;
+  }
+
+  @keyframes arrive {
+    0%,
+    70% {
+      opacity: 0;
+      translate: -26% 0;
+    }
+    74% {
+      opacity: 0.9;
+    }
+    84% {
+      opacity: 0.9;
+      translate: 0 0;
+    }
+    92%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes arrive-fast {
+    0% {
+      opacity: 0;
+      translate: -26% 0;
+    }
+    8% {
+      opacity: 0.9;
+    }
+    42% {
+      opacity: 0.9;
+      translate: 0 0;
+    }
+    62%,
+    100% {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+
+  /* ---- docs: the scan line ------------------------------------------------------------------ */
+
+  .scan {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 20%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgb(var(--accent-hot-rgb) / 0.32) 72%,
+      rgb(255 255 255 / 0.95) 97%,
+      transparent 100%
+    );
+    translate: 0 -100%;
+    opacity: 0;
+    animation: scan 8s var(--ease-in-out) 1s infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .scan,
+  :global([data-art-host]:focus-visible) .scan {
+    animation: scan-fast 2.2s linear 0s infinite;
+  }
+
+  @keyframes scan {
+    0%,
+    55% {
+      translate: 0 -100%;
+      opacity: 0;
+    }
+    60% {
+      opacity: 1;
+    }
+    92% {
+      opacity: 1;
+    }
+    97%,
+    100% {
+      translate: 0 500%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes scan-fast {
+    0% {
+      translate: 0 -100%;
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      translate: 0 500%;
+      opacity: 0;
+    }
+  }
+
+  /* ---- edge: a ring of light leaves the die core --------------------------------------------- */
+
+  .pulse {
+    position: absolute;
+    left: 50%;
+    top: 45.5%;
+    width: 112%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      transparent 56%,
+      rgb(var(--accent-hot-rgb) / 0.55) 74%,
+      rgb(255 255 255 / 0.95) 84%,
+      transparent 92%
+    );
+    scale: 0.04;
+    opacity: 0;
+    animation: pulse 7s var(--ease-out) 0.5s infinite;
+  }
+
+  .pulseLate {
+    animation-delay: 1.4s;
+    opacity: 0;
+  }
+
+  :global([data-art-host][data-hover="true"]) .pulse,
+  :global([data-art-host]:focus-visible) .pulse {
+    animation: pulse-fast 2.2s var(--ease-out) 0s infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .pulseLate,
+  :global([data-art-host]:focus-visible) .pulseLate {
+    animation-delay: 0.45s;
+  }
+
+  @keyframes pulse {
+    0%,
+    62% {
+      scale: 0.04;
+      opacity: 0;
+    }
+    66% {
+      opacity: 1;
+    }
+    92% {
+      opacity: 0.6;
+    }
+    100% {
+      scale: 0.95;
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse-fast {
+    0% {
+      scale: 0.04;
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 0.5;
+    }
+    100% {
+      scale: 0.95;
+      opacity: 0;
+    }
+  }
+
+  /* ---- ai: the orb's core brightens as it breathes ---------------------------------------------- */
+
+  .core {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    width: 54%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      rgb(255 255 255 / 0.85),
+      rgb(var(--accent-hot-rgb) / 0.4) 42%,
+      transparent 72%
+    );
+    opacity: 0.1;
+    animation: core 5.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes core {
+    from {
+      opacity: 0.08;
+      scale: 0.86;
+    }
+    to {
+      opacity: 0.62;
+      scale: 1.04;
+    }
+  }
+
+  /* ---- games: glass tiles flip over --------------------------------------------------------- */
+
+  .chip {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--s);
+    aspect-ratio: 26 / 30;
+    translate: -50% -50%;
+    overflow: visible;
+    fill: rgb(var(--accent-rgb) / 0.3);
+    stroke: rgb(255 255 255 / 0.9);
+    stroke-width: 1.4;
+    stroke-linejoin: miter;
+    filter: drop-shadow(0 0 3px rgb(var(--accent-hot-rgb) / 0.7));
+    opacity: 0;
+    animation: chip 7s var(--ease-in-out) var(--d) infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .chip,
+  :global([data-art-host]:focus-visible) .chip {
+    animation: chip-fast 1.9s var(--ease-in-out) var(--d) infinite;
+  }
+
+  @keyframes chip {
+    0%,
+    70% {
+      opacity: 0;
+      scale: 1 1;
+    }
+    74% {
+      opacity: 0.95;
+    }
+    84% {
+      scale: 1 0.04;
+    }
+    94% {
+      opacity: 0.95;
+      scale: 1 1;
+    }
+    100% {
+      opacity: 0;
+      scale: 1 1;
+    }
+  }
+
+  @keyframes chip-fast {
+    0% {
+      opacity: 0.2;
+      scale: 1 1;
+    }
+    20% {
+      opacity: 0.95;
+    }
+    45% {
+      scale: 1 0.04;
+    }
+    75% {
+      opacity: 0.95;
+      scale: 1 1;
+    }
+    100% {
+      opacity: 0.2;
+      scale: 1 1;
+    }
+  }
+
+  /* ---- explorer: blocks travel the chain ---------------------------------------------------- */
+
+  .track {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    animation: travel 9s linear var(--td, 0s) infinite;
+  }
+
+  .cube {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 8%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border: 1px solid rgb(255 255 255 / 0.85);
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.3), rgb(var(--accent-rgb) / 0.22));
+    box-shadow: 0 0 10px rgb(var(--accent-hot-rgb) / 0.55);
+    animation: shrink 9s linear var(--td, 0s) infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .track,
+  :global([data-art-host]:focus-visible) .track {
+    animation-duration: 3.6s;
+  }
+
+  :global([data-art-host][data-hover="true"]) .cube,
+  :global([data-art-host]:focus-visible) .cube {
+    animation-duration: 3.6s;
+  }
+
+  /* The chain runs from the near cube (.27,.65) out to the far end (.92,.18), in perspective. */
+  @keyframes travel {
+    0% {
+      translate: 27% 65%;
+      opacity: 0;
+    }
+    8% {
+      opacity: 0.95;
+    }
+    30% {
+      translate: 50% 46%;
+    }
+    50% {
+      translate: 63% 36%;
+    }
+    72% {
+      translate: 77% 27%;
+      opacity: 0.9;
+    }
+    100% {
+      translate: 92% 18%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes shrink {
+    0% {
+      scale: 1.5;
+    }
+    100% {
+      scale: 0.3;
+    }
+  }
+
+  /* A real block: one brighter cube runs the chain once when the tip height moves. */
+  .arrival {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    animation: travel 2.8s var(--ease-out) 1 both;
+  }
+
+  .arrivalCube {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 9%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border: 1px solid #fff;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.55), rgb(var(--accent-rgb) / 0.35));
+    box-shadow:
+      0 0 14px rgb(var(--accent-hot-rgb) / 0.85),
+      0 0 34px rgb(var(--accent-rgb) / 0.5);
+    animation: shrink 2.8s linear 1 both;
+  }
+
+  /* ---- node: concentric ripples leave the base of the pillar ------------------------------ */
+
+  .ripple {
+    position: absolute;
+    left: 50%;
+    top: 72%;
+    width: 86%;
+    height: 17%;
+    translate: -50% -50%;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--accent-hot-rgb) / 0.95);
+    box-shadow:
+      0 0 10px rgb(var(--accent-rgb) / 0.55),
+      inset 0 0 10px rgb(var(--accent-rgb) / 0.3);
+    scale: 0.2;
+    opacity: 0;
+    animation: ripple 6.4s var(--ease-out) var(--rd, 0s) infinite;
+  }
+
+  :global([data-art-host][data-hover="true"]) .ripple,
+  :global([data-art-host]:focus-visible) .ripple {
+    animation-duration: 3.2s;
+  }
+
+  @keyframes ripple {
+    0% {
+      scale: 0.2;
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.9;
+    }
+    100% {
+      scale: 1.12;
+      opacity: 0;
+    }
+  }
+
+  /* ---- site: the horizon seam ------------------------------------------------------------- */
+
+  .seam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 38.5%;
+    height: 4%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--accent-hot-rgb) / 0.6) 30%,
+      rgb(255 255 255 / 0.95) 50%,
+      rgb(var(--accent-hot-rgb) / 0.6) 70%,
+      transparent
+    );
+    opacity: 0.25;
+    animation: seam 6.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes seam {
+    from {
+      opacity: 0.12;
+      scale: 0.7 1;
+    }
+    to {
+      opacity: 0.85;
+      scale: 1 1;
+    }
+  }
+
+  /* ---- wallet: the key's flare ---------------------------------------------------------------- */
+
+  .flare {
+    position: absolute;
+    left: 82%;
+    top: 47%;
+    width: 22%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.65), transparent 70%);
+    scale: 0;
+    opacity: 0;
+    animation: flare 7s var(--ease-out) 2s infinite;
+  }
+
+  .flare::before,
+  .flare::after {
+    content: "";
+    position: absolute;
+    background: linear-gradient(90deg, transparent, #fff 50%, transparent);
+  }
+
+  .flare::before {
+    left: -20%;
+    right: -20%;
+    top: 50%;
+    height: 1.5px;
+    translate: 0 -50%;
+  }
+
+  .flare::after {
+    top: -20%;
+    bottom: -20%;
+    left: 50%;
+    width: 1.5px;
+    translate: -50% 0;
+    background: linear-gradient(180deg, transparent, #fff 50%, transparent);
+  }
+
+  :global([data-art-host][data-hover="true"]) .flare,
+  :global([data-art-host]:focus-visible) .flare {
+    animation: flare-fast 2.4s var(--ease-out) 0s infinite;
+  }
+
+  @keyframes flare {
+    0%,
+    78% {
+      scale: 0;
+      opacity: 0;
+      rotate: 0deg;
+    }
+    84% {
+      scale: 1;
+      opacity: 1;
+      rotate: 25deg;
+    }
+    94%,
+    100% {
+      scale: 0.2;
+      opacity: 0;
+      rotate: 60deg;
+    }
+  }
+
+  @keyframes flare-fast {
+    0% {
+      scale: 0;
+      opacity: 0;
+      rotate: 0deg;
+    }
+    18% {
+      scale: 1.1;
+      opacity: 1;
+      rotate: 25deg;
+    }
+    50%,
+    100% {
+      scale: 0.2;
+      opacity: 0;
+      rotate: 60deg;
+    }
+  }
+
+  /* ---- gating -------------------------------------------------------------------------------- */
+
+  /*
+   * Off screen the section marks the grid not live and every micro animation is paused. These
+   * selectors are as specific as the hover rules above (and come after them), so a paused
+   * animation is never restarted by a hover shorthand.
+   */
+  :global([data-art-live="false"] [data-art-host]) .band,
+  :global([data-art-live="false"] [data-art-host]) .arrive,
+  :global([data-art-live="false"] [data-art-host]) .scan,
+  :global([data-art-live="false"] [data-art-host]) .pulse,
+  :global([data-art-live="false"] [data-art-host]) .core,
+  :global([data-art-live="false"] [data-art-host]) .chip,
+  :global([data-art-live="false"] [data-art-host]) .track,
+  :global([data-art-live="false"] [data-art-host]) .arrival,
+  :global([data-art-live="false"] [data-art-host]) .arrivalCube,
+  :global([data-art-live="false"] [data-art-host]) .cube,
+  :global([data-art-live="false"] [data-art-host]) .ripple,
+  :global([data-art-live="false"] [data-art-host]) .seam,
+  :global([data-art-live="false"] [data-art-host]) .flare {
+    animation-play-state: paused;
+  }
+
+  /* Reduced motion removes every micro animation and the specular follow. */
+  :global(html[data-motion="reduced"] [data-art-host]) .mask,
+  :global(html[data-motion="reduced"] [data-art-host]) .echo,
+  :global(html[data-motion="reduced"] [data-art-host]) .arrive,
+  :global(html[data-motion="reduced"] [data-art-host]) .chip,
+  :global(html[data-motion="reduced"] [data-art-host]) .track,
+  :global(html[data-motion="reduced"] [data-art-host]) .arrival,
+  :global(html[data-motion="reduced"] [data-art-host]) .ripple,
+  :global(html[data-motion="reduced"] [data-art-host]) .flare {
+    display: none;
+  }
+
+  @media (forced-colors: active) {
+    .mask,
+    .echo,
+    .arrive,
+    .chip,
+    .track,
+    .arrival,
+    .ripple,
+    .flare {
+      display: none;
+    }
+  }
+}

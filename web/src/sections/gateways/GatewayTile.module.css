@@ -1,0 +1,424 @@
+/*
+ * A gateway tile. The tile IS the link (Panel as="a"), so the primitive's hover spotlight,
+ * edge catch, tilt, press compression, focus beam and stage focus all apply untouched.
+ *
+ * Inside the Panel's content wrapper (itself above the glass, spotlight and tick marks):
+ *   art zone  0   the RGBA art, normally composited (see art/art.module.css)
+ *   scrim     1   a quiet gradient so text never fights the art
+ *   copy      2   the words
+ *
+ * Composition is driven from here. `--art-*` custom properties on `.content` tell the fit hook
+ * where the art lives (fractions of the tile) for each tile shape; the hook publishes the
+ * art's measured left edge back as `--art-cl`, and the text column is capped by it, so copy
+ * and art are side by side and never overlap. The Panel is a size container, so type scales
+ * with the tile (cqw), not the viewport.
+ */
+@layer section {
+  .cell {
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  .tile {
+    --pad: clamp(1rem, 4.6cqw, 1.35rem);
+    --name-size: clamp(1.15rem, 6.2cqw, 1.5rem);
+    --copy-w: 100%;
+    block-size: 100%;
+    color: var(--text-2);
+    text-decoration: none;
+  }
+
+  .content {
+    block-size: 100%;
+    --art-fill: 0.88;
+  }
+
+  /* ---- art placement per tile shape (fractions of the tile) ------------------------------- */
+
+  .tile[data-form="hero"] .content {
+    --art-l: 0.42;
+    --art-fill: 0.94;
+    --art-ay: 0.52;
+  }
+
+  .tile[data-form="wide"] .content {
+    --art-l: 0.44;
+    --art-fill: 0.97;
+  }
+
+  .tile[data-form="compact"] .content {
+    --art-l: 0.46;
+    --art-t: 0.02;
+    --art-b: 0.04;
+    --art-fill: 0.9;
+  }
+
+  .tile[data-form="tall"] .content {
+    --art-t: 0.09;
+    --art-b: 0.36;
+    --art-fill: 0.92;
+  }
+
+  .tile[data-form="strip"] .content {
+    --art-r: 0.72;
+    --art-fill: 0.8;
+  }
+
+  /* runonflux.com: the lattice horizon is a wide strip, so it covers the tile and bleeds. */
+  .tile[data-gateway="flux"] .content {
+    --art-l: 0;
+    --art-r: 0;
+    --art-t: 0;
+    --art-b: 0;
+    --art-mode: cover;
+    --art-bleed: 1;
+    --art-fill: 1;
+    --art-ay: 0.5;
+  }
+
+  /* ---- forms: how the copy sits in each tile shape ------------------------------------------ */
+
+  .tile[data-form="hero"] {
+    --pad: clamp(1.25rem, 5cqw, 2.1rem);
+    --name-size: clamp(1.9rem, 7cqw, 3.4rem);
+    --copy-w: 56%;
+  }
+
+  .tile[data-form="wide"] {
+    --name-size: clamp(1.2rem, 3.5cqw, 1.65rem);
+  }
+
+  .tile[data-form="compact"] {
+    --name-size: clamp(1.1rem, 6cqw, 1.4rem);
+  }
+
+  .tile[data-form="tall"] {
+    --name-size: clamp(1.2rem, 6.4cqw, 1.6rem);
+  }
+
+  .tile[data-form="strip"] {
+    --pad: 0.65rem 1rem;
+    --name-size: 1.0625rem;
+    --strip-art: 28%;
+  }
+
+  /* The name block and the foot sit at the bottom; the kind label stays at the top. */
+  .body {
+    display: grid;
+    gap: 5px;
+    margin-block-start: auto;
+    max-inline-size: var(--copy-w);
+    min-inline-size: 0;
+  }
+
+  /* Side by side: the text column ends where the art begins (never below 7.5rem). */
+  .tile[data-form="wide"] .body,
+  .tile[data-form="compact"] .body {
+    max-inline-size: max(7.5rem, calc(var(--art-cl, 100cqw) - var(--pad) - 0.75rem));
+  }
+
+  .tile[data-form="hero"] .body {
+    max-inline-size: var(--copy-w);
+  }
+
+  /* The horizon is a full bleed backdrop, not a side by side art: the text may use the width. */
+  .tile[data-gateway="flux"] .body {
+    max-inline-size: none;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: var(--bw, 1px);
+    z-index: 1;
+    clip-path: var(--clip-inner);
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgb(8 10 15 / 0.58) 0%,
+      rgb(8 10 15 / 0.3) calc(var(--art-cl, 55%) * 0.9),
+      transparent calc(var(--art-cl, 55%) + 8%)
+    );
+  }
+
+  .tile[data-form="tall"] .scrim {
+    background: linear-gradient(0deg, rgb(8 10 15 / 0.72) 0%, rgb(8 10 15 / 0.4) 32%, transparent 56%);
+  }
+
+  .tile[data-form="strip"] .scrim {
+    display: none;
+  }
+
+  .tile[data-gateway="flux"] .scrim {
+    background:
+      linear-gradient(0deg, rgb(8 10 15 / 0.86) 0%, rgb(8 10 15 / 0.55) 40%, transparent 74%),
+      linear-gradient(180deg, rgb(8 10 15 / 0.55) 0%, transparent 34%);
+  }
+
+  /* ---- copy ----------------------------------------------------------------------------- */
+
+  .copy {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    block-size: 100%;
+    padding: var(--pad);
+    min-inline-size: 0;
+  }
+
+  .kind {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-inline-size: none;
+    color: var(--accent-text);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    /* Bright art (the horizon especially) can pass behind the label; a dark halo keeps it clean. */
+    text-shadow: 0 0 0.6em rgb(8 10 15 / 0.9);
+  }
+
+  .kindLabel {
+    color: var(--text-3);
+  }
+
+  .name {
+    color: var(--text-1);
+    font: 600 var(--name-size) / 1.06 var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .lite {
+    color: var(--text-2);
+    font-weight: var(--fw-light);
+  }
+
+  .tagline {
+    max-inline-size: 36ch;
+    color: var(--text-2);
+    font: 400 var(--fs-md) / 1.4 var(--font-sans);
+    text-wrap: pretty;
+  }
+
+  .detail {
+    max-inline-size: 44ch;
+    margin-block-start: 6px;
+    color: var(--text-3);
+    font: 400 var(--fs-sm) / 1.55 var(--font-sans);
+    text-wrap: pretty;
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-inline-size: 0;
+  }
+
+  .host {
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--text-3);
+    font: 500 var(--fs-xs) / 1.2 var(--font-mono);
+    letter-spacing: 0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  /* The arrow chip: a hexagon with an arrow that exits top-right and re-enters bottom-left. */
+  .go {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 31px;
+    block-size: 36px;
+    color: var(--accent-text);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  .go::before,
+  .go::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    clip-path: var(--hex-clip);
+  }
+
+  .go::before {
+    background: rgb(var(--accent-rgb) / 0.55);
+    transition: background var(--dur-2) var(--ease-out);
+  }
+
+  .go::after {
+    inset: 1px;
+    background: rgb(8 10 15 / 0.88);
+  }
+
+  .arrows {
+    position: relative;
+    z-index: 1;
+    inline-size: 16px;
+    block-size: 16px;
+    overflow: hidden;
+  }
+
+  .arrowOut,
+  .arrowIn {
+    position: absolute;
+    inset: 0;
+    transition: translate var(--dur-3) var(--ease-out);
+  }
+
+  .arrowIn {
+    translate: -140% 140%;
+  }
+
+  .tile[data-hover="true"] .arrowOut,
+  .tile:focus-visible .arrowOut {
+    translate: 140% -140%;
+  }
+
+  .tile[data-hover="true"] .arrowIn,
+  .tile:focus-visible .arrowIn {
+    translate: 0 0;
+  }
+
+  .tile[data-hover="true"] .go,
+  .tile:focus-visible .go {
+    color: var(--text-1);
+  }
+
+  .tile[data-hover="true"] .go::before,
+  .tile:focus-visible .go::before {
+    background: var(--hot);
+  }
+
+  .tile[data-hover="true"] .host,
+  .tile:focus-visible .host {
+    color: var(--text-2);
+  }
+
+  /* ---- strip: the quiet utilities --------------------------------------------------------------- */
+
+  .tile[data-form="strip"] .copy {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding-inline-start: calc(var(--strip-art) + 0.35rem);
+  }
+
+  .tile[data-form="strip"] .kind {
+    display: none;
+  }
+
+  .tile[data-form="strip"] .body {
+    flex: 1;
+    gap: 2px;
+    margin-block-start: 0;
+    max-inline-size: none;
+  }
+
+  .tile[data-form="strip"] .tagline {
+    display: -webkit-box;
+    max-inline-size: none;
+    overflow: hidden;
+    font-size: var(--fs-sm);
+    line-height: 1.3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .tile[data-form="strip"] .foot {
+    flex: none;
+  }
+
+  .tile[data-form="strip"] .host {
+    display: none;
+  }
+
+  .tile[data-form="strip"] .go {
+    inline-size: 26px;
+    block-size: 30px;
+  }
+
+  /* ---- phone ---------------------------------------------------------------------------------- */
+
+  @media (max-width: 719.98px) {
+    .tile[data-form="hero"] .content {
+      --art-l: 0;
+      --art-t: 0.1;
+      --art-b: 0.5;
+      --art-fill: 0.92;
+      --art-ay: 0.5;
+    }
+
+    .tile[data-form="hero"] .body {
+      max-inline-size: none;
+    }
+
+    .tile[data-form="hero"] .detail {
+      display: none;
+    }
+
+    .tile[data-form="hero"] .scrim {
+      background: linear-gradient(0deg, rgb(8 10 15 / 0.74) 0%, rgb(8 10 15 / 0.42) 38%, transparent 64%);
+    }
+
+    .tile[data-form="wide"] .content {
+      --art-l: 0.5;
+      --art-fill: 0.96;
+    }
+  }
+
+  /* ---- launch: the 240 ms warp toward the viewer ------------------------------------------------- */
+
+  .tile[data-launch="true"] {
+    animation: launch 260ms var(--ease-out);
+  }
+
+  @keyframes launch {
+    0% {
+      scale: 1;
+    }
+    38% {
+      scale: 1.05;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .tile[data-launch="true"] {
+    animation: none;
+  }
+
+  :global(html[data-motion="reduced"]) .arrowOut,
+  :global(html[data-motion="reduced"]) .arrowIn,
+  :global(html[data-motion="reduced"]) .go,
+  :global(html[data-motion="reduced"]) .go::before,
+  :global(html[data-motion="reduced"]) .host {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .tile[data-hover="true"] .arrowOut,
+  :global(html[data-motion="reduced"]) .tile:focus-visible .arrowOut {
+    translate: none;
+  }
+
+  :global(html[data-motion="reduced"]) .tile[data-hover="true"] .arrowIn,
+  :global(html[data-motion="reduced"]) .tile:focus-visible .arrowIn {
+    translate: -140% 140%;
+  }
+
+  @media (prefers-contrast: more) {
+    .scrim {
+      background: rgb(8 10 15 / 0.7);
+    }
+  }
+}

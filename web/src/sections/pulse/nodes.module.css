@@ -1,0 +1,327 @@
+@layer section {
+  .tile {
+    block-size: 100%;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    block-size: 100%;
+  }
+
+  /* ---- the total ------------------------------------------------------------------------------ */
+
+  .total {
+    display: grid;
+    gap: var(--space-4);
+    min-block-size: 5.5rem;
+  }
+
+  .totalNumber {
+    font-size: var(--fs-stat-xl);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-shadow: 0 0 36px rgb(var(--accent-rgb) / 0.35);
+  }
+
+  .totalSub {
+    color: var(--text-3);
+    font: 400 var(--fs-sm) / var(--lh-normal) var(--font-sans);
+  }
+
+  .totalSub b {
+    color: var(--text-1);
+    font-weight: var(--fw-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- the tier rows --------------------------------------------------------------------------- */
+
+  .rows {
+    position: relative;
+    display: grid;
+    flex: 1 1 auto;
+    grid-auto-rows: 1fr;
+    border-block-start: 1px solid var(--line-2);
+  }
+
+  /*
+   * A tick ruler along the top hairline, brightened by the Beat. It is a box of its own, drawn at
+   * its brightest (alpha 0.46) and held at 0.16 / 0.46 until a block lands: the pulse is then an
+   * opacity animation on the compositor. (It used to read --flash on .rows, which restyled the
+   * three rows under it, about 600 elements, on every frame of the beat.)
+   */
+  .rows::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    block-size: 4px;
+    background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.46) 0 1px, transparent 1px 12px);
+    opacity: 0.3478;
+    pointer-events: none;
+  }
+
+  :global(html[data-beat="a"]) .rows::before {
+    animation: ruler-a 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-beat="b"]) .rows::before {
+    animation: ruler-b 1400ms var(--ease-out) backwards;
+  }
+
+  :global(html[data-motion="reduced"]) .rows::before {
+    animation: none;
+  }
+
+  @keyframes ruler-a {
+    from {
+      opacity: 1;
+    }
+  }
+
+  @keyframes ruler-b {
+    from {
+      opacity: 1;
+    }
+  }
+
+  .row {
+    --row-pad: var(--space-6);
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-6);
+    inline-size: 100%;
+    padding-block: var(--row-pad);
+    padding-inline: var(--space-3);
+    color: var(--text-2);
+    text-align: start;
+    border-block-end: 1px solid var(--line-1);
+    transition:
+      background-color var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out);
+  }
+
+  .row:last-child {
+    border-block-end: 0;
+  }
+
+  .row::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 14px rgb(var(--accent-rgb) / 0.7);
+    scale: 1 0;
+    transform-origin: center;
+    transition: scale var(--dur-3) var(--ease-out);
+  }
+
+  .row:hover,
+  .row:focus-visible {
+    background-color: rgb(var(--accent-rgb) / 0.07);
+  }
+
+  .row:hover::before,
+  .row:focus-visible::before,
+  .row[aria-pressed="true"]::before {
+    scale: 1 1;
+  }
+
+  .row[aria-pressed="true"] {
+    background-color: rgb(var(--accent-rgb) / 0.1);
+  }
+
+  .row:focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: -2px;
+  }
+
+  .meta {
+    display: grid;
+    gap: var(--space-4);
+    min-inline-size: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+
+  .row[data-dim="true"] .meta {
+    opacity: 0.45;
+  }
+
+  .nameLine {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--tier);
+    font: 600 var(--fs-xs) / 1 var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .name svg {
+    translate: 0 -1px;
+  }
+
+  .count {
+    color: var(--text-1);
+    font: 400 1.625rem / 1 var(--font-display);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .facts {
+    display: grid;
+    gap: 3px;
+  }
+
+  .fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-5);
+    font: 400 var(--fs-xs) / 1.5 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .factLabel {
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .factValue {
+    color: var(--text-1);
+    white-space: nowrap;
+  }
+
+  .pct {
+    color: var(--text-1);
+    font: 500 var(--fs-sm) / 1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .pctSign {
+    color: var(--text-3);
+    font-size: 0.8em;
+    margin-inline-start: 1px;
+  }
+
+  .rowSkeleton {
+    pointer-events: none;
+  }
+
+  .foot {
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+  }
+
+  .rule {
+    color: var(--text-2);
+    font: 400 var(--fs-sm) / var(--lh-normal) var(--font-sans);
+  }
+
+  /* ---- wide tile (tablet): the tiers sit side by side -------------------------------------------- */
+
+  @container (min-width: 40rem) {
+    /* The sentence about what a node is paid moves up beside the total, so the top right is not a void. */
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto 1fr;
+      align-content: start;
+      column-gap: var(--space-9);
+      row-gap: var(--space-8);
+    }
+
+    .content > * {
+      grid-column: 1 / -1;
+    }
+
+    .content > .total {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .content > .foot {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: end;
+      max-inline-size: 22ch;
+      margin-block-start: 0;
+      padding-block-start: 0;
+      text-align: end;
+    }
+
+    .content > .rows {
+      grid-row: 3;
+    }
+
+    .rule {
+      color: var(--text-3);
+    }
+
+    .rows {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      align-content: start;
+      justify-items: start;
+      gap: var(--space-5);
+      padding-inline: var(--space-8);
+      border-block-end: 0;
+      border-inline-start: 1px solid var(--line-1);
+    }
+
+    .row:first-child {
+      border-inline-start: 0;
+      padding-inline-start: var(--space-3);
+    }
+
+    .meta {
+      inline-size: 100%;
+    }
+
+    .row::before {
+      inset-block: auto 0;
+      inset-inline: 0;
+      inline-size: auto;
+      block-size: 2px;
+      scale: 0 1;
+    }
+
+    .row:hover::before,
+    .row:focus-visible::before,
+    .row[aria-pressed="true"]::before {
+      scale: 1 1;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .row,
+  :global(html[data-motion="reduced"]) .row::before,
+  :global(html[data-motion="reduced"]) .meta {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    .row[aria-pressed="true"] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}

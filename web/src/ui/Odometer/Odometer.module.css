@@ -1,0 +1,82 @@
+@layer ui {
+  .odo {
+    display: inline-flex;
+    align-items: baseline;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .cells {
+    display: inline-flex;
+    align-items: baseline;
+    border-radius: 0.1em;
+  }
+
+  .odo[data-flash="a"] .cells {
+    animation: settle-a var(--dur-5) var(--ease-out);
+  }
+
+  .odo[data-flash="b"] .cells {
+    animation: settle-b var(--dur-5) var(--ease-out);
+  }
+
+  .cell {
+    position: relative;
+    display: inline-block;
+    block-size: 1em;
+    overflow: hidden;
+    /* Digits that are not at rest are masked at the top and bottom edge. */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+  }
+
+  /*
+   * No will-change: the roll is a WAAPI transform animation, which the browser promotes for as
+   * long as it runs. A permanent will-change made one layer per digit (about 170 layers on the
+   * home page) for strips that sit still almost all of the time.
+   */
+  .strip {
+    display: block;
+  }
+
+  .strip > span {
+    display: block;
+    block-size: 1em;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .sep {
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .affix {
+    display: inline-block;
+    opacity: 0.8;
+  }
+
+  @keyframes settle-a {
+    0% {
+      text-shadow: 0 0 0.6em rgb(var(--accent-hot-rgb) / 0.75);
+    }
+    100% {
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes settle-b {
+    0% {
+      text-shadow: 0 0 0.6em rgb(var(--accent-hot-rgb) / 0.75);
+    }
+    100% {
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .odo .cells {
+    animation: none;
+  }
+}

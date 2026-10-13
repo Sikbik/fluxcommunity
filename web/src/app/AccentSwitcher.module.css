@@ -1,0 +1,90 @@
+@layer ui {
+  .group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .swatch {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 36px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (pointer: coarse) {
+    .swatch {
+      inline-size: 44px;
+      block-size: 44px;
+    }
+  }
+
+  .hex {
+    position: relative;
+    inline-size: 20px;
+    block-size: 23px;
+    background: var(--sw);
+    clip-path: var(--hex-clip);
+    transition:
+      scale var(--dur-2) var(--ease-snap),
+      filter var(--dur-2) var(--ease-out);
+  }
+
+  /* The selection ring: a hexagon outline around the swatch. */
+  .ring {
+    position: absolute;
+    inline-size: 28px;
+    block-size: 32px;
+    background: #fff;
+    clip-path: var(--hex-clip);
+    opacity: 0;
+    scale: 0.7;
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      scale var(--dur-3) var(--ease-snap);
+  }
+
+  .ring::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: var(--ink-0);
+    clip-path: var(--hex-clip);
+  }
+
+  .swatch[aria-checked="true"] .ring {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .swatch[aria-checked="true"] .hex {
+    scale: 0.92;
+    filter: drop-shadow(0 0 6px var(--sw));
+  }
+
+  .swatch:hover .hex {
+    scale: 1.12;
+  }
+
+  .swatch:focus-visible {
+    outline: none;
+  }
+
+  .swatch:focus-visible .ring {
+    opacity: 1;
+    scale: 1.06;
+    background: var(--focus-color);
+  }
+
+  :global(html[data-motion="reduced"]) .hex,
+  :global(html[data-motion="reduced"]) .ring {
+    transition: opacity var(--dur-2) linear;
+  }
+
+  :global(html[data-motion="reduced"]) .swatch:hover .hex {
+    scale: 1;
+  }
+}

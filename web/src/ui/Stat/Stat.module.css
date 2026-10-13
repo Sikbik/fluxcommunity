@@ -1,0 +1,51 @@
+@layer ui {
+  .stat {
+    display: grid;
+    gap: 8px;
+    min-inline-size: 0;
+  }
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 12px;
+  }
+
+  .label {
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .value {
+    color: var(--text-1);
+    font: var(--type-stat);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+
+  .stat[data-size="lg"] .value {
+    font-size: var(--fs-stat-xl);
+  }
+
+  .stat[data-size="sm"] .value {
+    font-size: var(--fs-h3);
+    font-weight: 400;
+  }
+
+  .unit {
+    margin-inline-start: 0.35em;
+    color: var(--text-3);
+    font: 500 var(--fs-md) / 1 var(--font-mono);
+    letter-spacing: 0;
+  }
+
+  .sub {
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+  }
+}

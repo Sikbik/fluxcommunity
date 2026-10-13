@@ -1,0 +1,187 @@
+@layer section {
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 1000px) {
+    .columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .group + .group {
+      padding-inline-start: var(--space-8);
+      border-inline-start: 1px solid var(--line-2);
+    }
+
+    .group:not(:last-child) {
+      padding-inline-end: var(--space-8);
+    }
+  }
+
+  @media (max-width: 999.98px) {
+    .group + .group {
+      padding-block-start: var(--space-7);
+      border-block-start: 1px solid var(--line-2);
+    }
+  }
+
+  .group {
+    display: grid;
+    align-content: start;
+    gap: var(--space-6);
+    min-inline-size: 0;
+  }
+
+  .groupHead {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .groupIndex {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-inline-size: none;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+  }
+
+  .groupIndex > :first-child {
+    color: var(--accent);
+  }
+
+  .groupTitle {
+    font: var(--type-h3);
+    letter-spacing: var(--tracking-heading);
+    color: var(--text-1);
+  }
+
+  .groupLead {
+    max-inline-size: 34ch;
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+  }
+
+  .list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list > li {
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .list > li:last-child {
+    border-block-end: 1px solid var(--line-1);
+  }
+
+  /* One row, one link: icon, what it is, where it goes, and an arrow that leans toward the exit. */
+  .row {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-5);
+    padding: var(--space-5) var(--space-3);
+    margin-inline: calc(var(--space-3) * -1);
+    min-block-size: 44px;
+    color: var(--text-2);
+    text-decoration: none;
+  }
+
+  /* The wash under a row you are on: an overlay whose opacity moves. */
+  .row::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to right, rgb(var(--accent-rgb) / 0.12), transparent 85%);
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .row:hover::before,
+  .row:focus-visible::before {
+    opacity: 1;
+  }
+
+  .rowIcon {
+    display: grid;
+    place-items: center;
+    inline-size: 38px;
+    block-size: 38px;
+    color: var(--accent-text);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  .rowText {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  .rowName {
+    color: var(--text-1);
+    font: var(--type-h4);
+    letter-spacing: var(--tracking-heading);
+    transition: color var(--dur-2) var(--ease-out);
+  }
+
+  .rowBlurb {
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .rowWhere {
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: 0.04em;
+    overflow-wrap: anywhere;
+  }
+
+  .rowArrow {
+    align-self: start;
+    margin-block-start: 3px;
+    color: var(--text-3);
+    transition:
+      translate var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out);
+  }
+
+  .row:hover .rowName,
+  .row:focus-visible .rowName {
+    color: var(--accent-strong);
+  }
+
+  .row:hover .rowIcon,
+  .row:focus-visible .rowIcon {
+    color: var(--accent-strong);
+  }
+
+  .row:hover .rowArrow,
+  .row:focus-visible .rowArrow {
+    translate: 3px -3px;
+    color: var(--text-1);
+  }
+
+  :global(html[data-motion="reduced"]) .row::before,
+  :global(html[data-motion="reduced"]) .rowArrow {
+    transition: none;
+  }
+
+  :global(html[data-motion="reduced"]) .row:hover .rowArrow,
+  :global(html[data-motion="reduced"]) .row:focus-visible .rowArrow {
+    translate: none;
+  }
+}

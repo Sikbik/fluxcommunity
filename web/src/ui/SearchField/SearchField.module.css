@@ -1,0 +1,109 @@
+@layer ui {
+  .field {
+    --c: 8px;
+    --cm: 2px;
+    --bw: 1px;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    inline-size: 100%;
+    min-block-size: 44px;
+    padding: 0 12px 0 14px;
+    color: var(--text-1);
+    cursor: text;
+  }
+
+  .field::before,
+  .field::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .field::before {
+    inset: 0;
+    clip-path: var(--clip-outer);
+    background: linear-gradient(180deg, rgb(var(--accent-hot-rgb) / 0.4), rgb(var(--accent-rgb) / 0.2));
+    transition: background var(--dur-2) var(--ease-out);
+  }
+
+  .field::after {
+    inset: var(--bw);
+    clip-path: var(--clip-inner);
+    background: rgb(8 10 15 / 0.7);
+  }
+
+  .field:hover::before {
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(var(--accent-hot-rgb) / 0.4));
+  }
+
+  .field:focus-within {
+    --bw: 2px;
+  }
+
+  .field:focus-within::before {
+    background: linear-gradient(180deg, #fff, rgb(var(--accent-hot-rgb) / 0.7));
+  }
+
+  .prompt {
+    flex: none;
+    color: var(--accent-text);
+    font: 500 var(--fs-md) / 1 var(--font-mono);
+  }
+
+  .input {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 0;
+    color: inherit;
+    font: 500 var(--fs-md) / 1.2 var(--font-mono);
+    letter-spacing: 0.01em;
+    background: none;
+    border: 0;
+    outline: none;
+  }
+
+  .input::placeholder {
+    color: var(--text-3);
+  }
+
+  .input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  .hint {
+    flex: none;
+  }
+
+  .clear {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 28px;
+    block-size: 28px;
+    color: var(--text-3);
+    border-radius: var(--r-xs);
+  }
+
+  .clear:hover {
+    color: var(--text-1);
+    background: var(--accent-soft);
+  }
+
+  :global(html[data-motion="reduced"]) .field::before {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    .field::before {
+      background: CanvasText;
+    }
+
+    .field::after {
+      background: Canvas;
+    }
+  }
+}

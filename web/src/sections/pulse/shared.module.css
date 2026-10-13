@@ -1,0 +1,64 @@
+/*
+ * Shared tile chrome: the header (a hex bullet, the mono label, the freshness chip) and the calm
+ * "not available" note. Every tile starts the same way so the bento reads as one instrument.
+ */
+@layer section {
+  .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-5);
+    min-inline-size: 0;
+  }
+
+  .titles {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-2);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .bullet {
+    color: var(--accent);
+    flex: none;
+  }
+
+  .detail {
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.4 var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  .chip {
+    flex: none;
+    display: flex;
+    align-items: center;
+    min-block-size: 22px;
+  }
+
+  .unavailable {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+  }
+
+  .unavailableMark {
+    flex: none;
+    inline-size: 8px;
+    block-size: 1px;
+    background: var(--text-4);
+    translate: 0 -0.3em;
+  }
+}

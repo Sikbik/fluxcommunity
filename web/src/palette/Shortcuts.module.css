@@ -1,0 +1,166 @@
+@layer section {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 8px clamp(20px, 4vw, 44px);
+  }
+
+  .col {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+
+  /* One column: the groups go back to their reading order (each carries its own `order`). */
+  @media (max-width: 719px) {
+    .grid {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .col {
+      display: contents;
+    }
+  }
+
+  .group {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    margin-block-end: 14px;
+  }
+
+  .groupTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    padding-block-end: 8px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    border-block-end: 1px solid var(--line-2);
+  }
+
+  .groupTitle::before {
+    content: "";
+    inline-size: 7px;
+    block-size: 8px;
+    background: var(--accent);
+    clip-path: var(--hex-clip);
+  }
+
+  .list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-block-size: 40px;
+    padding-block: 6px;
+    border-block-end: 1px solid var(--line-1);
+  }
+
+  .label {
+    color: var(--text-2);
+    font-size: var(--fs-md);
+    line-height: 1.35;
+  }
+
+  .keys {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px 8px;
+    margin: 0;
+  }
+
+  .seq {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sep {
+    color: var(--text-4);
+    font: 400 var(--fs-2xs) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .note {
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.3 var(--font-mono);
+    text-align: end;
+  }
+
+  .foot {
+    margin: 4px 0 0;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+  }
+
+  /* ---- the chord hint: shown for a moment after `g` ------------------------------------------- */
+
+  .chord {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: max(28px, var(--safe-bottom));
+    display: grid;
+    justify-items: center;
+    pointer-events: none;
+    padding-inline: 12px;
+    opacity: 0;
+    translate: 0 10px;
+    transition:
+      opacity var(--dur-2) var(--ease-out),
+      translate var(--dur-2) var(--ease-out);
+  }
+
+  .chord[data-open="true"] {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .chordInner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 16px;
+    padding: 12px 18px;
+  }
+
+  .chordLead {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-1);
+    font: 500 var(--fs-sm) / 1 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .chordItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-2);
+    font: 400 var(--fs-sm) / 1 var(--font-sans);
+    white-space: nowrap;
+  }
+
+  :global(html[data-motion="reduced"]) .chord {
+    translate: 0 0;
+    transition: opacity var(--dur-2) linear;
+  }
+}

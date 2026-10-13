@@ -1,0 +1,633 @@
+/* ==========================================================================
+   Flux Community v2 -- design tokens
+   --------------------------------------------------------------------------
+   The single source of colour, type, space, material, layer and motion.
+   Derived from the sibling product's tokens (Flux Atlas) and pruned of its
+   globe, moon and window groups, then extended for this site: the Lattice
+   material (glass slab, chamfers, hex patterns), section rhythm, z layers and
+   a four-way accent switch.
+
+   Brand. Flux Brand Book v2.0: Blue Wave #2B61D1 is the one brand colour with
+   book shades #4F7AD4 and #86A1DA; black #000 with #2D2D2D and #717171; white.
+   The Flux symbol is only ever drawn in blue, white, black or gray (--flux-*).
+   Tier, status and chart colours are product colours: they never touch the
+   symbol and the symbol never takes them.
+
+   How the accent works
+   - html[data-accent="flux|cumulus|nimbus|stratus"] re-points the --accent-*
+     scale AND the semantic accent roles below. The Flux symbol never changes.
+   - Components use the ROLES, not the raw scale:
+       --accent         structure: rings, borders on active, icons, glow
+       --accent-text    text, links, numbers in the accent (AA on every ink)
+       --accent-strong  brighter sibling for hover edges and active labels
+       --accent-solid   fill of a primary control, with --on-accent text on it
+       --accent-rgb     "R G B" triple for rgb(var(--accent-rgb) / alpha)
+   - [data-tier="cumulus|nimbus|stratus"] re-points the same roles for a
+     subtree, so a card can wear its tier colour without a new component.
+
+   Contrast (WCAG 2.2, computed with OKLCH tooling, ink-0 #080a0f / ink-3 #22272e)
+     flux     text #86a1da 7.7 / 5.8   solid #2b61d1 under white 5.6
+     cumulus  text #36d3ff 11.2 / 8.5  solid #36d3ff under #04101a 10.9
+     nimbus   text #c77dff 7.4 / 5.6   solid #c77dff under #04101a 7.1
+     stratus  text #ffc857 12.9 / 9.8  solid #ffc857 under #04101a 12.5
+
+   Table of contents
+     1 Layers          5 Tiers, status        9 Glass, glow, rim, grain   13 Motion
+     2 Brand anchors   6 Type                10 Layout and rhythm        14 Modes
+     3 Surfaces, text  7 Space, radii        11 Z layers
+     4 Accent          8 Chamfers, patterns  12 Focus
+   ========================================================================== */
+
+/* 1. Layer order. Declared here, first, so every later file joins the right layer.
+      reset < tokens < base < ui (primitives) < section (page sections) < utility. */
+@layer reset, tokens, base, ui, section, utility;
+
+/* Typed custom properties so they can be animated and interpolated. */
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --flash {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --sweep {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -30%;
+}
+@property --prog {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    /* ---- 2. Brand anchors (Flux Brand Book v2.0) ----------------------------- */
+    --flux-blue: #2b61d1; /* Blue Wave, the primary */
+    --flux-blue-2: #4f7ad4; /* book shade 1 */
+    --flux-blue-3: #86a1da; /* book shade 2 */
+    --flux-black: #000000;
+    --flux-graphite: #2d2d2d;
+    --flux-gray: #717171;
+    --flux-gray-mark: #7e7c7c; /* the gray the official gray symbol files use */
+    --flux-white: #ffffff;
+
+    /* ---- 3. Surfaces, lines and text ------------------------------------------- */
+    /* Flux Black lifted toward Graphite in five steps with a 4 to 6 percent Blue
+       Wave cast. Elevation is lightness, never drop shadow. */
+    --void: #000000;
+    --ink-0: #080a0f; /* slab */
+    --ink-1: #0f1319; /* raised card inside a slab */
+    --ink-2: #181c23; /* hover, input fill */
+    --ink-3: #22272e; /* pressed, selected, tracks */
+    --ink-4: #2f333a; /* strong fills, scrollbar thumbs */
+    --ink-5: #3f4249; /* rare: dividers on ink-4 */
+
+    --line-1: rgb(255 255 255 / 0.06); /* hairline dividers */
+    --line-2: rgb(255 255 255 / 0.1); /* borders */
+    --line-3: rgb(255 255 255 / 0.18); /* emphasised borders, focus halos */
+    --line-blue: rgb(134 161 218 / 0.22); /* structural hairline in Blue Wave shade 2 */
+
+    /* Text contrast on ink-0 / ink-3: 1 19.8/15.0  2 13.7/10.4  3 8.0/6.1
+       4 is the brand gray: decoration and disabled only (4.1 on ink-0). */
+    --text-1: #ffffff;
+    --text-2: #d5d7db;
+    --text-3: #a1a5ab;
+    --text-4: #717171;
+
+    --hot: #ffffff; /* white-hot: the colour of light that is about to matter */
+    --hot-2: #cedaf0;
+    --hot-glow: rgb(174 198 255 / 0.5);
+    --hot-rgb: 255 255 255;
+    /* The two neutral triples, for translucent whites and blacks that follow no accent:
+       rgb(var(--white-rgb) / 0.1) hairlines and sheens, rgb(var(--void-rgb) / 0.6) scrims,
+       vignettes and shadows. Use these instead of writing 255 255 255 or 0 0 0 into a rule. */
+    --white-rgb: 255 255 255;
+    --void-rgb: 0 0 0;
+
+    --selection-bg: rgb(43 97 209 / 0.5);
+
+    /* ---- 4. Accent: the Flux default -------------------------------------------- */
+    /* Scale derived from Blue Wave in OKLCH (hue 262.5). 600 is the brand blue. */
+    --accent-950: #030c26;
+    --accent-900: #061843;
+    --accent-800: #0e2c71;
+    --accent-700: #1b44a3;
+    --accent-600: #2b61d1;
+    --accent-500: #4f7ad4;
+    --accent-400: #86a1da;
+    --accent-300: #abbee4;
+    --accent-200: #cedaf0;
+    --accent-100: #e5ebf8;
+    --accent-50: #f2f5fb;
+
+    /* Roles. Everything in ui/ reads these. */
+    --accent: #4f7ad4;
+    --accent-text: #86a1da;
+    --accent-strong: #abbee4;
+    --accent-solid: #2b61d1;
+    --accent-solid-hover: #3268d7;
+    --accent-solid-active: #1b44a3;
+    --on-accent: #ffffff;
+    --accent-rgb: 79 122 212;
+    --accent-deep-rgb: 43 97 209;
+    --accent-hot-rgb: 174 198 255;
+    --accent-soft: rgb(43 97 209 / 0.18);
+    --accent-soft-2: rgb(43 97 209 / 0.3);
+    --accent-line: rgb(79 122 212 / 0.4);
+    --accent-glow: rgb(43 97 209 / 0.7);
+
+    /* ---- 5. Tiers and status -------------------------------------------------- */
+    /* Tier colours belong to tiers only. Shapes also differ (1, 2, 3 layers) so
+       tier is never colour-only. */
+    --tier-cumulus: #36d3ff;
+    --tier-nimbus: #c77dff;
+    --tier-stratus: #ffc857;
+    --tier-cumulus-ink: #00a3cb;
+    --tier-nimbus-ink: #9a52ce;
+    --tier-stratus-ink: #be8900;
+    --tier-cumulus-rgb: 54 211 255;
+    --tier-nimbus-rgb: 199 125 255;
+    --tier-stratus-rgb: 255 200 87;
+    --tier-unknown: #a1a5ab;
+
+    /* Status: fixed, reserved meaning, never themed. Always icon plus word. */
+    --status-ok: #3fdc95; /* live, healthy, confirmed */
+    --status-pending: #86a1da; /* syncing, checking */
+    --status-warn: #ff9a3d; /* cached, degraded, retiring */
+    --status-crit: #ff5470; /* offline, down, error */
+    --status-off: #717171; /* unknown, not checked */
+    --status-ok-soft: rgb(63 220 149 / 0.13);
+    --status-pending-soft: rgb(134 161 218 / 0.16);
+    --status-warn-soft: rgb(255 154 61 / 0.14);
+    --status-crit-soft: rgb(255 84 112 / 0.15);
+    --status-off-soft: rgb(113 113 113 / 0.2);
+    --status: var(--status-off);
+    --status-soft: var(--status-off-soft);
+
+    /* ---- 6. Type ------------------------------------------------------------------ */
+    --font-display: "Montserrat Variable", "Montserrat", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    --font-sans: "Open Sans Variable", "Open Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-accent: "Lora Variable", "Lora", Georgia, "Times New Roman", serif;
+    --font-mono: "IBM Plex Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+
+    --fs-2xs: 0.6875rem; /* 11 meta, ticks, kbd */
+    --fs-xs: 0.75rem; /* 12 labels, chips */
+    --fs-sm: 0.8125rem; /* 13 dense UI */
+    --fs-md: 0.9375rem; /* 15 UI body */
+    --fs-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem); /* body copy */
+    --fs-lead: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem); /* lead paragraph */
+    --fs-h4: 1.0625rem;
+    --fs-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+    --fs-h2: clamp(1.875rem, 4.2vw, 3.75rem);
+    --fs-display: clamp(2.75rem, 8vw, 8rem);
+    --fs-stat: clamp(2rem, 1.4rem + 2.4vw, 3.5rem); /* big numbers */
+    --fs-stat-xl: clamp(2.75rem, 2rem + 3.6vw, 5.5rem);
+
+    --fw-light: 300;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    --lh-display: 0.95;
+    --lh-tight: 1.05;
+    --lh-snug: 1.25;
+    --lh-normal: 1.45;
+    --lh-relaxed: 1.6;
+
+    --tracking-display: -0.04em;
+    --tracking-h2: -0.03em;
+    --tracking-heading: -0.012em;
+    --tracking-label: 0.12em;
+    --num-tabular: "tnum" 1;
+
+    /* Composite roles: font: var(--type-h2) */
+    --type-display: 300 var(--fs-display) / var(--lh-display) var(--font-display);
+    --type-h2: 600 var(--fs-h2) / 1.05 var(--font-display);
+    --type-h3: 600 var(--fs-h3) / 1.2 var(--font-display);
+    --type-h4: 600 var(--fs-h4) / 1.3 var(--font-display);
+    --type-lead: 400 var(--fs-lead) / var(--lh-relaxed) var(--font-sans);
+    --type-body: 400 var(--fs-body) / var(--lh-relaxed) var(--font-sans);
+    --type-ui: 500 var(--fs-md) / var(--lh-snug) var(--font-sans);
+    --type-label: 500 var(--fs-xs) / 1.2 var(--font-mono);
+    --type-stat: 300 var(--fs-stat) / 1 var(--font-display);
+
+    /* ---- 7. Space and radii -------------------------------------------------------- */
+    --space-1: 2px;
+    --space-2: 4px;
+    --space-3: 6px;
+    --space-4: 8px;
+    --space-5: 12px;
+    --space-6: 16px;
+    --space-7: 20px;
+    --space-8: 24px;
+    --space-9: 32px;
+    --space-10: 40px;
+    --space-11: 48px;
+    --space-12: 64px;
+    --space-13: 80px;
+    --space-14: 96px;
+
+    --r-xs: 4px; /* keycaps */
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 14px;
+    --r-pill: 999px; /* nav and toggles only */
+
+    /* ---- 8. Chamfers and patterns ---------------------------------------------------- */
+    /* Chamfer, not radius. Big cuts sit top-right and bottom-left; a micro bevel
+       softens the other two corners so a slab never has a hard 90 degree corner. */
+    --chamfer-xs: 5px;
+    --chamfer-sm: 8px; /* inputs, chips */
+    --chamfer: 14px; /* panels, buttons */
+    --chamfer-lg: 22px; /* large panels, drawers, dialogs */
+    --chamfer-micro: 4px;
+    --hex-clip: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); /* pointy-top */
+    --hex-clip-flat: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); /* flat-top */
+
+    /* The brand's hexagon pattern: a pointy-top hairline lattice, tile 55.43 x 96
+       (side 32). Used as a MASK so any colour can be poured through it, which is
+       what lets it follow the accent switch. */
+    --pattern-hex-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='55.43' height='96' viewBox='0 0 55.43 96'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1'%3E%3Cpath d='M27.71 0L55.43 16V48L27.71 64L0 48V16Z'/%3E%3Cpath d='M0 48L27.71 64V96L0 112L-27.71 96V64Z'/%3E%3Cpath d='M55.43 48L83.14 64V96L55.43 112L27.71 96V64Z'/%3E%3Cpath d='M0-48L27.71-32V0L0 16L-27.71 0V-32Z'/%3E%3Cpath d='M55.43-48L83.14-32V0L55.43 16L27.71 0V-32Z'/%3E%3C/g%3E%3C/svg%3E");
+    --pattern-hex-w: 55.43px;
+    --pattern-hex-h: 96px;
+
+    /* ---- 9. Glass, glow, rim, grain ----------------------------------------------------- */
+    /* The slab (ref-ui-material): ink-0 at about 62 percent, blur, a 1 px gradient
+       edge that is hot on one cut corner, hex pattern, grain, ticks. */
+    --glass-bg: rgb(8 10 15 / 0.62);
+    --glass-bg-strong: rgb(8 10 15 / 0.82);
+    --glass-bg-solid: #080a0f;
+    --glass-blur: 18px;
+    --glass-saturate: 1.4;
+    --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    --glass-border: rgb(255 255 255 / 0.09);
+    --inset-hi: inset 0 1px 0 rgb(255 255 255 / 0.07);
+
+    --shadow-pop: 0 18px 44px -12px rgb(0 0 0 / 0.7), 0 4px 12px -4px rgb(0 0 0 / 0.5);
+    --shadow-deep: 0 30px 80px -24px rgb(0 0 0 / 0.85), 0 12px 26px -14px rgb(0 0 0 / 0.6);
+    --glow-accent: 0 0 22px -4px rgb(var(--accent-deep-rgb) / 0.7);
+    --glow-hot: 0 0 26px -4px rgb(var(--accent-hot-rgb) / 0.5);
+    --glow-ok: 0 0 14px -2px rgb(63 220 149 / 0.6);
+    --glow-crit: 0 0 14px -2px rgb(255 84 112 / 0.6);
+
+    --grain-opacity: 0.045;
+    --grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* Lattice (the 2D backdrop and the no-WebGL fallback) */
+    --lattice-line: rgb(var(--accent-rgb) / 0.2);
+    --lattice-cell: rgb(var(--accent-rgb) / 0.3);
+    --lattice-glow: rgb(var(--accent-deep-rgb) / 0.55);
+
+    /* ---- 10. Layout and rhythm ------------------------------------------------------------ */
+    --gutter: clamp(1rem, 4vw, 3rem);
+    --container: 1280px;
+    --container-wide: 1520px;
+    --container-narrow: 760px;
+    --header-h: 68px;
+    --header-h-condensed: 54px;
+    --header-offset: calc(var(--header-h-condensed) + 16px);
+    --section-y: clamp(4.5rem, 3rem + 8vw, 9rem); /* vertical padding of a section */
+    --section-gap: clamp(2rem, 1rem + 3vw, 4rem); /* header to content */
+    --stack-sm: 0.5rem;
+    --stack-md: 1rem;
+    --stack-lg: 1.75rem;
+    --grid-gap: clamp(0.75rem, 0.5rem + 1vw, 1.25rem);
+    --touch-min: 44px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    /* Breakpoints (documented here for JS and docs; @media cannot read them):
+       phone < 720, tablet 720-1099, desktop 1100-1679, wide 1680+ */
+    --bp-phone: 720px;
+    --bp-desktop: 1100px;
+    --bp-wide: 1680px;
+
+    /* ---- 11. Z layers ------------------------------------------------------------------------ */
+    --z-stage: -1;
+    --z-backdrop: 0;
+    --z-page: 1;
+    --z-raised: 10;
+    --z-header: 60;
+    --z-sheet: 70; /* mobile nav sheet */
+    --z-overlay: 100; /* the OverlayHost layer: ambient HUD, command deck */
+    --z-ambient: 110;
+    --z-modal: 120; /* Drawer, Dialog */
+    --z-palette: 130;
+    --z-toast: 140;
+    --z-tooltip: 150;
+    --z-grain: 180;
+
+    /* ---- 12. Focus -------------------------------------------------------------------------------- */
+    --focus-color: #ffffff;
+    --focus-ring: 0 0 0 2px var(--ink-0), 0 0 0 4px var(--accent-text);
+
+    /* ---- 13. Motion ----------------------------------------------------------------------------------- */
+    --motion-scale: 1; /* 0 when reduced; JS-driven timings multiply by this */
+    --dur-1: 120ms; /* hover colour, focus rings */
+    --dur-2: 220ms; /* small UI transitions */
+    --dur-3: 380ms; /* panels, drawers, tooltips */
+    --dur-4: 700ms; /* section reveals, count-ups */
+    --dur-5: 1200ms; /* camera moves, hero intro beats */
+    --dur-tick: 520ms; /* odometer digit roll */
+    --dur-beat: 30000ms; /* the chain's block interval, for reference */
+
+    /* --ease-out is FRONT-LOADED: half the distance is covered in the first 10 percent of the
+       time, 83 percent in the first 25, and it is visually finished by the halfway point. That
+       is right for a response to input (hover, press, open, a tooltip) up to about 400 ms: it
+       feels instant and then settles. On anything longer the first beat does the work and the
+       rest is a dead crawl, so for sweeps, beams, travelling highlights and any move over 400 ms
+       use --ease-in-out (symmetric: half the distance at half the time). */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-snap: cubic-bezier(0.2, 0.9, 0.2, 1.15);
+    --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ease-linear: linear;
+
+    --stagger: 60ms; /* reveal stagger per item */
+    --reveal-y: 24px;
+    --reveal-blur: 8px;
+    --tilt-max: 5; /* degrees, read by JS */
+    --magnet-max: 6; /* px, read by JS */
+    --magnet-field: 80; /* px, read by JS */
+  }
+
+  /* ---- 4b. Accent switching ---------------------------------------------------------------------- */
+  /* html[data-accent] re-points the page accent. The tier remaps below reuse the same roles. */
+  html[data-accent="flux"] {
+    --accent-950: #030c26;
+    --accent-900: #061843;
+    --accent-800: #0e2c71;
+    --accent-700: #1b44a3;
+    --accent-600: #2b61d1;
+    --accent-500: #4f7ad4;
+    --accent-400: #86a1da;
+    --accent-300: #abbee4;
+    --accent-200: #cedaf0;
+    --accent-100: #e5ebf8;
+    --accent-50: #f2f5fb;
+    --accent: #4f7ad4;
+    --accent-text: #86a1da;
+    --accent-strong: #abbee4;
+    --accent-solid: #2b61d1;
+    --accent-solid-hover: #3268d7;
+    --accent-solid-active: #1b44a3;
+    --on-accent: #ffffff;
+    --accent-rgb: 79 122 212;
+    --accent-deep-rgb: 43 97 209;
+    --accent-hot-rgb: 174 198 255;
+    --accent-soft: rgb(43 97 209 / 0.18);
+    --accent-soft-2: rgb(43 97 209 / 0.3);
+    --accent-line: rgb(79 122 212 / 0.4);
+    --accent-glow: rgb(43 97 209 / 0.7);
+    --selection-bg: rgb(43 97 209 / 0.5);
+  }
+
+  html[data-accent="cumulus"] {
+    --accent-950: #00141c;
+    --accent-900: #002934;
+    --accent-800: #014557;
+    --accent-700: #02677f;
+    --accent-600: #0c8aaa;
+    --accent-500: #02b0d8;
+    --accent-400: #36d3ff;
+    --accent-300: #a0e6ff;
+    --accent-200: #cef2ff;
+    --accent-100: #e7f8ff;
+    --accent-50: #f4fcff;
+    --accent: #36d3ff;
+    --accent-text: #36d3ff;
+    --accent-strong: #a0e6ff;
+    --accent-solid: #36d3ff;
+    --accent-solid-hover: #5fdcff;
+    --accent-solid-active: #02b0d8;
+    --on-accent: #04101a;
+    --accent-rgb: 54 211 255;
+    --accent-deep-rgb: 2 176 216;
+    --accent-hot-rgb: 160 230 255;
+    --accent-soft: rgb(54 211 255 / 0.14);
+    --accent-soft-2: rgb(54 211 255 / 0.26);
+    --accent-line: rgb(54 211 255 / 0.4);
+    --accent-glow: rgb(54 211 255 / 0.55);
+    --selection-bg: rgb(2 176 216 / 0.5);
+  }
+
+  html[data-accent="nimbus"] {
+    --accent-950: #150322;
+    --accent-900: #2a093e;
+    --accent-800: #471567;
+    --accent-700: #682991;
+    --accent-600: #8942ba;
+    --accent-500: #a95fdf;
+    --accent-400: #c77dff;
+    --accent-300: #ddb7ff;
+    --accent-200: #ecd8ff;
+    --accent-100: #f5ecff;
+    --accent-50: #fbf7ff;
+    --accent: #c77dff;
+    --accent-text: #c77dff;
+    --accent-strong: #ddb7ff;
+    --accent-solid: #c77dff;
+    --accent-solid-hover: #d49aff;
+    --accent-solid-active: #a95fdf;
+    --on-accent: #04101a;
+    --accent-rgb: 199 125 255;
+    --accent-deep-rgb: 169 95 223;
+    --accent-hot-rgb: 221 183 255;
+    --accent-soft: rgb(199 125 255 / 0.15);
+    --accent-soft-2: rgb(199 125 255 / 0.27);
+    --accent-line: rgb(199 125 255 / 0.42);
+    --accent-glow: rgb(199 125 255 / 0.55);
+    --selection-bg: rgb(169 95 223 / 0.5);
+  }
+
+  html[data-accent="stratus"] {
+    --accent-950: #1d1100;
+    --accent-900: #352500;
+    --accent-800: #593f00;
+    --accent-700: #835f00;
+    --accent-600: #ae8004;
+    --accent-500: #daa42a;
+    --accent-400: #ffc857;
+    --accent-300: #ffe0a7;
+    --accent-200: #ffeed1;
+    --accent-100: #fff7e8;
+    --accent-50: #fffbf5;
+    --accent: #ffc857;
+    --accent-text: #ffc857;
+    --accent-strong: #ffe0a7;
+    --accent-solid: #ffc857;
+    --accent-solid-hover: #ffd47a;
+    --accent-solid-active: #daa42a;
+    --on-accent: #04101a;
+    --accent-rgb: 255 200 87;
+    --accent-deep-rgb: 218 164 42;
+    --accent-hot-rgb: 255 224 167;
+    --accent-soft: rgb(255 200 87 / 0.14);
+    --accent-soft-2: rgb(255 200 87 / 0.26);
+    --accent-line: rgb(255 200 87 / 0.42);
+    --accent-glow: rgb(255 200 87 / 0.5);
+    --selection-bg: rgb(218 164 42 / 0.5);
+  }
+
+  /* ---- 5b. Attribute-driven remaps for a subtree --------------------------------------------------- */
+  /* Tier: data-tier exposes --tier* and re-points the accent roles for the subtree. */
+  [data-tier="cumulus"] {
+    --tier: var(--tier-cumulus);
+    --tier-ink: var(--tier-cumulus-ink);
+    --tier-rgb: var(--tier-cumulus-rgb);
+    --accent: #36d3ff;
+    --accent-text: #36d3ff;
+    --accent-strong: #a0e6ff;
+    --accent-solid: #36d3ff;
+    --accent-solid-hover: #5fdcff;
+    --accent-solid-active: #02b0d8;
+    --on-accent: #04101a;
+    --accent-rgb: 54 211 255;
+    --accent-deep-rgb: 2 176 216;
+    --accent-hot-rgb: 160 230 255;
+    --accent-soft: rgb(54 211 255 / 0.14);
+    --accent-soft-2: rgb(54 211 255 / 0.26);
+    --accent-line: rgb(54 211 255 / 0.4);
+    --accent-glow: rgb(54 211 255 / 0.55);
+  }
+  [data-tier="nimbus"] {
+    --tier: var(--tier-nimbus);
+    --tier-ink: var(--tier-nimbus-ink);
+    --tier-rgb: var(--tier-nimbus-rgb);
+    --accent: #c77dff;
+    --accent-text: #c77dff;
+    --accent-strong: #ddb7ff;
+    --accent-solid: #c77dff;
+    --accent-solid-hover: #d49aff;
+    --accent-solid-active: #a95fdf;
+    --on-accent: #04101a;
+    --accent-rgb: 199 125 255;
+    --accent-deep-rgb: 169 95 223;
+    --accent-hot-rgb: 221 183 255;
+    --accent-soft: rgb(199 125 255 / 0.15);
+    --accent-soft-2: rgb(199 125 255 / 0.27);
+    --accent-line: rgb(199 125 255 / 0.42);
+    --accent-glow: rgb(199 125 255 / 0.55);
+  }
+  [data-tier="stratus"] {
+    --tier: var(--tier-stratus);
+    --tier-ink: var(--tier-stratus-ink);
+    --tier-rgb: var(--tier-stratus-rgb);
+    --accent: #ffc857;
+    --accent-text: #ffc857;
+    --accent-strong: #ffe0a7;
+    --accent-solid: #ffc857;
+    --accent-solid-hover: #ffd47a;
+    --accent-solid-active: #daa42a;
+    --on-accent: #04101a;
+    --accent-rgb: 255 200 87;
+    --accent-deep-rgb: 218 164 42;
+    --accent-hot-rgb: 255 224 167;
+    --accent-soft: rgb(255 200 87 / 0.14);
+    --accent-soft-2: rgb(255 200 87 / 0.26);
+    --accent-line: rgb(255 200 87 / 0.42);
+    --accent-glow: rgb(255 200 87 / 0.5);
+  }
+  [data-tier="unknown"] {
+    --tier: var(--tier-unknown);
+    --tier-ink: var(--tier-unknown);
+    --tier-rgb: 161 165 171;
+  }
+
+  /* Status: data-status exposes --status and --status-soft. */
+  [data-status="ok"] {
+    --status: var(--status-ok);
+    --status-soft: var(--status-ok-soft);
+  }
+  [data-status="pending"] {
+    --status: var(--status-pending);
+    --status-soft: var(--status-pending-soft);
+  }
+  [data-status="warn"] {
+    --status: var(--status-warn);
+    --status-soft: var(--status-warn-soft);
+  }
+  [data-status="crit"] {
+    --status: var(--status-crit);
+    --status-soft: var(--status-crit-soft);
+  }
+  [data-status="off"] {
+    --status: var(--status-off);
+    --status-soft: var(--status-off-soft);
+  }
+
+  /* ---- 14. Modes ------------------------------------------------------------------------------------------- */
+
+  /* Glass quality. The shell sets data-glass="lite" when the stage runs at tier 1 or
+     below, on Save-Data, or under prefers-reduced-transparency: no backdrop blur, a
+     denser fill, no grain. The lattice behind is the star; the slabs stay legible. */
+  :root[data-glass="lite"] {
+    --glass-blur: 0px;
+    --glass-saturate: 1;
+    --glass-bg: rgb(8 10 15 / 0.86);
+    --glass-bg-strong: rgb(8 10 15 / 0.94);
+    --grain-opacity: 0;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --glass-blur: 0px;
+      --glass-saturate: 1;
+      --glass-bg: rgb(8 10 15 / 0.9);
+      --glass-bg-strong: rgb(8 10 15 / 0.96);
+      --grain-opacity: 0;
+    }
+  }
+
+  /* Motion. The OS preference and the visitor's override both land here. Reduced
+     keeps opacity cross-fades and removes travel, scale, parallax, springs and
+     loops. The shell mirrors the effective state onto html[data-motion]. */
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) {
+      --motion-scale: 0;
+      --dur-3: 160ms;
+      --dur-4: 200ms;
+      --dur-5: 240ms;
+      --dur-tick: 1ms;
+      --stagger: 0ms;
+      --reveal-y: 0px;
+      --reveal-blur: 0px;
+      --ease-snap: var(--ease-standard);
+    }
+  }
+  :root[data-motion="reduced"] {
+    --motion-scale: 0;
+    --dur-3: 160ms;
+    --dur-4: 200ms;
+    --dur-5: 240ms;
+    --dur-tick: 1ms;
+    --stagger: 0ms;
+    --reveal-y: 0px;
+    --reveal-blur: 0px;
+    --ease-snap: var(--ease-standard);
+  }
+
+  /* Contrast. Borders and tertiary text step up; decoration steps down. */
+  @media (prefers-contrast: more) {
+    :root {
+      --line-1: rgb(255 255 255 / 0.18);
+      --line-2: rgb(255 255 255 / 0.34);
+      --line-3: rgb(255 255 255 / 0.55);
+      --glass-border: rgb(255 255 255 / 0.4);
+      --text-3: #c3c7cd;
+      --text-4: #9a9a9a;
+      --glass-bg: rgb(8 10 15 / 0.9);
+      --glass-bg-strong: rgb(8 10 15 / 0.97);
+      --grain-opacity: 0;
+    }
+  }
+}

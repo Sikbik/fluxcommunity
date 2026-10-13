@@ -1,0 +1,35 @@
+@layer ui {
+  .meter {
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--meter-h, 6px);
+    background: rgb(255 255 255 / 0.08);
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--meter-h, 6px)) 100%, 0 100%);
+  }
+
+  .fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(var(--accent-rgb) / 0.7), var(--accent-strong));
+    transform-origin: left center;
+    transform: scaleX(var(--v, 0));
+    transition: transform var(--dur-4) var(--ease-out);
+    box-shadow: 0 0 12px rgb(var(--accent-rgb) / 0.6);
+  }
+
+  .meter[data-size="lg"] {
+    --meter-h: 10px;
+  }
+
+  :global(html[data-motion="reduced"]) .fill {
+    transition: none;
+  }
+
+  @media (forced-colors: active) {
+    .fill {
+      background: Highlight;
+      box-shadow: none;
+    }
+  }
+}

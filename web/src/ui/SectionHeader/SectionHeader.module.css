@@ -1,0 +1,138 @@
+@layer ui {
+  .head {
+    display: grid;
+    gap: var(--stack-md);
+    justify-items: start;
+  }
+
+  .head[data-align="center"] {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-3);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    inline-size: 100%;
+  }
+
+  .head[data-align="center"] .eyebrow {
+    justify-content: center;
+  }
+
+  .bullet {
+    color: var(--accent);
+  }
+
+  .index {
+    color: var(--accent-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .slash {
+    color: var(--text-4);
+  }
+
+  /* A hairline that draws itself out from the label. */
+  .rule {
+    flex: 1;
+    block-size: 1px;
+    min-inline-size: 24px;
+    max-inline-size: 220px;
+    background: linear-gradient(90deg, rgb(var(--accent-rgb) / 0.6), transparent);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform var(--dur-5) var(--ease-in-out) 150ms;
+  }
+
+  .head[data-shown="true"] .rule {
+    transform: scaleX(1);
+  }
+
+  .head[data-align="center"] .rule {
+    display: none;
+  }
+
+  .title {
+    font: var(--type-h2);
+    letter-spacing: var(--tracking-h2);
+    color: var(--text-1);
+    text-wrap: balance;
+  }
+
+  .title :where(b, strong, em) {
+    font-weight: var(--fw-bold);
+    font-style: normal;
+  }
+
+  /*
+   * Emphasis: the words in <b> or <strong> take the white-to-accent gradient (the .t-grad treatment of
+   * the hero's key words) at the bold weight. SplitReveal puts every word in a transformed span, which
+   * background-clip: text cannot see through, so each word carries the gradient itself. The heading is
+   * large text (3:1), and #fff to --accent-text stays above 5:1 on the ink behind it.
+   */
+  .title :where(b, strong),
+  .title :where(b, strong) [data-w] > * {
+    background: linear-gradient(100deg, var(--text-1) 0%, var(--accent-strong) 38%, var(--accent-text) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /*
+   * background-clip: text only paints inside the element's own box, and a split word is an
+   * inline-block exactly one line-height tall: the tails of g, y, p and q hang below it and were cut
+   * flat. Give the box the room the clip wrapper around it already has (0.12em above and below) and
+   * take the same room back with a negative margin, so nothing moves. --split-travel keeps the
+   * entrance the same distance (the translate is a share of the now taller box).
+   */
+  .title :where(b, strong) [data-w] > * {
+    padding-block: 0.12em;
+    margin-block: -0.12em;
+    --split-travel: 90%;
+  }
+
+  .lead {
+    font: var(--type-lead);
+    color: var(--text-2);
+    max-inline-size: 60ch;
+    text-wrap: pretty;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-block-start: var(--stack-sm);
+  }
+
+  :global(html[data-motion="reduced"]) .rule {
+    transform: none;
+    transition: none;
+  }
+
+  /* More contrast and forced colours: the emphasis is plain text in the heading colour. */
+  @media (prefers-contrast: more) {
+    .title :where(b, strong),
+    .title :where(b, strong) [data-w] > * {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: var(--text-1);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .title :where(b, strong),
+    .title :where(b, strong) [data-w] > * {
+      background: none;
+      -webkit-text-fill-color: currentColor;
+      color: CanvasText;
+    }
+  }
+}

@@ -1,0 +1,164 @@
+/*
+ * ArtLayer: emissive art inside a glass Panel, as RGBA (alpha from luminance) composited
+ * normally. The zone carries only the chamfer clip and is static, so the clip never moves
+ * with the drifting frame. Nothing in here has a backdrop-filter, so opacity and clip-path
+ * are safe on these elements.
+ */
+@layer section {
+  .zone {
+    position: absolute;
+    inset: var(--bw, 1px);
+    z-index: 0;
+    clip-path: var(--clip-inner);
+    opacity: var(--art-strength, 1);
+    pointer-events: none;
+    /* The art's own alpha, for the light effects to mask with: WebP everywhere... */
+    --art-mask: var(--art-mask-url);
+  }
+
+  /* ...and the AVIF-first set where `image-set()` understands `type()`. */
+  @supports (background-image: image-set(url("x.avif") type("image/avif"))) {
+    .zone {
+      --art-mask: var(--art-mask-set);
+    }
+  }
+
+  /* The frame is the image box: sized and placed by the fit maths (useArtFit). */
+  .frame {
+    position: absolute;
+    left: var(--fl, 0px);
+    top: var(--ft, 0px);
+    width: var(--fw, 100%);
+    height: var(--fh, 100%);
+    transform-origin: var(--ox, 50%) var(--oy, 50%);
+    /*
+     * The drift opposite the pointer is an inline `translate` written by useParallax (up to
+     * --dx/--dy, the safe px), so a pointer move restyles this one element and not the tile.
+     */
+    scale: var(--lift, 1);
+    transition: scale var(--dur-4) var(--ease-out);
+  }
+
+  :global(html[data-motion="reduced"]) .frame {
+    translate: none;
+    scale: none;
+    transition: none;
+  }
+
+  /* The art lifts on hover and keyboard focus, and a touch less when pressed. */
+  :global([data-art-host][data-hover="true"]) .frame,
+  :global([data-art-host]:focus-visible) .frame {
+    --lift: 1.055;
+  }
+
+  :global([data-art-host]:active) .frame {
+    --lift: 1.03;
+  }
+
+  :global([data-art-host][data-launch="true"]) .frame {
+    --lift: 1.16;
+    transition-duration: var(--dur-3);
+  }
+
+  /* The idle breath, and the stacking context the micro animation overlays live in. */
+  .float {
+    position: absolute;
+    inset: 0;
+    transform-origin: var(--ox, 50%) var(--oy, 50%);
+    animation: float var(--float-dur, 9s) ease-in-out var(--float-delay, 0s) infinite alternate;
+  }
+
+  .zone:not([data-float]) .float {
+    animation: none;
+  }
+
+  /* Breathing is a scale about the object's centre, on top of the float. */
+  .zone[data-breath] .float {
+    animation:
+      float var(--float-dur, 9s) ease-in-out var(--float-delay, 0s) infinite alternate,
+      breath 5.6s ease-in-out var(--float-delay, 0s) infinite alternate;
+  }
+
+  @keyframes float {
+    from {
+      translate: 0 0;
+    }
+    to {
+      translate: 0 -1.8%;
+    }
+  }
+
+  @keyframes breath {
+    from {
+      scale: 1;
+    }
+    to {
+      scale: 1.045;
+    }
+  }
+
+  :global([data-art-live="false"]) .float {
+    animation-play-state: paused;
+  }
+
+  .img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-inline-size: none;
+    opacity: 0;
+    transition: opacity var(--dur-4) var(--ease-out);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .zone[data-art-state="ready"] .img {
+    opacity: 1;
+  }
+
+  /* A soft pool of light under the object: bloom without a blur filter. */
+  .pool {
+    position: absolute;
+    background: radial-gradient(
+      closest-side,
+      rgb(var(--accent-deep-rgb) / 0.3),
+      rgb(var(--accent-deep-rgb) / 0.1) 55%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  /* No art yet (or it failed): a faint glyph where the object would be. */
+  .fallback {
+    position: absolute;
+    translate: -50% -50%;
+    color: rgb(var(--accent-rgb) / 0.7);
+    opacity: 0.5;
+    transition: opacity var(--dur-4) var(--ease-out);
+  }
+
+  .zone[data-art-state="ready"] .fallback {
+    opacity: 0;
+  }
+
+  :global(html[data-motion="reduced"]) .zone .float {
+    animation: none;
+  }
+
+  :global(html[data-motion="reduced"]) .img,
+  :global(html[data-motion="reduced"]) .fallback {
+    transition: none;
+  }
+
+  @media (prefers-contrast: more) {
+    .pool {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .zone {
+      display: none;
+    }
+  }
+}

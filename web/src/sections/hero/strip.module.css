@@ -1,0 +1,321 @@
+/*
+ * The live strip: block height, the next-block ring, nodes online and the FLUX price, in one glass
+ * slab along the bottom of the hero. Four cells on desktop, a 2 x 2 grid on phones. The scroll cue
+ * hangs from its bottom edge. Real blocks flare the slab's own edge and ticks (the Panel brightens on
+ * html[data-beat]); the ring and the odometers add their own beat.
+ */
+@layer section {
+  .wrap {
+    position: relative;
+    margin-block-start: clamp(0.75rem, 2.2svh, 1.75rem);
+  }
+
+  /* One line above the slab for the strip as a whole: syncing, or the last known numbers. It hangs
+     above the slab rather than taking space, so the strip never moves when it appears. */
+  .caption {
+    position: absolute;
+    inset: auto 0 100% 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.6em;
+    margin: 0 0 0.45rem;
+    pointer-events: none;
+    max-inline-size: none;
+    font: 500 var(--fs-2xs) / 1.2 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .caption[data-tone="offline"] {
+    color: var(--status-warn);
+  }
+
+  .cells {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+  }
+
+  .cell {
+    --odo: clamp(1.5rem, 1.15rem + 0.95vw, 2.125rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.55rem;
+    min-inline-size: 0;
+    padding: 0.85rem clamp(0.9rem, 0.5rem + 1.1vw, 1.5rem) 0.95rem;
+    border-inline-start: 1px solid var(--line-1);
+  }
+
+  .cell:first-child {
+    border-inline-start: 0;
+  }
+
+  .label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem 0.6rem;
+    min-block-size: 1.375rem;
+    margin: 0;
+    font: 500 var(--fs-2xs) / 1.2 var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .labelText {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+  }
+
+  .value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.9rem;
+    min-block-size: var(--odo);
+    margin: 0;
+    font: 300 var(--odo) / 1 var(--font-display);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-1);
+  }
+
+  .num {
+    display: inline-flex;
+    align-items: baseline;
+    font-size: var(--odo);
+  }
+
+  .unit {
+    margin-inline-start: 0.4rem;
+    font: 500 var(--fs-xs) / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+  }
+
+  .missing {
+    color: var(--text-3);
+  }
+
+  /* ---- next block ---------------------------------------------------------------------------- */
+
+  .nextBody {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-block-size: var(--odo);
+  }
+
+  .nextText {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .nextValue {
+    display: inline-flex;
+    align-items: baseline;
+    font: 300 var(--odo) / 1 var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+  }
+
+  .nextSub {
+    font: 500 var(--fs-2xs) / 1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+
+  .ring {
+    flex: none;
+    inline-size: calc(var(--odo) * 2.05);
+    block-size: calc(var(--odo) * 2.05);
+    max-inline-size: none;
+    margin-block: calc(var(--odo) * -0.5);
+    overflow: visible;
+  }
+
+  .seg {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.16);
+    stroke-width: 6;
+    stroke-linecap: butt;
+    transition: stroke var(--dur-2) var(--ease-out);
+  }
+
+  .seg[data-lit] {
+    stroke: var(--accent);
+  }
+
+  .seg[data-head] {
+    stroke: #fff;
+    filter: drop-shadow(0 0 3px rgb(var(--accent-hot-rgb) / 0.95));
+  }
+
+  .ring[data-live="false"] .seg {
+    stroke: rgb(255 255 255 / 0.09);
+  }
+
+  /* The block landed: the ring completes in white-hot, swells once and settles. */
+  .ring[data-complete] .seg[data-lit] {
+    stroke: #fff;
+    filter: drop-shadow(0 0 2px rgb(var(--accent-hot-rgb) / 0.9));
+  }
+
+  .ring[data-flare="a"] {
+    animation: ring-flare-a 760ms var(--ease-out);
+  }
+
+  .ring[data-flare="b"] {
+    animation: ring-flare-b 760ms var(--ease-out);
+  }
+
+  @keyframes ring-flare-a {
+    0% {
+      scale: 1;
+    }
+    24% {
+      scale: 1.16;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  @keyframes ring-flare-b {
+    0% {
+      scale: 1;
+    }
+    24% {
+      scale: 1.16;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  /* ---- price --------------------------------------------------------------------------------- */
+
+  .change {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font: 500 var(--fs-sm) / 1 var(--font-mono);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-3);
+  }
+
+  /* The visible text sits one box in (the other is the spoken version): it takes the colour. */
+  .changeBody {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    color: inherit;
+  }
+
+  .change[data-dir="up"] {
+    color: var(--status-ok);
+  }
+
+  .change[data-dir="down"] {
+    color: var(--status-crit);
+  }
+
+  .change[data-dir="down"] svg {
+    scale: 1 -1;
+  }
+
+  .window {
+    color: var(--text-3);
+    font-size: var(--fs-2xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ---- the scroll cue ------------------------------------------------------------------------ */
+
+  .cue {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    z-index: 2;
+    translate: -50% 62%;
+  }
+
+  /* A plain box, so the nudge runs on the compositor (an svg's transform never does). */
+  .cueBob {
+    animation: cue-nudge 4s var(--ease-in-out) infinite;
+  }
+
+  @keyframes cue-nudge {
+    0%,
+    62%,
+    100% {
+      translate: 0 0;
+    }
+    74% {
+      translate: 0 4px;
+    }
+    86% {
+      translate: 0 0;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .cueBob,
+  :global(html[data-motion="reduced"]) .ring[data-flare] {
+    animation: none;
+  }
+
+  :global(html[data-ambient="true"]) .cueBob {
+    animation-play-state: paused;
+  }
+
+  :global([data-section="hero"][data-inview="false"]) .cueBob {
+    animation-play-state: paused;
+  }
+
+  /* ---- phones: a 2 x 2 grid ------------------------------------------------------------------ */
+
+  @media (max-width: 719.98px) {
+    .cells {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cell {
+      --odo: 1.5rem;
+      padding: 0.75rem 0.85rem 0.8rem;
+    }
+
+    .cell:nth-child(odd) {
+      border-inline-start: 0;
+    }
+
+    .cell:nth-child(n + 3) {
+      border-block-start: 1px solid var(--line-1);
+    }
+
+    .ring {
+      inline-size: 2.75rem;
+      block-size: 2.75rem;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .seg {
+      stroke: GrayText;
+    }
+
+    .seg[data-lit] {
+      stroke: Highlight;
+    }
+  }
+}

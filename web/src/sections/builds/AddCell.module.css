@@ -1,0 +1,159 @@
+@layer section {
+  .add {
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 15rem;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    block-size: 100%;
+    text-align: center;
+  }
+
+  .emblem {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 84px;
+    block-size: 84px;
+    margin-block-end: 6px;
+    color: var(--accent-text);
+  }
+
+  .emblem svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .outer {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-dasharray: 5 6;
+    opacity: 0.55;
+    transform-origin: 50% 50%;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+
+  .inner {
+    fill: rgb(var(--accent-rgb) / 0.1);
+    stroke: currentColor;
+    stroke-width: 1.6;
+    transition: fill var(--dur-3) var(--ease-out);
+  }
+
+  .plus {
+    position: relative;
+    display: grid;
+    transition: scale var(--dur-3) var(--ease-snap);
+  }
+
+  .add[data-hover="true"] .outer,
+  .add:focus-visible .outer {
+    opacity: 1;
+    animation: spin 14s linear infinite;
+  }
+
+  .add[data-hover="true"] .inner,
+  .add:focus-visible .inner {
+    fill: rgb(var(--accent-rgb) / 0.22);
+  }
+
+  .add[data-hover="true"] .plus {
+    scale: 1.14;
+  }
+
+  .title {
+    color: var(--text-1);
+    font: var(--type-h4);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .sub {
+    max-inline-size: 22ch;
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  .copy {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+  }
+
+  /* A strip: the emblem beside its words. Used when the cell has a whole row (a wide grid) and on a
+     phone, where every cell is a row anyway. */
+  .add[data-wide="true"] {
+    min-block-size: 0;
+  }
+
+  .add[data-wide="true"] .content {
+    flex-direction: row;
+    justify-content: center;
+    gap: 22px;
+    text-align: start;
+  }
+
+  .add[data-wide="true"] .emblem {
+    inline-size: 68px;
+    block-size: 68px;
+    margin: 0;
+  }
+
+  .add[data-wide="true"] .copy {
+    justify-items: start;
+    gap: 2px;
+  }
+
+  .add[data-wide="true"] .sub {
+    max-inline-size: 52ch;
+  }
+
+  @media (max-width: 719.98px) {
+    .add {
+      min-block-size: 0;
+    }
+
+    .content {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 14px;
+      text-align: start;
+    }
+
+    .emblem {
+      inline-size: 52px;
+      block-size: 52px;
+      margin: 0;
+    }
+
+    .copy {
+      justify-items: start;
+      gap: 2px;
+    }
+
+    .sub {
+      max-inline-size: none;
+    }
+  }
+
+  :global(html[data-motion="reduced"]) .outer,
+  :global(html[data-motion="reduced"]) .plus {
+    animation: none;
+    transition: none;
+  }
+}

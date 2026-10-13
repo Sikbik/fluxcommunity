@@ -1,0 +1,48 @@
+@layer ui {
+  .tip {
+    position: fixed;
+    inset: 0 auto auto 0;
+    max-inline-size: min(280px, calc(100vw - 16px));
+    padding: 7px 10px;
+    color: var(--text-1);
+    font: 500 var(--fs-xs) / 1.35 var(--font-sans);
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+    border: 1px solid var(--line-3);
+    border-block-start-color: rgb(var(--accent-hot-rgb) / 0.55);
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow-pop);
+    pointer-events: none;
+    opacity: 0;
+    translate: var(--tx, 0px) calc(var(--ty, 0px) + var(--shift, 4px));
+    transition:
+      opacity var(--dur-1) var(--ease-out),
+      translate var(--dur-2) var(--ease-out);
+    text-wrap: balance;
+  }
+
+  .tip[data-open="true"] {
+    opacity: 1;
+    --shift: 0px;
+  }
+
+  .row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :global(html[data-motion="reduced"]) .tip {
+    --shift: 0px;
+    transition: opacity var(--dur-1) linear;
+  }
+
+  @media (forced-colors: active) {
+    .tip {
+      background: Canvas;
+      color: CanvasText;
+      border-color: CanvasText;
+    }
+  }
+}

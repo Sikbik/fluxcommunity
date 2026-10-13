@@ -1,0 +1,84 @@
+/*
+ * The bento. Twelve columns on a desktop, six on a tablet, one on a phone. The DOM order is also the
+ * visual order at every size (map, nodes, cadence, reduction, capacity), so a keyboard walks the tiles
+ * the way the eye does, and on a phone the map comes first.
+ */
+@layer section {
+  .bento {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--grid-gap);
+  }
+
+  .cell {
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  /* Tablet: six columns, tiles at full width, the small three in pairs where they fit. */
+  @media (min-width: 720px) {
+    .bento {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .map,
+    .nodes,
+    .cadence,
+    .reduction,
+    .capacity {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .cadence,
+    .reduction {
+      grid-column: span 3;
+    }
+  }
+
+  /*
+   * Small laptops: twelve columns, map and nodes share the first row, the cadence and reduction tiles
+   * pair up below, and capacity runs the full width with its two halves side by side. Three narrow
+   * tiles in a row would only starve the dial and the clock.
+   */
+  @media (min-width: 1100px) {
+    .bento {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .map {
+      grid-column: span 7;
+    }
+
+    .nodes {
+      grid-column: span 5;
+    }
+
+    .cadence,
+    .reduction {
+      grid-column: span 6;
+    }
+
+    .capacity {
+      grid-column: span 12;
+    }
+  }
+
+  /* Desktop: the map is the big tile; the three instruments sit side by side below it. */
+  @media (min-width: 1280px) {
+    .map {
+      grid-column: span 8;
+    }
+
+    .nodes {
+      grid-column: span 4;
+    }
+
+    .cadence,
+    .reduction,
+    .capacity {
+      grid-column: span 4;
+    }
+  }
+}

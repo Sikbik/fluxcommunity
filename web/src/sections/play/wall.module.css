@@ -1,0 +1,262 @@
+/*
+ * The kinetic wall: two counter-scrolling rows of game names in IBM Plex Mono, full bleed
+ * (it breaks out of the section container), faded at both ends. The row pauses on hover and
+ * keyboard focus within, when the visitor pauses it, and when it is off screen. Under
+ * reduced motion it is a static, wrapped list.
+ *
+ * Hover lighting is pure CSS: while an item is hovered every other item dims, the item goes
+ * white-hot, and its immediate neighbours come up half way.
+ */
+@layer section {
+  .wall {
+    /* Break out of the section container to the full viewport width. */
+    composes: bleed from global;
+    position: relative;
+    margin-block-start: var(--space-4);
+    padding-block: clamp(0.75rem, 2vw, 1.5rem);
+    /* A quiet scrim so the type keeps its contrast over the lit lattice. */
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgb(8 10 15 / 0.6) 18%,
+      rgb(8 10 15 / 0.6) 82%,
+      transparent
+    );
+  }
+
+  .wall::before,
+  .wall::after {
+    content: "";
+    position: absolute;
+    inset-inline: var(--gutter);
+    block-size: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-blue), transparent);
+    pointer-events: none;
+  }
+
+  .wall::before {
+    inset-block-start: 0;
+  }
+
+  .wall::after {
+    inset-block-end: 0;
+  }
+
+  /* The caption and the pause control live in the container, aligned with the section. */
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    margin-block-start: var(--section-gap);
+  }
+
+  .caption {
+    color: var(--text-2);
+    font: var(--type-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    /* A soft dark halo keeps the small caps readable over the lit lattice. */
+    text-shadow:
+      0 0 0.6em rgb(5 7 12 / 0.95),
+      0 0 1.4em rgb(5 7 12 / 0.9);
+  }
+
+  .rows {
+    display: grid;
+    gap: clamp(0.25rem, 1vw, 0.75rem);
+  }
+
+  .row {
+    position: relative;
+    min-inline-size: 0;
+  }
+
+  /*
+   * The viewport clips the scrolling track. It is padded (and pulled back by the same amount)
+   * so the hover glow, which reaches beyond the line box, is not cut off at the row's edges.
+   */
+  .viewport {
+    overflow: hidden;
+    padding-block: 1.5rem;
+    margin-block: -1.5rem;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+
+  .track {
+    display: flex;
+    inline-size: max-content;
+    animation: wall var(--wall-dur, 40s) linear infinite;
+    animation-direction: var(--wall-dir, normal);
+    will-change: transform;
+  }
+
+  @keyframes wall {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  /* Paused by the visitor, off screen, or while the pointer or focus is on the row. */
+  .row[data-idle="true"] .track,
+  .viewport:hover .track,
+  .viewport:focus-within .track {
+    animation-play-state: paused;
+  }
+
+  .run {
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .item {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    padding-block: 0.05em;
+    padding-inline-start: 0.4em;
+    color: var(--text-1);
+    font: 500 clamp(1.75rem, 1rem + 2.8vw, 3.5rem) / 1.12 var(--font-mono);
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+    cursor: default;
+    transition:
+      color var(--dur-2) var(--ease-out),
+      opacity var(--dur-3) var(--ease-out),
+      text-shadow var(--dur-3) var(--ease-out);
+  }
+
+  /* The separator: a hexagon, lit with the item. */
+  .item::after {
+    content: "";
+    inline-size: 0.26em;
+    block-size: 0.3em;
+    margin-inline: 0.55em 0.15em;
+    flex: none;
+    clip-path: var(--hex-clip);
+    background: rgb(var(--accent-rgb) / 0.55);
+    transition: background var(--dur-2) var(--ease-out);
+  }
+
+  /* Every other name is an outline: a typographic rhythm, not a second colour. */
+  .item:nth-child(even) {
+    color: transparent;
+    -webkit-text-stroke: 1.25px var(--accent-strong);
+  }
+
+  /* The closing "and more" is the section's one editorial line. */
+  .more {
+    color: var(--accent-text);
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    -webkit-text-stroke: 0;
+  }
+
+  .item:nth-child(even).more {
+    color: var(--accent-text);
+    -webkit-text-stroke: 0;
+  }
+
+  /* ---- reduced motion: a still, wrapped list inside the container ------------------------------- */
+
+  :global(html[data-motion="reduced"]) .wall {
+    inline-size: auto;
+    margin-inline: 0;
+  }
+
+  :global(html[data-motion="reduced"]) .wall::before,
+  :global(html[data-motion="reduced"]) .wall::after {
+    inset-inline: 0;
+  }
+
+  :global(html[data-motion="reduced"]) .viewport {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  :global(html[data-motion="reduced"]) .track {
+    display: block;
+    inline-size: auto;
+    animation: none;
+    will-change: auto;
+  }
+
+  :global(html[data-motion="reduced"]) .run {
+    flex-wrap: wrap;
+    row-gap: 0.15em;
+  }
+
+  :global(html[data-motion="reduced"]) .item {
+    font-size: clamp(1.4rem, 1rem + 2.2vw, 2.5rem);
+    transition: none;
+  }
+
+  /* A single run has no next run to point at, so the last separator goes. */
+  :global(html[data-motion="reduced"]) .item:last-child::after {
+    display: none;
+  }
+
+  /* ---- hover: the name, then its neighbours -------------------------------------------------- */
+
+  .rows:has(.item:hover) .item {
+    opacity: 0.42;
+  }
+
+  /* Same specificity as the dimming rule above, so the hovered name wins by order. */
+  .rows:has(.item:hover) .item:hover {
+    opacity: 1;
+    color: #fff;
+    -webkit-text-stroke: 0;
+    text-shadow:
+      0 0 0.35em rgb(var(--accent-hot-rgb) / 0.8),
+      0 0 1.1em rgb(var(--accent-deep-rgb) / 0.7);
+  }
+
+  .rows:has(.item:hover) .item:hover::after {
+    background: var(--hot);
+  }
+
+  .rows:has(.item:hover) .item:hover + .item,
+  .rows:has(.item:hover) .item:has(+ .item:hover) {
+    opacity: 0.86;
+  }
+
+  .rows:has(.item:hover) .item:hover + .item::after,
+  .rows:has(.item:hover) .item:has(+ .item:hover)::after {
+    background: rgb(var(--accent-hot-rgb) / 0.9);
+  }
+
+  @media (max-width: 719.98px) {
+    .item {
+      font-size: clamp(1.5rem, 8vw, 2.25rem);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .item,
+    .item:nth-child(even) {
+      color: CanvasText;
+      -webkit-text-stroke: 0;
+    }
+
+    .item::after {
+      background: CanvasText;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .item:nth-child(even) {
+      color: var(--text-1);
+      -webkit-text-stroke: 0;
+    }
+  }
+}

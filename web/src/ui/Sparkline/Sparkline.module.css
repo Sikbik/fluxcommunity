@@ -1,0 +1,132 @@
+@layer ui {
+  .root {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    color: var(--accent);
+    touch-action: pan-y;
+  }
+
+  /* Two layers fill the root: the target line, and the series in a clip that its slide-in moves
+     inside. Both SVGs are plain, still pictures; only the HTML box around the series animates. */
+  .svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+
+  .clip {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(-30% 0 -30% 0);
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+  }
+
+  .line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .target {
+    stroke: var(--text-3);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.7;
+  }
+
+  /*
+   * The caption of the target line. Four spots touch the line: start or end, above or below
+   * (data-side, data-edge, chosen in labelPlacement.ts so the series does not run through the
+   * text). The 2px gap must match LABEL_GAP there.
+   */
+  .targetLabel {
+    position: absolute;
+    inset-inline-start: 0;
+    translate: 0 calc(-100% - 2px);
+    text-shadow:
+      0 0 3px var(--ink-0),
+      0 0 7px var(--ink-0);
+    color: var(--text-3);
+    font: 500 0.625rem / 1 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .targetLabel[data-side="end"] {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+
+  .targetLabel[data-edge="below"] {
+    translate: 0 2px;
+  }
+
+  .dot {
+    position: absolute;
+    inline-size: 9px;
+    block-size: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    background: currentColor;
+    clip-path: var(--hex-clip);
+    box-shadow: 0 0 0 2px var(--ink-0);
+    pointer-events: none;
+  }
+
+  .dot::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    background: currentColor;
+    clip-path: var(--hex-clip);
+    opacity: 0.25;
+    animation: breathe 2.6s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    50% {
+      opacity: 0.05;
+      scale: 1.35;
+    }
+  }
+
+  .cursor {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 1px;
+    background: rgb(255 255 255 / 0.35);
+    pointer-events: none;
+  }
+
+  .tip {
+    position: absolute;
+    inset-block-start: -2px;
+    translate: -50% -100%;
+    padding: 2px 6px;
+    color: var(--text-1);
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    white-space: nowrap;
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--line-3);
+    border-radius: var(--r-xs);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(html[data-motion="reduced"]) .dot::after {
+    animation: none;
+  }
+}

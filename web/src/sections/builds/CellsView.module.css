@@ -1,0 +1,37 @@
+@layer section {
+  .wrap {
+    position: relative;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+    gap: var(--grid-gap);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .item {
+    min-inline-size: 0;
+  }
+
+  .item > * {
+    block-size: 100%;
+  }
+
+  /* Leavers fade out here, where they stood, while the rest of the grid slides into place. */
+  .ghosts {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @media (max-width: 719.98px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+  }
+}

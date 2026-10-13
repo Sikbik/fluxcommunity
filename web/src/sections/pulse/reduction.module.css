@@ -1,0 +1,209 @@
+@layer section {
+  .tile {
+    block-size: 100%;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    block-size: 100%;
+  }
+
+  /* ---- the segmented clock ----------------------------------------------------------------------- */
+
+  /* The clock is its own size container: the digits scale to the room it really has, so four units
+     never run into each other in a narrow tile. */
+  .clock {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(min-content, 1fr));
+    border-block: 1px solid var(--line-2);
+    container-type: inline-size;
+  }
+
+  .unit {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-6) var(--space-5);
+    justify-items: center;
+  }
+
+  .unit + .unit {
+    border-inline-start: 1px solid var(--line-1);
+  }
+
+  .digits {
+    color: var(--text-1);
+    font: 300 clamp(1.625rem, 12.5cqi, 4rem) / 1 var(--font-display);
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .unit:last-child .digits {
+    color: var(--accent-strong);
+  }
+
+  .unitLabel {
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  @container (max-width: 18rem) {
+    .unitLabel {
+      font-size: 0.625rem;
+      letter-spacing: 0.06em;
+    }
+  }
+
+  .colon {
+    composes: beat from global;
+    position: absolute;
+    inset-block-start: 38%;
+    inset-inline-start: -1px;
+    inline-size: 5px;
+    block-size: 5px;
+    background: var(--accent);
+    clip-path: var(--hex-clip);
+    translate: -50% 0;
+    opacity: calc(0.45 + var(--flash) * 0.5);
+  }
+
+  /* ---- the epoch bar ---------------------------------------------------------------------------------- */
+
+  .epoch {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .epochHead,
+  .epochEnds {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-5);
+    color: var(--text-3);
+    font: 400 var(--fs-xs) / 1.4 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .epochHead b {
+    color: var(--text-1);
+    font-weight: 500;
+  }
+
+  .epochEnds {
+    font-size: var(--fs-2xs);
+  }
+
+  .ruler {
+    composes: beat from global;
+    block-size: 5px;
+    margin-block-start: calc(var(--space-2) * -1);
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(255 255 255 / calc(0.22 + var(--flash) * 0.3)) 0 1px,
+      transparent 1px 10%
+    );
+    background-size: calc(100% - 1px) 100%;
+    border-inline-end: 1px solid rgb(255 255 255 / 0.22);
+  }
+
+  .blocksOnly {
+    color: var(--text-2);
+    font: 400 var(--fs-sm) / var(--lh-normal) var(--font-mono);
+  }
+
+  .blocksOnly b {
+    color: var(--text-1);
+    font-weight: 500;
+  }
+
+  /* ---- before and after ------------------------------------------------------------------------------ */
+
+  .step {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .stepHead {
+    color: var(--text-3);
+    font: var(--type-label);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .stepRow {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-5);
+    font: 400 var(--fs-xs) / 1.2 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stepLabel {
+    color: var(--text-3);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .stepValue {
+    min-inline-size: 7.5ch;
+    color: var(--text-1);
+    text-align: end;
+    white-space: nowrap;
+  }
+
+  .stepUnit {
+    color: var(--text-3);
+  }
+
+  /* ---- facts ------------------------------------------------------------------------------------------ */
+
+  .facts {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: auto;
+    padding-block-start: var(--space-6);
+    border-block-start: 1px solid var(--line-1);
+  }
+
+  .fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-6);
+    font: 400 var(--fs-xs) / 1.45 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fact dt {
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+
+  .fact dd {
+    margin: 0;
+    color: var(--text-1);
+    text-align: end;
+  }
+
+  .date {
+    font-size: var(--fs-xs);
+    text-wrap: balance;
+  }
+
+  .flux {
+    color: var(--text-3);
+  }
+
+  .skeleton {
+    display: grid;
+    gap: var(--space-5);
+  }
+}

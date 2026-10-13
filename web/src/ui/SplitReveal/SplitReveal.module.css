@@ -1,0 +1,56 @@
+/*
+ * SplitReveal: each word rises out of a clipped line box. Words are real text nodes
+ * separated by real spaces, so selection, search and screen readers see ordinary text.
+ */
+@layer ui {
+  .root {
+    display: block;
+  }
+
+  .word {
+    display: inline-block;
+    overflow: clip;
+    overflow-clip-margin: 0.04em;
+    vertical-align: bottom;
+    /* Room for descenders and ascenders inside the clip. */
+    padding-block: 0.12em;
+    margin-block: -0.12em;
+  }
+
+  /*
+   * --split-travel is how far below its own box a word waits (a share of that box's height). A
+   * caller that makes the box taller than the line (SectionHeader's gradient words, see there)
+   * lowers it so the word still starts the same distance down.
+   */
+  .inner {
+    display: inline-block;
+    translate: 0 calc(var(--split-travel, 110%) * var(--split-on, 1));
+    opacity: calc(1 - var(--split-on, 1));
+    transition:
+      translate var(--dur-4) var(--ease-out)
+      calc(var(--i, 0) * var(--split-step, 40ms) + var(--split-delay, 0ms)),
+      opacity calc(var(--dur-4) * 0.6) var(--ease-out)
+      calc(var(--i, 0) * var(--split-step, 40ms) + var(--split-delay, 0ms));
+  }
+
+  .root[data-shown="true"] {
+    --split-on: 0;
+  }
+
+  .root:not([data-shown="true"]) {
+    --split-on: 1;
+  }
+
+  /* The reduced twin: opacity only, whole line at once. */
+  :global(html[data-motion="reduced"]) .inner {
+    translate: 0 0;
+    transition: opacity var(--dur-4) linear;
+  }
+
+  @media print {
+    .inner {
+      translate: none;
+      opacity: 1;
+    }
+  }
+}
