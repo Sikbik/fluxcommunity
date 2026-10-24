@@ -26,7 +26,7 @@ declare global {
 window.__bus = useStageBus;
 
 const SECTION_COPY: Record<SectionId, { title: string; body: string }> = {
-  hero: { title: 'Built by the community, ran by the network', body: 'Hero: bright, close and low.' },
+  hero: { title: 'Built by the community, run by the network', body: 'Hero: bright, close and low.' },
   pulse: { title: 'The network, right now.', body: 'Pulse: a touch calmer, live tiles on top.' },
   gateways: {
     title: 'Start anywhere.',
@@ -285,7 +285,7 @@ function SectionBlock({ id, anchor }: { id: SectionId; anchor: boolean }) {
         <div className="lab-eyebrow">{`0${SECTION_ORDER.indexOf(id)} / ${id.toUpperCase()}`}</div>
         {id === 'hero' ? (
           <h1>
-            Built by the <b>community</b> Ran by the <b>network</b>
+            Built by the <b>community</b> Run by the <b>network</b>
           </h1>
         ) : (
           <h2>{copy.title}</h2>

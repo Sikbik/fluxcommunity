@@ -61,6 +61,7 @@ script to refresh. A preview is absent when its capture failed; the UI falls bac
 | flux-tools-hub | https://node-flux-tools.app.runonflux.io | captured (the app itself is a small page) |
 | atlas | https://atlas.app.runonflux.io | captured (WebGL globe, 7.5 s settle) |
 | claimcalc | https://claimcalc.app.runonflux.io | captured (the app itself is a small page) |
+| node-calculator | https://noderewardcalculator.app.runonflux.io | captured 2026-10-24 |
 | flux-view | https://view.app.runonflux.io | captured |
 | academy | https://academy.app.runonflux.io | captured |
 | goldietech | https://goldietechnodes.com | captured (light theme) |

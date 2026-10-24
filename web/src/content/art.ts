@@ -302,6 +302,11 @@ export const PREVIEWS: Record<string, { src: string; width: number; height: numb
     width: 960,
     height: 600,
   },
+  'node-calculator': {
+    src: '/previews/node-calculator.webp',
+    width: 960,
+    height: 600,
+  },
   nodeorbit: {
     src: '/previews/nodeorbit.webp',
     width: 960,
@@ -340,6 +345,8 @@ export const PREVIEW_LQIP: Record<string, string> = {
     'data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAQCdASoQAAoAA8BgJZwAAubTZgEIUAD+9hfYOGk2cN6q+VVbTuDjFAA=',
   hostmynode:
     'data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAADQAQCdASoQAAoAA8BgJYwCdAEObhN+4AD+9EFAr3fC45h2/2D7JpFgobBjSD6VXIrUGumdgAA=',
+  'node-calculator':
+    'data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAABwAQCdASoQAAoAA8BgJYwCdAFAAAD+8Nsqueg/iN5InLQooo5aEAAA',
   nodeorbit:
     'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAACwAQCdASoQAAoAA8BgJQAAXIclyLYAAP73gI1eHUyYRkm/0+Lnls8eMOg9snfrAAA=',
   noxide:
