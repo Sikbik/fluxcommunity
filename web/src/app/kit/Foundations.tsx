@@ -186,7 +186,7 @@ export function Foundations() {
         <Col>
           <Spec label="Display: clamp(2.75rem, 8vw, 8rem), 300 with 700 key words, -0.04em">
             <p className="t-display">
-              Built by the <b className="t-grad">community</b> Ran by the <b className="t-grad">network</b>
+              Built by the <b className="t-grad">community</b> Run by the <b className="t-grad">network</b>
             </p>
           </Spec>
           <Spec label="H2: clamp(1.875rem, 4.2vw, 3.75rem), 600, -0.03em">

@@ -9,7 +9,7 @@ interface Word {
 }
 
 /**
- * "Built by the community / Ran by the network" as four stacked lines, light and bold in turn, with no
+ * "Built by the community / Run by the network" as four stacked lines, light and bold in turn, with no
  * end punctuation (it is a headline, not a sentence).
  *
  * The h1 is ONE block of inline text with hard line breaks: the browser measures the largest
@@ -20,7 +20,7 @@ interface Word {
 const LINES: readonly (readonly Word[])[] = [
   [{ text: 'Built' }, { text: 'by' }, { text: 'the' }],
   [{ text: 'community', key: 0 }],
-  [{ text: 'Ran' }, { text: 'by' }, { text: 'the' }],
+  [{ text: 'Run' }, { text: 'by' }, { text: 'the' }],
   [{ text: 'network', key: 1 }],
 ];
 

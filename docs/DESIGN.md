@@ -201,7 +201,7 @@ for reduced motion, `?intro=0`, and repeat visits in the same session.
 ### 5.1 Hero
 
 - Eyebrow (mono): `FLUX  /  THE DECENTRALIZED CLOUD` and a live `BLOCK 3,031,112` chip with a status dot.
-- H1: **Built by the community / Ran by the network** (four stacked lines, no end punctuation). Mixed
+- H1: **Built by the community / Run by the network** (four stacked lines, no end punctuation). Mixed
   weights: "community" and "network" in 700 with a subtle accent gradient, the rest 300.
 - Subhead: "Apps, tools, node hosts and guides from the people who build on Flux, plus the live pulse of
   the network they run on."

@@ -65,7 +65,7 @@ p.tag b { font-weight: 700; color: #fff; }
   <div class="text">
     <h1>Flux<br><b>Community</b></h1>
     <div class="rule"></div>
-    <p class="tag">Built by the <b>community</b><br>Ran by the <b>network</b></p>
+    <p class="tag">Built by the <b>community</b><br>Run by the <b>network</b></p>
   </div>
   <div class="url">community.app.runonflux.io</div>
 </div>
