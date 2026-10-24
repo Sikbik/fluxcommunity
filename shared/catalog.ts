@@ -183,6 +183,18 @@ export const COMMUNITY_APPS: readonly CommunityApp[] = [
     lifecycle: 'live',
   },
   {
+    id: 'node-calculator',
+    name: 'Flux Node Calculator',
+    tagline: 'Node rewards and your break-even point.',
+    description:
+      'Estimate FluxNode rewards, look up your nodes, project earnings across reward reductions, and find your break-even point.',
+    category: 'rewards',
+    builder: 'Dawg4037',
+    url: 'https://noderewardcalculator.app.runonflux.io',
+    host: 'noderewardcalculator.app.runonflux.io',
+    lifecycle: 'new',
+  },
+  {
     id: 'flux-view',
     name: 'Flux View',
     tagline: 'Nodes, hashrate and apps in one view.',
